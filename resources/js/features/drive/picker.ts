@@ -11,24 +11,22 @@ export async function pickDriveFile(
   if (!google?.accounts?.oauth2) throw new Error('GIS not available');
   if (!(window as any).gapi?.picker) throw new Error('Picker not available');
 
-  // 1) short-lived front-end token
+  // Get a short-lived front-end token
   const accessToken: string = await new Promise((resolve, reject) => {
     const tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: keys.clientId,
       scope: 'https://www.googleapis.com/auth/drive.readonly',
-      callback: (resp: any) => {
-        if (resp?.access_token) return resolve(resp.access_token);
-        reject(new Error('No access token'));
-      },
+      callback: (resp: any) =>
+        resp?.access_token ? resolve(resp.access_token) : reject(new Error('No access token')),
       error_callback: (err: any) => reject(err),
     });
     tokenClient.requestAccessToken({ prompt: '' });
   });
 
-  // 2) build Picker (no MIME restrictions)
+  // Build Picker (no MIME restrictions)
   return new Promise<PickResult | null>((resolve) => {
     const docsView = new google.picker.DocsView(google.picker.ViewId.DOCS);
-    const uploadView = new google.picker.DocsUploadView();
+    // const uploadView = new google.picker.DocsUploadView();
 
     const picker = new google.picker.PickerBuilder()
       .setDeveloperKey(keys.apiKey)
@@ -36,7 +34,7 @@ export async function pickDriveFile(
       .setOrigin(`${window.location.protocol}//${window.location.host}`)
       .setTitle('Select or Upload File')
       .addView(docsView)
-      .addView(uploadView)
+      // .addView(uploadView)
       .setCallback((data: any) => {
         if (data?.action === google.picker.Action.PICKED) {
           const d = data.docs?.[0];
