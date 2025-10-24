@@ -24,7 +24,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function FooterLinksIndex({ links }: Props) {
     const handleDelete = (id: number) => {
-        router.delete(`/admin/Footer-links/${id}`, { preserveScroll: true });
+        router.delete(`/admin/footer-links/${id}`, { preserveScroll: true });
     };
 
     return (
@@ -38,7 +38,7 @@ export default function FooterLinksIndex({ links }: Props) {
                         </Link>
                         <h1 className="text-2xl font-bold">Footer Links</h1>
                     </div>
-                    <Link href="/admin/Footer-links/create">
+                    <Link href="/admin/footer-links/create">
                         <Button><Plus className="mr-2 h-4 w-4" />Add Link</Button>
                     </Link>
                 </div>
@@ -64,7 +64,7 @@ export default function FooterLinksIndex({ links }: Props) {
                                         <TableCell><code className="rounded bg-muted px-2 py-1 text-sm">{link.slug}</code></TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
-                                                <Link href={`/admin/Footer-links/${link.id}/edit`}>
+                                                <Link href={`/admin/footer-links/${link.id}/edit`}>
                                                     <Button variant="outline" size="sm"><Pencil className="h-4 w-4" /></Button>
                                                 </Link>
                                                 <AlertDialog>

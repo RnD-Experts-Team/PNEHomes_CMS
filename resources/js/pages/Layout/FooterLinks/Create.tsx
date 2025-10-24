@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Layout & Settings', href: '/admin/layout' },
-    { title: 'Footer Links', href: '/admin/Footer-links' },
+    { title: 'Footer Links', href: '/admin/footer-links' },
     { title: 'Create', href: '#' },
 ];
 
@@ -27,7 +27,7 @@ export default function FooterLinkCreate() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/admin/Footer-links');
+        post('/admin/footer-links');
     };
 
     return (

@@ -26,7 +26,7 @@ interface FormData {
 export default function FooterLinkEdit({ link }: Props) {
     const breadcrumbs: BreadcrumbItem[] = [
             { title: 'Layout & Settings', href: '/admin/layout' },
-        { title: 'Footer Links', href: '/admin/Footer-links' },
+        { title: 'Footer Links', href: '/admin/footer-links' },
         { title: 'Edit', href: '#' },
     ];
 
@@ -38,7 +38,7 @@ export default function FooterLinkEdit({ link }: Props) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/admin/Footer-links/${link.id}`);
+        put(`/admin/footer-links/${link.id}`);
     };
 
     return (
