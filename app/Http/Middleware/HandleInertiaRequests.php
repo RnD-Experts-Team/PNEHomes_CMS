@@ -45,6 +45,10 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'google' => [
+                'apiKey'   => config('google.google_project_api_key'),
+                'clientId' => config('google.google_client_id'),
+            ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }
