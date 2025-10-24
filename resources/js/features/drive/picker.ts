@@ -1,7 +1,4 @@
-// resources/js/features/drive/picker.ts
 import { loadGapiPicker, loadGis } from '@/utils/google';
-
-const MIME_FILTER = 'image/*,video/*';
 
 type PickResult = { id: string; mimeType?: string; name?: string };
 
@@ -19,29 +16,25 @@ export async function pickDriveFile(
     const tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: keys.clientId,
       scope: 'https://www.googleapis.com/auth/drive.readonly',
-      callback: (resp: any) => resp?.access_token ? resolve(resp.access_token) : reject(new Error('No access token')),
+      callback: (resp: any) => {
+        if (resp?.access_token) return resolve(resp.access_token);
+        reject(new Error('No access token'));
+      },
       error_callback: (err: any) => reject(err),
     });
     tokenClient.requestAccessToken({ prompt: '' });
   });
 
-  // 2) build Picker (no setSelectFolderEnabled / setIncludeFolders on Upload view)
+  // 2) build Picker (no MIME restrictions)
   return new Promise<PickResult | null>((resolve) => {
-    const docsView = new google.picker.DocsView(google.picker.ViewId.DOCS)
-      // If you really want to hide folders, you can keep this; it’s safe on DocsView:
-      // .setIncludeFolders(false)
-      .setMimeTypes(MIME_FILTER);
-
-    const uploadView = new google.picker.DocsUploadView()
-      .setMimeTypes(MIME_FILTER);
-      // Do NOT chain setIncludeFolders or setSelectFolderEnabled here.
+    const docsView = new google.picker.DocsView(google.picker.ViewId.DOCS);
+    const uploadView = new google.picker.DocsUploadView();
 
     const picker = new google.picker.PickerBuilder()
       .setDeveloperKey(keys.apiKey)
       .setOAuthToken(accessToken)
-      // use the canonical origin string to avoid COOP/CORS quirks in some setups
       .setOrigin(`${window.location.protocol}//${window.location.host}`)
-      .setTitle('Select or Upload (images/videos)')
+      .setTitle('Select or Upload File')
       .addView(docsView)
       .addView(uploadView)
       .setCallback((data: any) => {
