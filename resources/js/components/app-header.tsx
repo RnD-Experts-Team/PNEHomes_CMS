@@ -64,11 +64,11 @@ const mainNavItems: NavItem[] = [
         href: '/admin/communities',
         icon: Users,
     },
-    {
-        title: 'Floor Plans',
-        href: '/admin/floor-plans',
-        icon: LayoutTemplate,
-    },
+    // {
+    //     title: 'Floor Plans',
+    //     href: '/admin/floor-plans',
+    //     icon: LayoutTemplate,
+    // },
     {
         title: 'Gallery',
         href: '/admin/gallery-albums',

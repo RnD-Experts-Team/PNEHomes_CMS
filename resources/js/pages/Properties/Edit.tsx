@@ -50,9 +50,9 @@ interface Property {
     order: number;
     is_active: boolean;
     gallery: PropertyGallery[];
-    whatsSpecial?: PropertyWhatsSpecial;
-    factsFeatures: PropertyFactsFeature[];
-    floorPlans: PropertyFloorPlan[];
+    whats_special?: PropertyWhatsSpecial;
+    facts_features: PropertyFactsFeature[];
+    floor_plans: PropertyFloorPlan[];
 }
 
 interface Props {
@@ -124,16 +124,16 @@ export default function PropertyEdit({ property }: Props) {
         is_active: property.is_active,
         gallery: property.gallery?.map((g) => g.image_id) || [],
         whats_special: {
-            badges: property.whatsSpecial?.badges || [],
-            description: property.whatsSpecial?.description || '',
+            badges: property.whats_special?.badges || [],
+            description: property.whats_special?.description || '',
         },
         facts_features:
-            property.factsFeatures?.map((f) => ({
+            property.facts_features?.map((f) => ({
                 title: f.title,
                 list: f.list,
             })) || [],
         floor_plans:
-            property.floorPlans?.map((p) => ({
+            property.floor_plans?.map((p) => ({
                 title: p.title,
                 image_id: p.image_id,
                 description: p.description,
