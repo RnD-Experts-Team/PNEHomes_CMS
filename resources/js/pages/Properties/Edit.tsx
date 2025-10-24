@@ -96,10 +96,7 @@ interface FormData {
 
 export default function PropertyEdit({ property }: Props) {
     const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: 'Dashboard',
-            href: dashboard().url,
-        },
+
         {
             title: 'Properties',
             href: '/admin/properties',

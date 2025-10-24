@@ -49,10 +49,7 @@ interface FormData {
 
 export default function CommunityEdit({ community }: Props) {
     const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: 'Dashboard',
-            href: dashboard().url,
-        },
+
         {
             title: 'Communities',
             href: '/admin/communities',

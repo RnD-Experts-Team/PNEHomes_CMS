@@ -57,10 +57,7 @@ interface FormData {
 
 export default function ServiceEdit({ service }: Props) {
     const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: 'Dashboard',
-            href: dashboard().url,
-        },
+
         {
             title: 'Services',
             href: '/admin/services',

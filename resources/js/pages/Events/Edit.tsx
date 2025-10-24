@@ -39,10 +39,7 @@ interface FormData {
 
 export default function EventEdit({ event }: Props) {
     const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: 'Dashboard',
-            href: dashboard().url,
-        },
+
         {
             title: 'Events',
             href: '/admin/events',

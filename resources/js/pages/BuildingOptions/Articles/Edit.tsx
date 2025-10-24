@@ -35,10 +35,7 @@ interface FormData {
 
 export default function BuildingArticleEdit({ article }: Props) {
     const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: 'Dashboard',
-            href: dashboard().url,
-        },
+
         {
             title: 'Building Options',
             href: '/admin/building-options',

@@ -33,10 +33,7 @@ interface FormData {
 
 export default function TeamMemberEdit({ member }: Props) {
     const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: 'Dashboard',
-            href: dashboard().url,
-        },
+
         {
             title: 'Team Members',
             href: '/admin/team-members',

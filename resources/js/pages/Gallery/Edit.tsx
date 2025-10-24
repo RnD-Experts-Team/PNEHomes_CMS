@@ -68,10 +68,7 @@ interface FormData {
 
 export default function GalleryEdit({ album }: Props) {
     const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: 'Dashboard',
-            href: dashboard().url,
-        },
+
         {
             title: 'Gallery Albums',
             href: '/admin/gallery-albums',
