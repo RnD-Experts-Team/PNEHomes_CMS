@@ -11,7 +11,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Pencil, Trash2, Plus, Settings, LayoutGrid } from 'lucide-react';
+import { Pencil, Trash2, Plus, ArrowLeft } from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -26,58 +26,53 @@ import {
 
 interface Community {
     id: number;
-    slug: string;
     title: string;
-    city: string;
-    starting_price: string;
+}
+
+interface Floorplan {
+    id: number;
+    title: string;
+    slug: string;
+    community: Community;
     order: number;
     is_active: boolean;
 }
 
 interface Props {
-    communities: Community[];
+    floorplans: Floorplan[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Communities',
-        href: '#',
-    },
+    { title: 'Communities', href: '/admin/communities' },
+    { title: 'Floor Plans', href: '#' },
 ];
 
-export default function CommunitiesIndex({ communities }: Props) {
+export default function FloorplansIndex({ floorplans }: Props) {
     const handleDelete = (id: number) => {
-        router.delete(`/admin/communities/${id}`, {
+        router.delete(`/admin/communities-floorplans/${id}`, {
             preserveScroll: true,
         });
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Communities" />
+            <Head title="Floor Plans" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Communities</h1>
-                    <div className="flex gap-2">
-                        <Link href="/admin/communities-floorplans">
-                            <Button variant="outline">
-                                <LayoutGrid className="mr-2 h-4 w-4" />
-                                Floor Plans
+                    <div className="flex items-center gap-2">
+                        <Link href="/admin/communities">
+                            <Button variant="ghost" size="icon">
+                                <ArrowLeft className="h-4 w-4" />
                             </Button>
                         </Link>
-                        <Link href="/admin/communities-settings">
-                            <Button variant="outline">
-                                <Settings className="mr-2 h-4 w-4" />
-                                Settings
-                            </Button>
-                        </Link>
-                        <Link href="/admin/communities/create">
-                            <Button>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Community
-                            </Button>
-                        </Link>
+                        <h1 className="text-2xl font-bold">Floor Plans</h1>
                     </div>
+                    <Link href="/admin/communities-floorplans/create">
+                        <Button>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Floor Plan
+                        </Button>
+                    </Link>
                 </div>
 
                 <div className="rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
@@ -86,41 +81,43 @@ export default function CommunitiesIndex({ communities }: Props) {
                             <TableRow>
                                 <TableHead>Order</TableHead>
                                 <TableHead>Title</TableHead>
-                                <TableHead>City</TableHead>
-                                <TableHead>Starting Price</TableHead>
+                                <TableHead>Slug</TableHead>
+                                <TableHead>Community</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {communities.length === 0 ? (
+                            {floorplans.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={6} className="text-center">
-                                        No communities found
+                                        No floor plans found
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                communities.map((community) => (
-                                    <TableRow key={community.id}>
-                                        <TableCell>{community.order}</TableCell>
-                                        <TableCell className="font-medium">
-                                            {community.title}
+                                floorplans.map((plan) => (
+                                    <TableRow key={plan.id}>
+                                        <TableCell>{plan.order}</TableCell>
+                                        <TableCell className="font-medium">{plan.title}</TableCell>
+                                        <TableCell>
+                                            <code className="rounded bg-muted px-2 py-1 text-sm">
+                                                {plan.slug}
+                                            </code>
                                         </TableCell>
-                                        <TableCell>{community.city}</TableCell>
-                                        <TableCell>{community.starting_price}</TableCell>
+                                        <TableCell>{plan.community.title}</TableCell>
                                         <TableCell>
                                             <Badge
                                                 variant={
-                                                    community.is_active ? 'default' : 'secondary'
+                                                    plan.is_active ? 'default' : 'secondary'
                                                 }
                                             >
-                                                {community.is_active ? 'Active' : 'Inactive'}
+                                                {plan.is_active ? 'Active' : 'Inactive'}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
                                                 <Link
-                                                    href={`/admin/communities/${community.id}/edit`}
+                                                    href={`/admin/communities-floorplans/${plan.id}/edit`}
                                                 >
                                                     <Button variant="outline" size="sm">
                                                         <Pencil className="h-4 w-4" />
@@ -139,12 +136,12 @@ export default function CommunitiesIndex({ communities }: Props) {
                                                     <AlertDialogContent>
                                                         <AlertDialogHeader>
                                                             <AlertDialogTitle>
-                                                                Delete Community
+                                                                Delete Floor Plan
                                                             </AlertDialogTitle>
                                                             <AlertDialogDescription>
                                                                 Are you sure you want to delete "
-                                                                {community.title}"? This action
-                                                                cannot be undone.
+                                                                {plan.title}"? This action cannot be
+                                                                undone.
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
@@ -152,9 +149,7 @@ export default function CommunitiesIndex({ communities }: Props) {
                                                                 Cancel
                                                             </AlertDialogCancel>
                                                             <AlertDialogAction
-                                                                onClick={() =>
-                                                                    handleDelete(community.id)
-                                                                }
+                                                                onClick={() => handleDelete(plan.id)}
                                                             >
                                                                 Delete
                                                             </AlertDialogAction>

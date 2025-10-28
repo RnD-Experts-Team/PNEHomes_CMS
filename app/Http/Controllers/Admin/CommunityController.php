@@ -30,10 +30,12 @@ class CommunityController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'slug' => 'nullable|string|unique:communities,slug',
+            // slug removed - auto-generated from title
             'title' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'address' => 'required|string',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             'card_image_id' => 'required|string',
             'video_id' => 'nullable|string',
             'community_features' => 'nullable|string',
@@ -69,10 +71,12 @@ class CommunityController extends Controller
     public function update(Request $request, int $id)
     {
         $validated = $request->validate([
-            'slug' => 'nullable|string|unique:communities,slug,' . $id,
+            // slug removed - auto-generated from title
             'title' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'address' => 'required|string',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             'card_image_id' => 'required|string',
             'video_id' => 'nullable|string',
             'community_features' => 'nullable|string',

@@ -12,7 +12,6 @@ Route::get('/', function () {
     return redirect('/login');
 })->name('home');
 
-
 // Admin Service Routes (Protected by auth middleware)
 Route::middleware(['auth'])->prefix('admin')->name('services.')->group(function () {
     Route::get('/services', [ServiceController::class, 'index'])->name('index');
@@ -22,6 +21,7 @@ Route::middleware(['auth'])->prefix('admin')->name('services.')->group(function 
     Route::put('/services/{id}', [ServiceController::class, 'update'])->name('update');
     Route::delete('/services/{id}', [ServiceController::class, 'destroy'])->name('destroy');
 });
+
 use App\Http\Controllers\Admin\PropertyController;
 
 // Admin Property Routes (Protected by auth middleware)
@@ -33,17 +33,40 @@ Route::middleware(['auth'])->prefix('admin')->name('properties.')->group(functio
     Route::put('/properties/{id}', [PropertyController::class, 'update'])->name('update');
     Route::delete('/properties/{id}', [PropertyController::class, 'destroy'])->name('destroy');
 });
+
 use App\Http\Controllers\Admin\CommunityController;
+use App\Http\Controllers\Admin\CommunitiesFloorplansController;
+use App\Http\Controllers\Admin\CommunitiesSettingsController;
 
 // Admin Community Routes (Protected by auth middleware)
-Route::middleware(['auth'])->prefix('admin')->name('communities.')->group(function () {
-    Route::get('/communities', [CommunityController::class, 'index'])->name('index');
-    Route::get('/communities/create', [CommunityController::class, 'create'])->name('create');
-    Route::post('/communities', [CommunityController::class, 'store'])->name('store');
-    Route::get('/communities/{id}/edit', [CommunityController::class, 'edit'])->name('edit');
-    Route::put('/communities/{id}', [CommunityController::class, 'update'])->name('update');
-    Route::delete('/communities/{id}', [CommunityController::class, 'destroy'])->name('destroy');
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    // Communities CRUD
+    Route::name('communities.')->group(function () {
+        Route::get('/communities', [CommunityController::class, 'index'])->name('index');
+        Route::get('/communities/create', [CommunityController::class, 'create'])->name('create');
+        Route::post('/communities', [CommunityController::class, 'store'])->name('store');
+        Route::get('/communities/{id}/edit', [CommunityController::class, 'edit'])->name('edit');
+        Route::put('/communities/{id}', [CommunityController::class, 'update'])->name('update');
+        Route::delete('/communities/{id}', [CommunityController::class, 'destroy'])->name('destroy');
+    });
+
+    // Communities Floor Plans CRUD
+    Route::name('communities-floorplans.')->group(function () {
+        Route::get('/communities-floorplans', [CommunitiesFloorplansController::class, 'index'])->name('index');
+        Route::get('/communities-floorplans/create', [CommunitiesFloorplansController::class, 'create'])->name('create');
+        Route::post('/communities-floorplans', [CommunitiesFloorplansController::class, 'store'])->name('store');
+        Route::get('/communities-floorplans/{id}/edit', [CommunitiesFloorplansController::class, 'edit'])->name('edit');
+        Route::put('/communities-floorplans/{id}', [CommunitiesFloorplansController::class, 'update'])->name('update');
+        Route::delete('/communities-floorplans/{id}', [CommunitiesFloorplansController::class, 'destroy'])->name('destroy');
+    });
+
+    // Communities Settings
+    Route::name('communities-settings.')->group(function () {
+        Route::get('/communities-settings', [CommunitiesSettingsController::class, 'edit'])->name('edit');
+        Route::put('/communities-settings', [CommunitiesSettingsController::class, 'update'])->name('update');
+    });
 });
+
 use App\Http\Controllers\Admin\GalleryAlbumController;
 
 // Admin Gallery Routes (Protected by auth middleware)
@@ -55,6 +78,7 @@ Route::middleware(['auth'])->prefix('admin')->name('gallery-albums.')->group(fun
     Route::put('/gallery-albums/{id}', [GalleryAlbumController::class, 'update'])->name('update');
     Route::delete('/gallery-albums/{id}', [GalleryAlbumController::class, 'destroy'])->name('destroy');
 });
+
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\EventSettingsController;
 
@@ -74,6 +98,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::put('/event-settings', [EventSettingsController::class, 'update'])->name('update');
     });
 });
+
 use App\Http\Controllers\Admin\TeamMemberController;
 use App\Http\Controllers\Admin\TeamSettingsController;
 
@@ -93,6 +118,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::put('/team-settings', [TeamSettingsController::class, 'update'])->name('update');
     });
 });
+
 use App\Http\Controllers\Admin\BuildingOptionController;
 use App\Http\Controllers\Admin\BuildingArticleController;
 use App\Http\Controllers\Admin\BuildingOptionsSettingsController;
@@ -122,6 +148,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::put('/building-options-settings', [BuildingOptionsSettingsController::class, 'update'])->name('update');
     });
 });
+
 use App\Http\Controllers\Admin\HomePageController;
 
 // Admin Home Page Routes (Protected by auth middleware)
@@ -133,6 +160,7 @@ Route::middleware(['auth'])->prefix('admin')->name('home.')->group(function () {
     Route::put('/home/grid-section', [HomePageController::class, 'updateGridSection'])->name('grid-section.update');
     Route::put('/home/settings', [HomePageController::class, 'updateSettings'])->name('settings.update');
 });
+
 use App\Http\Controllers\Admin\HomeHeroSectionController;
 use App\Http\Controllers\Admin\HomeServiceLinkController;
 use App\Http\Controllers\Admin\HomeGridLinkController;
@@ -179,6 +207,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::delete('/home-testimonials/{id}', [HomeTestimonialController::class, 'destroy'])->name('destroy');
     });
 });
+
 use App\Http\Controllers\Admin\LayoutController;
 use App\Http\Controllers\Admin\NavigationLinkController;
 use App\Http\Controllers\Admin\FooterLinkController;
@@ -222,6 +251,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::delete('/social-links/{id}', [SocialLinkController::class, 'destroy'])->name('destroy');
     });
 });
+
 use App\Http\Controllers\Admin\ContentPageController;
 
 // Admin Content Pages Routes (Protected by auth middleware)
@@ -232,6 +262,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/privacy-policy', [ContentPageController::class, 'privacyPolicy'])->name('privacy-policy.edit');
     Route::put('/privacy-policy', [ContentPageController::class, 'updatePrivacyPolicy'])->name('privacy-policy.update');
 });
+
 use App\Http\Controllers\Admin\FloorPlanController;
 
 // Admin Floor Plans Routes (Protected by auth middleware)
@@ -243,6 +274,13 @@ Route::middleware(['auth'])->prefix('admin')->name('floor-plans.')->group(functi
     Route::put('/floor-plans/{id}', [FloorPlanController::class, 'update'])->name('update');
     Route::delete('/floor-plans/{id}', [FloorPlanController::class, 'destroy'])->name('destroy');
 });
+use App\Http\Controllers\Admin\GallerySettingsController;
 
+// Inside the gallery-albums group or as a separate group
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    // Gallery Settings
+    Route::get('/gallery-settings', [GallerySettingsController::class, 'edit'])->name('gallery-settings.edit');
+    Route::put('/gallery-settings', [GallerySettingsController::class, 'update'])->name('gallery-settings.update');
+});
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

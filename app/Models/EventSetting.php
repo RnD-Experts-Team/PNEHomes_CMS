@@ -12,6 +12,7 @@ class EventSetting extends Model
     protected $fillable = [
         'cover_image_id',
         'slogan',
+        'title',
         'contact_title',
         'contact_message',
     ];

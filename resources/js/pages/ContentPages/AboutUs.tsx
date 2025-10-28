@@ -3,10 +3,10 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { IdPickerButton } from '@/components/drive/IdPickerButton';
+import QuillEditorPro from '@/components/QuillEditorPro';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'About Us', href: '#' },
@@ -101,19 +101,20 @@ export default function AboutUsPage({ aboutUs }: Props) {
 
               <div className="space-y-2">
                 <Label htmlFor="content">Content *</Label>
-                <Textarea
-                  id="content"
+
+                <QuillEditorPro
                   value={data.content}
-                  onChange={(e) => setData('content', e.target.value)}
-                  placeholder="Enter page content"
-                  rows={20}
-                  className="font-mono text-sm"
+                  onChange={(html) => setData('content', html)}
+                  placeholder="Write your About Us content…"
+                  height="500px"
+                  className="w-full"
                 />
+
                 {errors.content && (
                   <p className="text-sm text-destructive">{errors.content}</p>
                 )}
                 <p className="text-xs text-muted-foreground">
-                  You can use HTML formatting in the content.
+                  This editor supports headings, colors, lists, links, images (upload or URL), video, code blocks, RTL, and more.
                 </p>
               </div>
             </CardContent>

@@ -29,6 +29,7 @@ class EventSettingsController extends Controller
             'slogan' => 'required|string|max:255',
             'contact_title' => 'nullable|string|max:255',
             'contact_message' => 'nullable|string',
+            'title' => 'required|string',
         ]);
 
         try {

@@ -20,6 +20,7 @@ class EventController extends Controller
             $data = [
                 'cover' => $settings?->cover_url,
                 'slogan' => $settings?->slogan,
+                'title' => $settings?->title,
                 'events' => $events->map(function ($event) {
                     return [
                         'id' => $event->id,

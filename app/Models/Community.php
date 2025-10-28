@@ -10,24 +10,20 @@ class Community extends Model
     use HasFactory;
 
     protected $fillable = [
-        'slug',
-        'title',
-        'city',
-        'address',
-        'card_image_id',
-        'video_id',
-        'community_features',
-        'starting_price',
-        'order',
-        'is_active',
+        'slug','title','city','address',
+        'latitude','longitude',
+        'card_image_id','video_id','community_features',
+        'starting_price','order','is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'order' => 'integer',
+        'latitude' => 'float',
+        'longitude' => 'float',
     ];
 
-    protected $appends = ['card_image_url', 'video_url'];
+    protected $appends = ['card_image_url','video_url'];
 
     public function getCardImageUrlAttribute(): ?string
     {
@@ -47,6 +43,10 @@ class Community extends Model
     {
         return $this->hasMany(CommunityGallery::class)->orderBy('order');
     }
+public function floorplans()   // relation name matches table
+    {
+        return $this->hasMany(CommunitiesFloorplan::class)->orderBy('order');
+    }
 
     protected static function boot()
     {
@@ -54,6 +54,7 @@ class Community extends Model
 
         static::deleting(function ($community) {
             $community->gallery()->delete();
+            $community->floorplans()->delete();
         });
     }
 }

@@ -18,6 +18,7 @@ interface Settings {
   slogan: string;
   contact_title?: string;
   contact_message?: string;
+  title: string;
 }
 
 interface Props {
@@ -29,6 +30,7 @@ interface FormData {
   slogan: string;
   contact_title: string;
   contact_message: string;
+  title: string;
 }
 
 export default function EventSettings({ settings }: Props) {
@@ -37,6 +39,7 @@ export default function EventSettings({ settings }: Props) {
     slogan: settings?.slogan || '',
     contact_title: settings?.contact_title || '',
     contact_message: settings?.contact_message || '',
+    title: settings?.title || '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -81,6 +84,19 @@ export default function EventSettings({ settings }: Props) {
                   value={data.slogan}
                   onChange={(e) => setData('slogan', e.target.value)}
                   placeholder="Enter slogan"
+                />
+                {errors.slogan && (
+                  <p className="text-sm text-destructive">{errors.slogan}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="slogan">Title *</Label>
+                <Input
+                  id="title"
+                  value={data.title}
+                  onChange={(e) => setData('title', e.target.value)}
+                  placeholder="Enter title"
                 />
                 {errors.slogan && (
                   <p className="text-sm text-destructive">{errors.slogan}</p>

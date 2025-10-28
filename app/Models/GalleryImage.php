@@ -23,14 +23,18 @@ class GalleryImage extends Model
 
     protected $appends = ['virtual_url', 'real_url'];
 
-    public function getVirtualUrlAttribute(): string
+    public function getVirtualUrlAttribute(): ?string
     {
-        return config('media.image_base_url') . '/' . $this->virtual_image_id;
+        return $this->virtual_image_id
+            ? config('media.image_base_url') . '/' . $this->virtual_image_id
+            : null;
     }
 
-    public function getRealUrlAttribute(): string
+    public function getRealUrlAttribute(): ?string
     {
-        return config('media.image_base_url') . '/' . $this->real_image_id;
+        return $this->real_image_id
+            ? config('media.image_base_url') . '/' . $this->real_image_id
+            : null;
     }
 
     public function album()

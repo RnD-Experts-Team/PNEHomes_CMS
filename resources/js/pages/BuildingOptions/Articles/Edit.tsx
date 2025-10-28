@@ -3,186 +3,163 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import QuillEditorPro from '@/components/QuillEditorPro'; // <-- new
 
 interface BuildingArticle {
-    id: number;
-    slug: string;
-    title: string;
-    description?: string;
-    image_id: string;
-    content: string;
-    order: number;
-    is_active: boolean;
+  id: number;
+  slug: string;
+  title: string;
+  description?: string;
+  image_id: string;
+  content: string;
+  order: number;
+  is_active: boolean;
 }
 
 interface Props {
-    article: BuildingArticle;
+  article: BuildingArticle;
 }
 
 interface FormData {
-    title: string;
-    slug: string;
-    description: string;
-    image_id: string;
-    content: string;
-    order: number;
-    is_active: boolean;
+  title: string;
+  slug: string;          // still part of payload, but no input shown
+  description: string;
+  image_id: string;
+  content: string;       // HTML from Quill
+  order: number;
+  is_active: boolean;
 }
 
 export default function BuildingArticleEdit({ article }: Props) {
-    const breadcrumbs: BreadcrumbItem[] = [
+  const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Building Options', href: '/admin/building-options' },
+    { title: 'Articles', href: '/admin/building-articles' },
+    { title: 'Edit', href: '#' },
+  ];
 
-        {
-            title: 'Building Options',
-            href: '/admin/building-options',
-        },
-        {
-            title: 'Articles',
-            href: '/admin/building-articles',
-        },
-        {
-            title: 'Edit',
-            href: '#',
-        },
-    ];
+  const { data, setData, put, processing, errors } = useForm<FormData>({
+    title: article.title || '',
+    slug: article.slug || '',          // optional, no UI
+    description: article.description || '',
+    image_id: article.image_id || '',
+    content: article.content || '',
+    order: article.order || 0,
+    is_active: article.is_active,
+  });
 
-    const { data, setData, put, processing, errors } = useForm<FormData>({
-        title: article.title || '',
-        slug: article.slug || '',
-        description: article.description || '',
-        image_id: article.image_id || '',
-        content: article.content || '',
-        order: article.order || 0,
-        is_active: article.is_active,
-    });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    put(`/admin/building-articles/${article.id}`);
+  };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        put(`/admin/building-articles/${article.id}`);
-    };
+  return (
+    <AppLayout breadcrumbs={breadcrumbs}>
+      <Head title={`Edit Building Article - ${article.title}`} />
+      <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Edit Building Article</h1>
+        </div>
 
-    return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Edit Building Article - ${article.title}`} />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Edit Building Article</h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Article Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Title *</Label>
+                  <Input
+                    id="title"
+                    value={data.title}
+                    onChange={(e) => setData('title', e.target.value)}
+                    placeholder="Enter article title"
+                  />
+                  {errors.title && (
+                    <p className="text-sm text-destructive">{errors.title}</p>
+                  )}
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Article Information</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="title">Title *</Label>
-                                    <Input
-                                        id="title"
-                                        value={data.title}
-                                        onChange={(e) => setData('title', e.target.value)}
-                                        placeholder="Enter article title"
-                                    />
-                                    {errors.title && (
-                                        <p className="text-sm text-destructive">{errors.title}</p>
-                                    )}
-                                </div>
+                {/* Slug field removed as requested */}
+              </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="slug">Slug</Label>
-                                    <Input
-                                        id="slug"
-                                        value={data.slug}
-                                        onChange={(e) => setData('slug', e.target.value)}
-                                        placeholder="auto-generated-from-title"
-                                    />
-                                </div>
-                            </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Input
+                  id="description"
+                  value={data.description}
+                  onChange={(e) => setData('description', e.target.value)}
+                  placeholder="Enter article description"
+                />
+              </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="description">Description</Label>
-                                <Textarea
-                                    id="description"
-                                    value={data.description}
-                                    onChange={(e) => setData('description', e.target.value)}
-                                    placeholder="Enter article description"
-                                    rows={3}
-                                />
-                            </div>
+              <div className="space-y-2">
+                <Label htmlFor="image_id">Image ID (Google Drive) *</Label>
+                <Input
+                  id="image_id"
+                  value={data.image_id}
+                  onChange={(e) => setData('image_id', e.target.value)}
+                  placeholder="Enter Google Drive file ID"
+                />
+                {errors.image_id && (
+                  <p className="text-sm text-destructive">{errors.image_id}</p>
+                )}
+              </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="image_id">Image ID (Google Drive) *</Label>
-                                <Input
-                                    id="image_id"
-                                    value={data.image_id}
-                                    onChange={(e) => setData('image_id', e.target.value)}
-                                    placeholder="Enter Google Drive file ID"
-                                />
-                                {errors.image_id && (
-                                    <p className="text-sm text-destructive">{errors.image_id}</p>
-                                )}
-                            </div>
+              <div className="space-y-2">
+                <Label htmlFor="content">Content *</Label>
+                <QuillEditorPro
+                  value={data.content}
+                  onChange={(html) => setData('content', html)}
+                  placeholder="Write your article content…"
+                  height="500px"
+                  className="w-full"
+                />
+                {errors.content && (
+                  <p className="text-sm text-destructive">{errors.content}</p>
+                )}
+              </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="content">Content *</Label>
-                                <Textarea
-                                    id="content"
-                                    value={data.content}
-                                    onChange={(e) => setData('content', e.target.value)}
-                                    placeholder="Enter article content"
-                                    rows={12}
-                                />
-                                {errors.content && (
-                                    <p className="text-sm text-destructive">{errors.content}</p>
-                                )}
-                            </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="order">Order</Label>
+                  <Input
+                    id="order"
+                    type="number"
+                    value={data.order}
+                    onChange={(e) => setData('order', parseInt(e.target.value) || 0)}
+                  />
+                </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="order">Order</Label>
-                                    <Input
-                                        id="order"
-                                        type="number"
-                                        value={data.order}
-                                        onChange={(e) =>
-                                            setData('order', parseInt(e.target.value) || 0)
-                                        }
-                                    />
-                                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="is_active"
+                    checked={data.is_active}
+                    onCheckedChange={(checked) => setData('is_active', checked)}
+                  />
+                  <Label htmlFor="is_active">Active</Label>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                                <div className="flex items-center space-x-2">
-                                    <Switch
-                                        id="is_active"
-                                        checked={data.is_active}
-                                        onCheckedChange={(checked) =>
-                                            setData('is_active', checked)
-                                        }
-                                    />
-                                    <Label htmlFor="is_active">Active</Label>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <div className="flex justify-end gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => window.history.back()}
-                        >
-                            Cancel
-                        </Button>
-                        <Button type="submit" disabled={processing}>
-                            {processing ? 'Updating...' : 'Update Article'}
-                        </Button>
-                    </div>
-                </form>
-            </div>
-        </AppLayout>
-    );
+          <div className="flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => window.history.back()}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={processing}>
+              {processing ? 'Updating...' : 'Update Article'}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </AppLayout>
+  );
 }

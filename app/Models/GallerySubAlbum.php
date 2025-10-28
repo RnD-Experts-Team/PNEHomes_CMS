@@ -13,8 +13,7 @@ class GallerySubAlbum extends Model
         'album_id',
         'slug',
         'title',
-        'cover_virtual_image_id',
-        'cover_real_image_id',
+        'cover_image_id',
         'order',
     ];
 
@@ -22,16 +21,11 @@ class GallerySubAlbum extends Model
         'order' => 'integer',
     ];
 
-    protected $appends = ['cover_virtual_url', 'cover_real_url'];
+    protected $appends = ['cover_url'];
 
-    public function getCoverVirtualUrlAttribute(): string
+    public function getCoverUrlAttribute(): string
     {
-        return config('media.image_base_url') . '/' . $this->cover_virtual_image_id;
-    }
-
-    public function getCoverRealUrlAttribute(): string
-    {
-        return config('media.image_base_url') . '/' . $this->cover_real_image_id;
+        return config('media.image_base_url') . '/' . $this->cover_image_id;
     }
 
     public function album()

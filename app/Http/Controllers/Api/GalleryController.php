@@ -7,145 +7,124 @@ use App\Services\GalleryService;
 
 class GalleryController extends Controller
 {
-    public function __construct(
-        protected GalleryService $galleryService
-    ) {}
+    public function __construct(protected GalleryService $galleryService) {}
 
     public function index()
     {
         try {
+            $settings = $this->galleryService->getSettings();
             $albums = $this->galleryService->getAllAlbums();
-            $contact = $this->galleryService->getContact();
 
             $data = [
-                'albums' => $albums->map(function ($album) {
-                    $albumData = [
+                'title' => $settings->title,
+                'cover' => $settings->cover_url,
+                'gallery' => $albums->map(function ($album) {
+                    return [
                         'id' => $album->id,
                         'slug' => $album->slug,
                         'title' => $album->title,
-                        'cover' => [
-                            'virtual' => $album->cover_virtual_url,
-                            'real' => $album->cover_real_url,
-                        ],
-                        'has_sub_albums' => $album->has_sub_albums,
+                        'cover_img' => $album->cover_url,
+                        'sub_albums' => $album->has_sub_albums 
+                            ? $album->subAlbums->map(fn($sub) => [
+                                'slug' => $sub->slug,
+                                'title' => $sub->title,
+                                'cover_img' => $sub->cover_url,
+                                'gallery' => $sub->images->map(fn($img) => [
+                                    'virtual_img' => $img->virtual_url,
+                                    'real_img' => $img->real_url,
+                                ])->toArray(),
+                            ])->toArray()
+                            : [],
+                        'gallery' => !$album->has_sub_albums
+                            ? $album->images->map(fn($img) => [
+                                'virtual_img' => $img->virtual_url,
+                                'real_img' => $img->real_url,
+                            ])->toArray()
+                            : [],
                     ];
-
-                    if ($album->has_sub_albums) {
-                        $albumData['sub_albums'] = $album->subAlbums->map(function ($subAlbum) {
-                            return [
-                                'slug' => $subAlbum->slug,
-                                'title' => $subAlbum->title,
-                                'cover' => [
-                                    'virtual' => $subAlbum->cover_virtual_url,
-                                    'real' => $subAlbum->cover_real_url,
-                                ],
-                            ];
-                        })->toArray();
-                    } else {
-                        $albumData['images'] = $album->images->map(function ($image) {
-                            return [
-                                'virtual' => $image->virtual_url,
-                                'real' => $image->real_url,
-                            ];
-                        })->toArray();
-                    }
-
-                    return $albumData;
                 })->toArray(),
-                'contact' => $contact ? [
-                    'title' => $contact->title,
-                    'message' => $contact->message,
-                ] : null,
+                'contact' => [
+                    'title' => $settings->contact_title,
+                    'message' => $settings->contact_message,
+                ],
             ];
 
-            return response()->json([
-                'success' => true,
-                'data' => $data,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch gallery',
-                'error' => $e->getMessage(),
-            ], 500);
+            return response()->json(['success' => true, 'data' => $data]);
+        } catch (\Throwable $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to fetch gallery'], 500);
         }
     }
 
     public function show(string $slug)
     {
         try {
+            $settings = $this->galleryService->getSettings();
             $album = $this->galleryService->getAlbumBySlug($slug);
 
             $data = [
                 'id' => $album->id,
                 'slug' => $album->slug,
                 'title' => $album->title,
-                'has_sub_albums' => $album->has_sub_albums,
+                'cover_img' => $album->cover_url,
+                'sub_albums' => $album->has_sub_albums 
+                    ? $album->subAlbums->map(fn($sub) => [
+                        'slug' => $sub->slug,
+                        'title' => $sub->title,
+                        'cover_img' => $sub->cover_url,
+                        'gallery' => $sub->images->map(fn($img) => [
+                            'virtual_img' => $img->virtual_url,
+                            'real_img' => $img->real_url,
+                        ])->toArray(),
+                    ])->toArray()
+                    : [],
+                'gallery' => !$album->has_sub_albums
+                    ? $album->images->map(fn($img) => [
+                        'virtual_img' => $img->virtual_url,
+                        'real_img' => $img->real_url,
+                    ])->toArray()
+                    : [],
+                'contact' => [
+                    'title' => $settings->contact_title,
+                    'message' => $settings->contact_message,
+                ],
             ];
 
-            if ($album->has_sub_albums) {
-                $data['sub_albums'] = $album->subAlbums->map(function ($subAlbum) {
-                    return [
-                        'slug' => $subAlbum->slug,
-                        'title' => $subAlbum->title,
-                        'cover' => [
-                            'virtual' => $subAlbum->cover_virtual_url,
-                            'real' => $subAlbum->cover_real_url,
-                        ],
-                        'images' => $subAlbum->images->map(function ($image) {
-                            return [
-                                'virtual' => $image->virtual_url,
-                                'real' => $image->real_url,
-                            ];
-                        })->toArray(),
-                    ];
-                })->toArray();
-            } else {
-                $data['images'] = $album->images->map(function ($image) {
-                    return [
-                        'virtual' => $image->virtual_url,
-                        'real' => $image->real_url,
-                    ];
-                })->toArray();
-            }
-
-            return response()->json([
-                'success' => true,
-                'data' => $data,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Album not found',
-            ], 404);
+            return response()->json(['success' => true, 'data' => $data]);
+        } catch (\Throwable $e) {
+            return response()->json(['success' => false, 'message' => 'Album not found'], 404);
         }
     }
 
     public function showSubAlbum(string $albumSlug, string $subAlbumSlug)
     {
         try {
-            $subAlbum = $this->galleryService->getSubAlbumBySlug($albumSlug, $subAlbumSlug);
+            $settings = $this->galleryService->getSettings();
+            $album = $this->galleryService->getAlbumBySlug($albumSlug);
+            $subAlbum = $this->galleryService->getSubAlbumBySlug($album->id, $subAlbumSlug);
 
             $data = [
-                'slug' => $subAlbum->slug,
-                'title' => $subAlbum->title,
-                'images' => $subAlbum->images->map(function ($image) {
-                    return [
-                        'virtual' => $image->virtual_url,
-                        'real' => $image->real_url,
-                    ];
-                })->toArray(),
+                'album' => [
+                    'slug' => $album->slug,
+                    'title' => $album->title,
+                ],
+                'sub_album' => [
+                    'slug' => $subAlbum->slug,
+                    'title' => $subAlbum->title,
+                    'cover_img' => $subAlbum->cover_url,
+                    'gallery' => $subAlbum->images->map(fn($img) => [
+                        'virtual_img' => $img->virtual_url,
+                        'real_img' => $img->real_url,
+                    ])->toArray(),
+                ],
+                'contact' => [
+                    'title' => $settings->contact_title,
+                    'message' => $settings->contact_message,
+                ],
             ];
 
-            return response()->json([
-                'success' => true,
-                'data' => $data,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Sub-album not found',
-            ], 404);
+            return response()->json(['success' => true, 'data' => $data]);
+        } catch (\Throwable $e) {
+            return response()->json(['success' => false, 'message' => 'Sub-album not found'], 404);
         }
     }
 }
