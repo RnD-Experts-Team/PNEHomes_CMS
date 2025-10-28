@@ -70,6 +70,11 @@ const mainNavItems: NavItem[] = [
     //     icon: LayoutTemplate,
     // },
     {
+        title: 'Services',
+        href: '/admin/services',
+        icon: LayoutTemplate,
+    },
+    {
         title: 'Gallery',
         href: '/admin/gallery-albums',
         icon: ImageIcon,

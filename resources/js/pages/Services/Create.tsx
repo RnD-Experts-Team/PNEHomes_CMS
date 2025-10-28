@@ -142,7 +142,7 @@ export default function ServiceCreate() {
                 />
               </div>
 
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="cover_image_id">Cover Image ID (Google Drive)</Label>
                 <div className="flex gap-2">
                   <Input
@@ -153,7 +153,7 @@ export default function ServiceCreate() {
                   />
                   <IdPickerButton onPick={(id) => setData('cover_image_id', id)} />
                 </div>
-              </div>
+              </div> */}
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">

@@ -15,8 +15,7 @@ class ServiceController extends Controller
     {
         try {
             $services = $this->serviceService->getAllServices();
-
-            $cover = $this->serviceService->getCoverImage();
+            $cover = $this->serviceService->getSettings()->img;
 
             $data = [
                 'cover' => $cover,

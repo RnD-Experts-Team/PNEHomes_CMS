@@ -165,18 +165,7 @@ export default function ServiceEdit({ service }: Props) {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="cover_image_id">Cover Image ID (Google Drive)</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="cover_image_id"
-                    value={data.cover_image_id}
-                    onChange={(e) => setData('cover_image_id', e.target.value)}
-                    placeholder="Enter Google Drive file ID"
-                  />
-                  <IdPickerButton onPick={(id) => setData('cover_image_id', id)} />
-                </div>
-              </div>
+              
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">

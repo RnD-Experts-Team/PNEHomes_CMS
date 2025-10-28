@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Service;
 use App\Models\ServiceContentItem;
 use App\Models\ServiceContact;
+use App\Models\ServicesSetting;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
@@ -135,12 +136,20 @@ class ServiceService
         $service->delete();
     }
 
-    public function getCoverImage(): ?string
-    {
-        $firstService = Service::where('is_active', true)
-            ->orderBy('order')
-            ->first();
 
-        return $firstService?->cover_url;
+
+    public function getSettings(): ServicesSetting
+    {
+        return ServicesSetting::firstOrCreate([], [
+            'image_id' => null,
+        ]);
+    }
+
+        public function updateSettings(array $data)
+    {
+        $servicesSettings = $this->getSettings();
+        $servicesSettings->update($data);
+        
+        return $servicesSettings;
     }
 }

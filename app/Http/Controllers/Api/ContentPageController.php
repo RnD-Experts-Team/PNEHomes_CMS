@@ -48,15 +48,15 @@ class ContentPageController extends Controller
         try {
             $privacyPolicy = $this->contentPageService->getPrivacyPolicy();
 
-            if (!$privacyPolicy) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Privacy Policy not found',
-                ], 404);
-            }
-
             $data = [
-                'content' => $privacyPolicy->content,
+                'title' => $privacyPolicy->title,
+                'slogan' => $privacyPolicy->slogan,
+                'description' => $privacyPolicy->description,
+                'cover' => $privacyPolicy->cover_url,
+                'contact' => [
+                    'title' => $privacyPolicy->contact_title,
+                    'message' => $privacyPolicy->contact_message,
+                ],
             ];
 
             return response()->json([

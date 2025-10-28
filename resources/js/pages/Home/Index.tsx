@@ -36,7 +36,6 @@ export default function HomePage({ homeData }: Props) {
 
   // First Section Form
   const firstSectionForm = useForm({
-    video_id: homeData.first_section?.video_id || '',
     mobile_cover_image_id: homeData.first_section?.mobile_cover_image_id || '',
     logo_image_id: homeData.first_section?.logo_image_id || '',
     title: homeData.first_section?.title || '',
@@ -118,25 +117,6 @@ export default function HomePage({ homeData }: Props) {
                   <CardTitle>First Section</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="video_id">Video ID (Google Drive) *</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="video_id"
-                        value={firstSectionForm.data.video_id}
-                        onChange={(e) => firstSectionForm.setData('video_id', e.target.value)}
-                        placeholder="Enter Google Drive video ID"
-                      />
-                      <IdPickerButton
-                        onPick={(id) => firstSectionForm.setData('video_id', id)}
-                      />
-                    </div>
-                    {firstSectionForm.errors.video_id && (
-                      <p className="text-sm text-destructive">
-                        {firstSectionForm.errors.video_id}
-                      </p>
-                    )}
-                  </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="mobile_cover_image_id">

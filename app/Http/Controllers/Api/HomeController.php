@@ -18,7 +18,6 @@ class HomeController extends Controller
 
             $data = [
                 'first_section' => $homeData['first_section'] ? [
-                    'video' => $homeData['first_section']->video_url,
                     'mobile_cover' => $homeData['first_section']->mobile_cover_url,
                     'logo' => $homeData['first_section']->logo_url,
                     'title' => $homeData['first_section']->title,

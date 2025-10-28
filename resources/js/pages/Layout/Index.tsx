@@ -36,8 +36,6 @@ export default function LayoutIndex({ layoutData }: Props) {
 
   const contactForm = useForm({
     phone: layoutData.contact_info?.phone || '',
-    email: layoutData.contact_info?.email || '',
-    address: layoutData.contact_info?.address || '',
   });
 
   const handleNavigationSubmit = (e: React.FormEvent) => {
@@ -163,27 +161,6 @@ export default function LayoutIndex({ layoutData }: Props) {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={contactForm.data.email}
-                      onChange={(e) => contactForm.setData('email', e.target.value)}
-                      placeholder="Enter email address"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="address">Address</Label>
-                    <Textarea
-                      id="address"
-                      value={contactForm.data.address}
-                      onChange={(e) => contactForm.setData('address', e.target.value)}
-                      placeholder="Enter address"
-                      rows={3}
-                    />
-                  </div>
 
                   <div className="flex justify-end">
                     <Button type="submit" disabled={contactForm.processing}>

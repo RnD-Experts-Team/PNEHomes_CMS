@@ -25,7 +25,6 @@ class HomePageController extends Controller
     public function updateFirstSection(Request $request)
     {
         $validated = $request->validate([
-            'video_id' => 'required|string',
             'mobile_cover_image_id' => 'required|string',
             'logo_image_id' => 'required|string',
             'title' => 'required|string|max:255',

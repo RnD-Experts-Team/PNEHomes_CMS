@@ -153,4 +153,10 @@ class CommunityService
             return $settings->refresh();
         });
     }
+    public function deleteCommunity(int $id): void
+{
+    $community = Community::findOrFail($id);
+    $community->delete();
+}
+
 }

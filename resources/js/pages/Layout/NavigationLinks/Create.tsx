@@ -14,14 +14,12 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface FormData {
     title: string;
-    slug: string;
     order: number;
 }
 
 export default function NavigationLinkCreate() {
     const { data, setData, post, processing, errors } = useForm<FormData>({
         title: '',
-        slug: '',
         order: 0,
     });
 
@@ -43,11 +41,6 @@ export default function NavigationLinkCreate() {
                                 <Label htmlFor="title">Title *</Label>
                                 <Input id="title" value={data.title} onChange={(e) => setData('title', e.target.value)} placeholder="Enter title" />
                                 {errors.title && <p className="text-sm text-destructive">{errors.title}</p>}
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="slug">Slug *</Label>
-                                <Input id="slug" value={data.slug} onChange={(e) => setData('slug', e.target.value)} placeholder="e.g., properties, communities" />
-                                {errors.slug && <p className="text-sm text-destructive">{errors.slug}</p>}
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="order">Order</Label>

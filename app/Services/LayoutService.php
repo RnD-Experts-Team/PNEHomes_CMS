@@ -7,6 +7,7 @@ use App\Models\NavigationLink;
 use App\Models\FooterLink;
 use App\Models\ContactInfo;
 use App\Models\SocialLink;
+use Illuminate\Support\Str;
 
 class LayoutService
 {
@@ -25,17 +26,17 @@ class LayoutService
     public function updateNavigation(array $data)
     {
         $navigation = Navigation::first();
-        
+
         if ($navigation) {
             $navigation->update($data);
         } else {
             $navigation = Navigation::create($data);
         }
-        
+
         return $navigation;
     }
 
-    // Navigation Links
+    // ---------- NAV LINKS ----------
     public function getAllNavigationLinks()
     {
         return NavigationLink::orderBy('order')->get();
@@ -48,12 +49,28 @@ class LayoutService
 
     public function createNavigationLink(array $data)
     {
+        // slug should be generated from title
+        $data['slug'] = $this->makeUniqueSlug(
+            $data['title'],
+            NavigationLink::class
+        );
+
         return NavigationLink::create($data);
     }
 
     public function updateNavigationLink(int $id, array $data)
     {
         $link = NavigationLink::findOrFail($id);
+
+        // only regenerate slug if the title changes
+        if (isset($data['title']) && $data['title'] !== $link->title) {
+            $data['slug'] = $this->makeUniqueSlug(
+                $data['title'],
+                NavigationLink::class,
+                $id
+            );
+        }
+
         $link->update($data);
         return $link;
     }
@@ -64,7 +81,7 @@ class LayoutService
         $link->delete();
     }
 
-    // Footer Links
+    // ---------- FOOTER LINKS ----------
     public function getAllFooterLinks()
     {
         return FooterLink::orderBy('order')->get();
@@ -77,12 +94,26 @@ class LayoutService
 
     public function createFooterLink(array $data)
     {
+        $data['slug'] = $this->makeUniqueSlug(
+            $data['title'],
+            FooterLink::class
+        );
+
         return FooterLink::create($data);
     }
 
     public function updateFooterLink(int $id, array $data)
     {
         $link = FooterLink::findOrFail($id);
+
+        if (isset($data['title']) && $data['title'] !== $link->title) {
+            $data['slug'] = $this->makeUniqueSlug(
+                $data['title'],
+                FooterLink::class,
+                $id
+            );
+        }
+
         $link->update($data);
         return $link;
     }
@@ -93,21 +124,21 @@ class LayoutService
         $link->delete();
     }
 
-    // Contact Info
+    // ---------- Contact Info ----------
     public function updateContactInfo(array $data)
     {
         $contactInfo = ContactInfo::first();
-        
+
         if ($contactInfo) {
             $contactInfo->update($data);
         } else {
             $contactInfo = ContactInfo::create($data);
         }
-        
+
         return $contactInfo;
     }
 
-    // Social Links
+    // ---------- Social Links ----------
     public function getAllSocialLinks()
     {
         return SocialLink::orderBy('order')->get();
@@ -134,5 +165,31 @@ class LayoutService
     {
         $link = SocialLink::findOrFail($id);
         $link->delete();
+    }
+
+    // ---------- helpers ----------
+    /**
+     * Make a unique slug for a model based on a title.
+     *
+     * @param  string      $title
+     * @param  class-string<\Illuminate\Database\Eloquent\Model> $modelClass
+     * @param  int|null    $ignoreId  ID to ignore when checking uniqueness (for updates)
+     */
+    protected function makeUniqueSlug(string $title, string $modelClass, ?int $ignoreId = null): string
+    {
+        $base = Str::slug($title);
+        $slug = $base;
+        $i = 2;
+
+        $query = fn($s) => $modelClass::where('slug', $s)
+            ->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))
+            ->exists();
+
+        while ($slug === '' || $query($slug)) {
+            $slug = $base . '-' . $i;
+            $i++;
+        }
+
+        return $slug;
     }
 }

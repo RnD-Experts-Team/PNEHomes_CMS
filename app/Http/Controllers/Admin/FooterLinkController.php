@@ -26,7 +26,6 @@ class FooterLinkController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255',
             'order' => 'nullable|integer',
         ]);
 
@@ -48,7 +47,6 @@ class FooterLinkController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255',
             'order' => 'nullable|integer',
         ]);
 

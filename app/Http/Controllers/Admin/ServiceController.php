@@ -19,6 +19,7 @@ class ServiceController extends Controller
 
         return Inertia::render('Services/Index', [
             'services' => $services,
+            'settings' => $this->serviceService->getSettings(),
         ]);
     }
 
@@ -109,5 +110,14 @@ class ServiceController extends Controller
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Failed to delete service']);
         }
+    }
+
+
+    public function updateSettings(Request $request){
+       $validated= $request->validate([
+'image_id' =>['required','string'],
+       ]
+       );
+       $this->serviceService->updateSettings($validated);
     }
 }

@@ -12,7 +12,6 @@ class HomeFirstSection extends Model
     protected $table = 'home_first_section';
 
     protected $fillable = [
-        'video_id',
         'mobile_cover_image_id',
         'logo_image_id',
         'title',
@@ -20,12 +19,9 @@ class HomeFirstSection extends Model
         'book_button_text',
     ];
 
-    protected $appends = ['video_url', 'mobile_cover_url', 'logo_url'];
+    protected $appends = [ 'mobile_cover_url', 'logo_url'];
 
-    public function getVideoUrlAttribute(): string
-    {
-        return config('media.video_base_url') . '/' . $this->video_id . '/preview';
-    }
+
 
     public function getMobileCoverUrlAttribute(): string
     {

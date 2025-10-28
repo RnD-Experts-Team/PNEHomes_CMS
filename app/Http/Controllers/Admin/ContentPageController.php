@@ -46,14 +46,26 @@ class ContentPageController extends Controller
         $privacyPolicy = $this->contentPageService->getPrivacyPolicy();
 
         return Inertia::render('ContentPages/PrivacyPolicy', [
-            'privacyPolicy' => $privacyPolicy,
+            'privacyPolicy' => [
+                'title' => $privacyPolicy->title,
+                'slogan' => $privacyPolicy->slogan,
+                'description' => $privacyPolicy->description,
+                'cover_image_id' => $privacyPolicy->cover_image_id,
+                'contact_title' => $privacyPolicy->contact_title,
+                'contact_message' => $privacyPolicy->contact_message,
+            ],
         ]);
     }
 
     public function updatePrivacyPolicy(Request $request)
     {
         $validated = $request->validate([
-            'content' => 'required|string',
+            'title' => 'required|string|max:255',
+            'slogan' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'cover_image_id' => 'required|string',
+            'contact_title' => 'required|string|max:255',
+            'contact_message' => 'required|string',
         ]);
 
         try {

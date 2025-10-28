@@ -2,16 +2,24 @@ import { Head, useForm } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { IdPickerButton } from '@/components/drive/IdPickerButton';
+import QuillEditorPro from '@/components/QuillEditorPro';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Privacy Policy', href: '#' },
 ];
 
 interface PrivacyPolicy {
-    content: string;
+    title: string;
+    slogan: string;
+    description: string;
+    cover_image_id: string;
+    contact_title: string;
+    contact_message: string;
 }
 
 interface Props {
@@ -19,12 +27,22 @@ interface Props {
 }
 
 interface FormData {
-    content: string;
+    title: string;
+    slogan: string;
+    description: string;
+    cover_image_id: string;
+    contact_title: string;
+    contact_message: string;
 }
 
 export default function PrivacyPolicyPage({ privacyPolicy }: Props) {
     const { data, setData, put, processing, errors } = useForm<FormData>({
-        content: privacyPolicy?.content || '',
+        title: privacyPolicy?.title || 'PRIVACY POLICY',
+        slogan: privacyPolicy?.slogan || 'PNE HOMES PRIVACY POLICY',
+        description: privacyPolicy?.description || '',
+        cover_image_id: privacyPolicy?.cover_image_id || '',
+        contact_title: privacyPolicy?.contact_title || 'Contact Us Today',
+        contact_message: privacyPolicy?.contact_message || "I would like to learn more about PNE Homes' privacy policy and how my personal information is handled.",
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -43,25 +61,100 @@ export default function PrivacyPolicyPage({ privacyPolicy }: Props) {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Policy Content</CardTitle>
+                            <CardTitle>Header Information</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="content">Content *</Label>
-                                <Textarea
-                                    id="content"
-                                    value={data.content}
-                                    onChange={(e) => setData('content', e.target.value)}
-                                    placeholder="Enter privacy policy content"
-                                    rows={25}
-                                    className="font-mono text-sm"
+                                <Label htmlFor="title">Title *</Label>
+                                <Input
+                                    id="title"
+                                    value={data.title}
+                                    onChange={(e) => setData('title', e.target.value)}
+                                    placeholder="PRIVACY POLICY"
                                 />
-                                {errors.content && (
-                                    <p className="text-sm text-destructive">{errors.content}</p>
+                                {errors.title && (
+                                    <p className="text-sm text-destructive">{errors.title}</p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="slogan">Slogan *</Label>
+                                <Input
+                                    id="slogan"
+                                    value={data.slogan}
+                                    onChange={(e) => setData('slogan', e.target.value)}
+                                    placeholder="PNE HOMES PRIVACY POLICY"
+                                />
+                                {errors.slogan && (
+                                    <p className="text-sm text-destructive">{errors.slogan}</p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="description">Description</Label>
+                                <QuillEditorPro
+                                    value={data.description}
+                                    onChange={(html) => setData('description', html)}
+                                    placeholder="Enter a brief description…"
+                                    height="200px"
+                                    className="w-full"
+                                />
+                                {errors.description && (
+                                    <p className="text-sm text-destructive">{errors.description}</p>
                                 )}
                                 <p className="text-xs text-muted-foreground">
-                                    You can use HTML formatting in the content.
+                                    This editor supports rich text formatting, links, lists, and more.
                                 </p>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="cover_image_id">Cover Image ID (Google Drive) *</Label>
+                                <div className="flex gap-2">
+                                    <Input
+                                        id="cover_image_id"
+                                        value={data.cover_image_id}
+                                        onChange={(e) => setData('cover_image_id', e.target.value)}
+                                        placeholder="Enter Google Drive file ID"
+                                    />
+                                    <IdPickerButton onPick={(id) => setData('cover_image_id', id)} />
+                                </div>
+                                {errors.cover_image_id && (
+                                    <p className="text-sm text-destructive">{errors.cover_image_id}</p>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Contact Information</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="contact_title">Contact Title *</Label>
+                                <Input
+                                    id="contact_title"
+                                    value={data.contact_title}
+                                    onChange={(e) => setData('contact_title', e.target.value)}
+                                    placeholder="Contact Us Today"
+                                />
+                                {errors.contact_title && (
+                                    <p className="text-sm text-destructive">{errors.contact_title}</p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="contact_message">Contact Message *</Label>
+                                <Textarea
+                                    id="contact_message"
+                                    value={data.contact_message}
+                                    onChange={(e) => setData('contact_message', e.target.value)}
+                                    placeholder="Enter contact message"
+                                    rows={4}
+                                />
+                                {errors.contact_message && (
+                                    <p className="text-sm text-destructive">{errors.contact_message}</p>
+                                )}
                             </div>
                         </CardContent>
                     </Card>

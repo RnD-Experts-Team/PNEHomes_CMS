@@ -29,18 +29,20 @@ class ContentPageService
     // Privacy Policy
     public function getPrivacyPolicy()
     {
-        return PrivacyPolicy::first();
+        return PrivacyPolicy::firstOrCreate([], [
+            'title' => 'PRIVACY POLICY',
+            'slogan' => 'PNE HOMES PRIVACY POLICY',
+            'description' => '',
+            'cover_image_id' => '',
+            'contact_title' => 'Contact Us Today',
+            'contact_message' => 'I would like to learn more about PNE Homes\' privacy policy and how my personal information is handled.',
+        ]);
     }
 
     public function updatePrivacyPolicy(array $data)
     {
-        $privacyPolicy = PrivacyPolicy::first();
-        
-        if ($privacyPolicy) {
-            $privacyPolicy->update($data);
-        } else {
-            $privacyPolicy = PrivacyPolicy::create($data);
-        }
+        $privacyPolicy = $this->getPrivacyPolicy();
+        $privacyPolicy->update($data);
         
         return $privacyPolicy;
     }

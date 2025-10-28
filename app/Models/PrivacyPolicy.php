@@ -12,6 +12,20 @@ class PrivacyPolicy extends Model
     protected $table = 'privacy_policy';
 
     protected $fillable = [
-        'content',
+        'title',
+        'slogan',
+        'description',
+        'cover_image_id',
+        'contact_title',
+        'contact_message',
     ];
+
+    protected $appends = ['cover_url'];
+
+    public function getCoverUrlAttribute(): ?string
+    {
+        return $this->cover_image_id
+            ? config('media.image_base_url') . '/' . $this->cover_image_id
+            : null;
+    }
 }

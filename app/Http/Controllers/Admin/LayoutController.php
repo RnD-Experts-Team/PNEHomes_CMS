@@ -38,8 +38,6 @@ class LayoutController extends Controller
     {
         $validated = $request->validate([
             'phone' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'address' => 'nullable|string',
         ]);
 
         try {
