@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Property extends Model
 {
@@ -19,9 +20,6 @@ class Property extends Model
         'garages',
         'sqft',
         'zillow_link',
-        'next_property_slug',
-        'prev_property_slug',
-        'cover_image_id',
         'order',
         'is_active',
     ];
@@ -31,13 +29,28 @@ class Property extends Model
         'order' => 'integer',
     ];
 
-    protected $appends = ['cover_url'];
-
-    public function getCoverUrlAttribute(): ?string
+    protected static function boot()
     {
-        return $this->cover_image_id
-            ? config('media.image_base_url') . '/' . $this->cover_image_id
-            : null;
+        parent::boot();
+
+        static::creating(function ($property) {
+            if (empty($property->slug)) {
+                $property->slug = Str::slug($property->title);
+            }
+        });
+
+        static::updating(function ($property) {
+            if ($property->isDirty('title') && empty($property->slug)) {
+                $property->slug = Str::slug($property->title);
+            }
+        });
+
+        static::deleting(function ($property) {
+            $property->gallery()->delete();
+            $property->whatsSpecial()->delete();
+            $property->factsFeatures()->delete();
+            $property->floorPlans()->delete();
+        });
     }
 
     public function gallery()
@@ -58,17 +71,5 @@ class Property extends Model
     public function floorPlans()
     {
         return $this->hasMany(PropertyFloorPlan::class)->orderBy('order');
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::deleting(function ($property) {
-            $property->gallery()->delete();
-            $property->whatsSpecial()->delete();
-            $property->factsFeatures()->delete();
-            $property->floorPlans()->delete();
-        });
     }
 }

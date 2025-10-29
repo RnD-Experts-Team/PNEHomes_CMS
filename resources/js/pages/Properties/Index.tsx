@@ -11,7 +11,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Pencil, Trash2, Plus } from 'lucide-react';
+import { Pencil, Trash2, Plus, Settings } from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -41,11 +41,7 @@ interface Props {
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
-
-    {
-        title: 'Properties',
-        href: '#',
-    },
+    { title: 'Properties', href: '#' },
 ];
 
 export default function PropertiesIndex({ properties }: Props) {
@@ -61,12 +57,20 @@ export default function PropertiesIndex({ properties }: Props) {
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Properties</h1>
-                    <Link href="/admin/properties/create">
-                        <Button>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Property
-                        </Button>
-                    </Link>
+                    <div className="flex gap-2">
+                        <Link href="/admin/property-settings">
+                            <Button variant="outline">
+                                <Settings className="mr-2 h-4 w-4" />
+                                Settings
+                            </Button>
+                        </Link>
+                        <Link href="/admin/properties/create">
+                            <Button>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Property
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
@@ -77,8 +81,7 @@ export default function PropertiesIndex({ properties }: Props) {
                                 <TableHead>Title</TableHead>
                                 <TableHead>Community</TableHead>
                                 <TableHead>Price</TableHead>
-                                <TableHead>Beds</TableHead>
-                                <TableHead>Baths</TableHead>
+                                <TableHead>Beds/Baths</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
@@ -86,7 +89,7 @@ export default function PropertiesIndex({ properties }: Props) {
                         <TableBody>
                             {properties.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={8} className="text-center">
+                                    <TableCell colSpan={7} className="text-center">
                                         No properties found
                                     </TableCell>
                                 </TableRow>
@@ -94,27 +97,20 @@ export default function PropertiesIndex({ properties }: Props) {
                                 properties.map((property) => (
                                     <TableRow key={property.id}>
                                         <TableCell>{property.order}</TableCell>
-                                        <TableCell className="font-medium">
-                                            {property.title}
-                                        </TableCell>
+                                        <TableCell className="font-medium">{property.title}</TableCell>
                                         <TableCell>{property.community}</TableCell>
                                         <TableCell>{property.price}</TableCell>
-                                        <TableCell>{property.beds}</TableCell>
-                                        <TableCell>{property.baths}</TableCell>
                                         <TableCell>
-                                            <Badge
-                                                variant={
-                                                    property.is_active ? 'default' : 'secondary'
-                                                }
-                                            >
+                                            {property.beds}bd / {property.baths}ba
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge variant={property.is_active ? 'default' : 'secondary'}>
                                                 {property.is_active ? 'Active' : 'Inactive'}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
-                                                <Link
-                                                    href={`/admin/properties/${property.id}/edit`}
-                                                >
+                                                <Link href={`/admin/properties/${property.id}/edit`}>
                                                     <Button variant="outline" size="sm">
                                                         <Pencil className="h-4 w-4" />
                                                     </Button>
@@ -131,23 +127,16 @@ export default function PropertiesIndex({ properties }: Props) {
                                                     </AlertDialogTrigger>
                                                     <AlertDialogContent>
                                                         <AlertDialogHeader>
-                                                            <AlertDialogTitle>
-                                                                Delete Property
-                                                            </AlertDialogTitle>
+                                                            <AlertDialogTitle>Delete Property</AlertDialogTitle>
                                                             <AlertDialogDescription>
-                                                                Are you sure you want to delete "
-                                                                {property.title}"? This action
-                                                                cannot be undone.
+                                                                Are you sure you want to delete "{property.title}"?
+                                                                This action cannot be undone.
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
-                                                            <AlertDialogCancel>
-                                                                Cancel
-                                                            </AlertDialogCancel>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
                                                             <AlertDialogAction
-                                                                onClick={() =>
-                                                                    handleDelete(property.id)
-                                                                }
+                                                                onClick={() => handleDelete(property.id)}
                                                             >
                                                                 Delete
                                                             </AlertDialogAction>

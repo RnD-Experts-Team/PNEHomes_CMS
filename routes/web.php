@@ -34,6 +34,14 @@ Route::middleware(['auth'])->prefix('admin')->name('properties.')->group(functio
     Route::put('/properties/{id}', [PropertyController::class, 'update'])->name('update');
     Route::delete('/properties/{id}', [PropertyController::class, 'destroy'])->name('destroy');
 });
+use App\Http\Controllers\Admin\PropertySettingsController;
+
+// Inside admin middleware group
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    // Property Settings
+    Route::get('/property-settings', [PropertySettingsController::class, 'edit'])->name('property-settings.edit');
+    Route::put('/property-settings', [PropertySettingsController::class, 'update'])->name('property-settings.update');
+});
 
 use App\Http\Controllers\Admin\CommunityController;
 use App\Http\Controllers\Admin\CommunitiesFloorplansController;
