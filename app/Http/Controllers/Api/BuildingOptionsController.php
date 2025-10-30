@@ -37,6 +37,7 @@ class BuildingOptionsController extends Controller
                         'slug' => $article->slug,
                         'title' => $article->title,
                         'description' => $article->description,
+                        'content' => $article->content,
                         'image' => $article->image_url,
                     ];
                 })->toArray(),
