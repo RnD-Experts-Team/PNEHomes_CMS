@@ -43,8 +43,8 @@ class CommunitiesSettingsController extends Controller
             'zillow_link' => ['nullable','url'],
 
             // Contact (optional, but validate shape)
-            'contact.title' => ['nullable','string','max:255'],
-            'contact.message' => ['nullable','string'],
+            'contact.title' => ['required','string','max:255'],
+            'contact.message' => ['required','string'],
         ]);
 
         $settingsData = [

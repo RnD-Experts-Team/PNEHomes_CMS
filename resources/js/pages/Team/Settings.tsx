@@ -106,7 +106,7 @@ export default function TeamSettings({ settings }: Props) {
                   {errors.title && <p className="text-sm text-destructive">{errors.title}</p>}
                 </div>
 
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Label htmlFor="subtitle">Subtitle</Label>
                   <Input
                     id="subtitle"
@@ -114,7 +114,7 @@ export default function TeamSettings({ settings }: Props) {
                     onChange={(e) => setData('subtitle', e.target.value)}
                     placeholder="Enter subtitle"
                   />
-                </div>
+                </div> */}
               </div>
 
               <div className="space-y-2">

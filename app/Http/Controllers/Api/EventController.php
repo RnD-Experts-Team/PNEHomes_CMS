@@ -26,7 +26,7 @@ class EventController extends Controller
                         'id' => $event->id,
                         'title' => $event->title,
                         'description' => $event->description,
-                        'cover' => $event->cover_url,
+                        'cover' => null,
                         'gallery' => $event->gallery->pluck('url')->toArray(),
                     ];
                 })->toArray(),

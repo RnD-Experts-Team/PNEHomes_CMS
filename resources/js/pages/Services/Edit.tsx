@@ -12,22 +12,29 @@ import { IdPickerButton } from '@/components/drive/IdPickerButton';
 
 interface Service {
   id: number;
-  title: string;
-  slug: string;
+  title?: string;
+  slug?: string;
   sub_title?: string;
   description?: string;
   cover_image_id?: string;
-  order: number;
-  is_active: boolean;
-  contentItems: Array<{
+  order?: number;
+  is_active?: boolean;
+  contentItems?: Array<{
     id: number;
     image_id: string;
     sub_title: string;
     description: string;
   }>;
-  contact: {
-    title: string;
-    message: string;
+  // In case your API sends snake_case instead:
+  content_items?: Array<{
+    id?: number;
+    image_id: string;
+    sub_title: string;
+    description: string;
+  }>;
+  contact?: {
+    title?: string;
+    message?: string;
   };
 }
 
@@ -62,22 +69,32 @@ export default function ServiceEdit({ service }: Props) {
     { title: 'Edit', href: '#' },
   ];
 
+  // Normalize possible data shapes and ensure an array
+  const initialContentItems: ContentItem[] =
+    service.contentItems?.map(({ image_id, sub_title, description }) => ({
+      image_id,
+      sub_title,
+      description,
+    })) ??
+    service.content_items?.map(({ image_id, sub_title, description }) => ({
+      image_id,
+      sub_title,
+      description,
+    })) ??
+    [];
+
   const { data, setData, put, processing, errors } = useForm<FormData>({
-    title: service.title || '',
-    slug: service.slug || '',
-    sub_title: service.sub_title || '',
-    description: service.description || '',
-    cover_image_id: service.cover_image_id || '',
-    order: service.order || 0,
-    is_active: service.is_active,
-    content_items: service.contentItems.map((item) => ({
-      image_id: item.image_id,
-      sub_title: item.sub_title,
-      description: item.description,
-    })),
+    title: service.title ?? '',
+    slug: service.slug ?? '',
+    sub_title: service.sub_title ?? '',
+    description: service.description ?? '',
+    cover_image_id: service.cover_image_id ?? '',
+    order: service.order ?? 0,
+    is_active: service.is_active ?? false,
+    content_items: initialContentItems,
     contact: {
-      title: service.contact?.title || 'CONTACT',
-      message: service.contact?.message || '',
+      title: service.contact?.title ?? 'CONTACT',
+      message: service.contact?.message ?? '',
     },
   });
 
@@ -88,13 +105,13 @@ export default function ServiceEdit({ service }: Props) {
 
   const addContentItem = () => {
     setData('content_items', [
-      ...data.content_items,
+      ...(data.content_items ?? []),
       { image_id: '', sub_title: '', description: '' },
     ]);
   };
 
   const removeContentItem = (index: number) => {
-    const newItems = data.content_items.filter((_, i) => i !== index);
+    const newItems = (data.content_items ?? []).filter((_, i) => i !== index);
     setData('content_items', newItems);
   };
 
@@ -103,14 +120,16 @@ export default function ServiceEdit({ service }: Props) {
     field: keyof ContentItem,
     value: string
   ) => {
-    const newItems = [...data.content_items];
-    newItems[index][field] = value;
+    const newItems = [...(data.content_items ?? [])];
+    // Ensure the item exists (in case of unexpected index)
+    if (!newItems[index]) return;
+    newItems[index] = { ...newItems[index], [field]: value };
     setData('content_items', newItems);
   };
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title={`Edit Service - ${service.title}`} />
+      <Head title={`Edit Service - ${service.title ?? ''}`} />
       <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Edit Service</h1>
@@ -165,8 +184,6 @@ export default function ServiceEdit({ service }: Props) {
                 />
               </div>
 
-              
-
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="order">Order</Label>
@@ -174,7 +191,9 @@ export default function ServiceEdit({ service }: Props) {
                     id="order"
                     type="number"
                     value={data.order}
-                    onChange={(e) => setData('order', parseInt(e.target.value) || 0)}
+                    onChange={(e) =>
+                      setData('order', Number.isNaN(parseInt(e.target.value)) ? 0 : parseInt(e.target.value))
+                    }
                   />
                 </div>
 
@@ -201,58 +220,62 @@ export default function ServiceEdit({ service }: Props) {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {data.content_items.map((item, index) => (
-                <Card key={index}>
-                  <CardContent className="pt-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-semibold">Item {index + 1}</h4>
-                      {data.content_items.length > 1 && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeContentItem(index)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
+              {(data.content_items?.length ?? 0) === 0 ? (
+                <p className="text-sm text-muted-foreground">No content items yet.</p>
+              ) : (
+                data.content_items.map((item, index) => (
+                  <Card key={index}>
+                    <CardContent className="pt-6 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-semibold">Item {index + 1}</h4>
+                        {data.content_items.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeContentItem(index)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
 
-                    <div className="space-y-2">
-                      <Label>Image ID (Google Drive) *</Label>
-                      <div className="flex gap-2">
+                      <div className="space-y-2">
+                        <Label>Image ID (Google Drive) *</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            value={item.image_id}
+                            onChange={(e) => updateContentItem(index, 'image_id', e.target.value)}
+                            placeholder="Enter Google Drive file ID"
+                          />
+                          <IdPickerButton
+                            onPick={(id) => updateContentItem(index, 'image_id', id)}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Subtitle *</Label>
                         <Input
-                          value={item.image_id}
-                          onChange={(e) => updateContentItem(index, 'image_id', e.target.value)}
-                          placeholder="Enter Google Drive file ID"
-                        />
-                        <IdPickerButton
-                          onPick={(id) => updateContentItem(index, 'image_id', id)}
+                          value={item.sub_title}
+                          onChange={(e) => updateContentItem(index, 'sub_title', e.target.value)}
+                          placeholder="Enter subtitle"
                         />
                       </div>
-                    </div>
 
-                    <div className="space-y-2">
-                      <Label>Subtitle *</Label>
-                      <Input
-                        value={item.sub_title}
-                        onChange={(e) => updateContentItem(index, 'sub_title', e.target.value)}
-                        placeholder="Enter subtitle"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Description *</Label>
-                      <Textarea
-                        value={item.description}
-                        onChange={(e) => updateContentItem(index, 'description', e.target.value)}
-                        placeholder="Enter description"
-                        rows={3}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                      <div className="space-y-2">
+                        <Label>Description *</Label>
+                        <Textarea
+                          value={item.description}
+                          onChange={(e) => updateContentItem(index, 'description', e.target.value)}
+                          placeholder="Enter description"
+                          rows={3}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </CardContent>
           </Card>
 

@@ -1,3 +1,4 @@
+// resources/js/Pages/Events/Settings.tsx
 import { Head, useForm } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
@@ -15,7 +16,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface Settings {
   cover_image_id: string;
-  slogan: string;
+  slogan?: string | null; // optional + nullable
   contact_title?: string;
   contact_message?: string;
   title: string;
@@ -27,7 +28,7 @@ interface Props {
 
 interface FormData {
   cover_image_id: string;
-  slogan: string;
+  slogan: string | null; // allow null through the form
   contact_title: string;
   contact_message: string;
   title: string;
@@ -36,7 +37,7 @@ interface FormData {
 export default function EventSettings({ settings }: Props) {
   const { data, setData, put, processing, errors } = useForm<FormData>({
     cover_image_id: settings?.cover_image_id || '',
-    slogan: settings?.slogan || '',
+    slogan: settings?.slogan ?? null, // null when absent
     contact_title: settings?.contact_title || '',
     contact_message: settings?.contact_message || '',
     title: settings?.title || '',
@@ -78,12 +79,12 @@ export default function EventSettings({ settings }: Props) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="slogan">Slogan *</Label>
+                <Label htmlFor="slogan">Slogan</Label> {/* optional */}
                 <Input
                   id="slogan"
-                  value={data.slogan}
-                  onChange={(e) => setData('slogan', e.target.value)}
-                  placeholder="Enter slogan"
+                  value={data.slogan ?? ''} // show empty when null
+                  onChange={(e) => setData('slogan', e.target.value || null)} // empty -> null
+                  placeholder="Enter slogan (optional)"
                 />
                 {errors.slogan && (
                   <p className="text-sm text-destructive">{errors.slogan}</p>
@@ -91,15 +92,15 @@ export default function EventSettings({ settings }: Props) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="slogan">Title *</Label>
+                <Label htmlFor="title">Title *</Label>
                 <Input
                   id="title"
                   value={data.title}
                   onChange={(e) => setData('title', e.target.value)}
                   placeholder="Enter title"
                 />
-                {errors.slogan && (
-                  <p className="text-sm text-destructive">{errors.slogan}</p>
+                {errors.title && (
+                  <p className="text-sm text-destructive">{errors.title}</p>
                 )}
               </div>
             </CardContent>
@@ -118,6 +119,9 @@ export default function EventSettings({ settings }: Props) {
                   onChange={(e) => setData('contact_title', e.target.value)}
                   placeholder="e.g., CONTACT"
                 />
+                {errors.contact_title && (
+                  <p className="text-sm text-destructive">{errors.contact_title}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -129,6 +133,9 @@ export default function EventSettings({ settings }: Props) {
                   placeholder="Enter contact message"
                   rows={4}
                 />
+                {errors.contact_message && (
+                  <p className="text-sm text-destructive">{errors.contact_message}</p>
+                )}
               </div>
             </CardContent>
           </Card>

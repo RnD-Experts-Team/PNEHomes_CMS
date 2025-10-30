@@ -33,7 +33,6 @@ class PropertyController extends Controller
             $properties = $this->propertyService->getAllProperties($filters);
             $total = $this->propertyService->getTotalCount($filters);
             $communities = $this->propertyService->getUniqueCommunities();
-
             $data = [
                 'title' => $settings->title,
                 'cover' => $settings->cover_url,
@@ -59,7 +58,7 @@ class PropertyController extends Controller
                     ])->toArray(),
                     'Floor_plans' => $p->floorPlans->map(fn($fp) => [
                         'title' => $fp->title,
-                        'img' => $fp->image_url,
+                        'img' => $fp->img,
                         'description' => $fp->description,
                     ])->toArray(),
                 ])->toArray(),

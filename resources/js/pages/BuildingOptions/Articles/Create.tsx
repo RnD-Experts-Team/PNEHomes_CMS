@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import QuillEditorPro from '@/components/QuillEditorPro'; // <-- new
+import QuillEditorPro from '@/components/QuillEditorPro';
+import { IdPickerButton } from '@/components/drive/IdPickerButton'; // <-- added
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Building Options', href: '/admin/building-options' },
@@ -16,10 +17,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface FormData {
   title: string;
-  slug: string;        // still present (optional), no input shown
+  slug: string;
   description: string;
   image_id: string;
-  content: string;     // HTML from Quill
+  content: string;
   order: number;
   is_active: boolean;
 }
@@ -27,7 +28,7 @@ interface FormData {
 export default function BuildingArticleCreate() {
   const { data, setData, post, processing, errors } = useForm<FormData>({
     title: '',
-    slug: '',                 // optional
+    slug: '',
     description: '',
     image_id: '',
     content: '',
@@ -67,8 +68,7 @@ export default function BuildingArticleCreate() {
                     <p className="text-sm text-destructive">{errors.title}</p>
                   )}
                 </div>
-
-                {/* Slug field removed as requested */}
+                {/* Slug input intentionally omitted */}
               </div>
 
               <div className="space-y-2">
@@ -81,14 +81,18 @@ export default function BuildingArticleCreate() {
                 />
               </div>
 
+              {/* Image ID + Picker */}
               <div className="space-y-2">
                 <Label htmlFor="image_id">Image ID (Google Drive) *</Label>
-                <Input
-                  id="image_id"
-                  value={data.image_id}
-                  onChange={(e) => setData('image_id', e.target.value)}
-                  placeholder="Enter Google Drive file ID"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    id="image_id"
+                    value={data.image_id}
+                    onChange={(e) => setData('image_id', e.target.value)}
+                    placeholder="Enter Google Drive file ID"
+                  />
+                  <IdPickerButton onPick={(id) => setData('image_id', id)} />
+                </div>
                 {errors.image_id && (
                   <p className="text-sm text-destructive">{errors.image_id}</p>
                 )}
@@ -132,11 +136,7 @@ export default function BuildingArticleCreate() {
           </Card>
 
           <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => window.history.back()}
-            >
+            <Button type="button" variant="outline" onClick={() => window.history.back()}>
               Cancel
             </Button>
             <Button type="submit" disabled={processing}>

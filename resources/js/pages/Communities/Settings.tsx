@@ -81,6 +81,7 @@ export default function CommunitiesSettings({ settings, contact }: Props) {
                                     value={data.title}
                                     onChange={(e) => setData('title', e.target.value)}
                                     placeholder="Communities"
+                                    required
                                 />
                                 {errors.title && (
                                     <p className="text-sm text-destructive">{errors.title}</p>
@@ -132,7 +133,7 @@ export default function CommunitiesSettings({ settings, contact }: Props) {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="contact_title">Contact Title</Label>
+                                <Label htmlFor="contact_title">Contact Title *</Label>
                                 <Input
                                     id="contact_title"
                                     value={data.contact.title}
@@ -143,6 +144,7 @@ export default function CommunitiesSettings({ settings, contact }: Props) {
                                         })
                                     }
                                     placeholder="e.g. Get in touch"
+                                    required
                                 />
                                 {errors['contact.title'] && (
                                     <p className="text-sm text-destructive">
@@ -152,7 +154,7 @@ export default function CommunitiesSettings({ settings, contact }: Props) {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="contact_message">Contact Message</Label>
+                                <Label htmlFor="contact_message">Contact Message *</Label>
                                 {/* use your own Textarea or default <textarea> */}
                                 <Textarea
                                     id="contact_message"
@@ -165,6 +167,7 @@ export default function CommunitiesSettings({ settings, contact }: Props) {
                                     }
                                     placeholder="Brief message shown on the contact section…"
                                     rows={5}
+                                    required
                                 />
                                 {errors['contact.message'] && (
                                     <p className="text-sm text-destructive">

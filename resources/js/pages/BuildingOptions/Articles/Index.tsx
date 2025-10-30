@@ -28,7 +28,7 @@ interface BuildingArticle {
     id: number;
     slug: string;
     title: string;
-    description?: string;
+    content?: string;
     order: number;
     is_active: boolean;
 }
@@ -84,7 +84,7 @@ export default function BuildingArticlesIndex({ articles }: Props) {
                                 <TableHead>Order</TableHead>
                                 <TableHead>Title</TableHead>
                                 <TableHead>Slug</TableHead>
-                                <TableHead>Description</TableHead>
+                                <TableHead>Content</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
@@ -109,7 +109,7 @@ export default function BuildingArticlesIndex({ articles }: Props) {
                                             </code>
                                         </TableCell>
                                         <TableCell className="max-w-md truncate">
-                                            {article.description || '-'}
+                                            {article.content?.slice(0, 100)|| '-'}
                                         </TableCell>
                                         <TableCell>
                                             <Badge
