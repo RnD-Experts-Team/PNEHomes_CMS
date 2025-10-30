@@ -38,7 +38,7 @@ class CommunityController extends Controller
                             'title' => $p->title,
                             'community' => $c->slug,
                             'cover' => $p->cover_url,
-                            'status' => $p->status,
+                            'status' => null,
                             'price' => $p->price,
                             'beds' => $p->beds,
                             'baths' => $p->baths,

@@ -142,7 +142,7 @@ export default function FloorplanEdit({ floorplan, communities }: Props) {
                                     </p>
                                 </div>
 
-                                <div className="space-y-2">
+                                {/* <div className="space-y-2">
                                     <Label htmlFor="status">Status</Label>
                                     <Select
                                         value={data.status}
@@ -157,7 +157,7 @@ export default function FloorplanEdit({ floorplan, communities }: Props) {
                                             <SelectItem value="pending">Pending</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                </div>
+                                </div> */}
                             </div>
 
                             {/* Cover Image */}

@@ -124,7 +124,7 @@ export default function FloorplanCreate({ communities }: Props) {
                                         Slug will be auto-generated from title
                                     </p>
                                 </div>
-
+{/*
                                 <div className="space-y-2">
                                     <Label htmlFor="status">Status</Label>
                                     <Select
@@ -140,7 +140,7 @@ export default function FloorplanCreate({ communities }: Props) {
                                             <SelectItem value="pending">Pending</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                </div>
+                                </div> */}
                             </div>
 
                             {/* Cover Image */}
