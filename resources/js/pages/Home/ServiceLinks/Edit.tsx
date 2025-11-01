@@ -19,7 +19,6 @@ interface Props {
 
 interface FormData {
     title: string;
-    slug: string;
     order: number;
 }
 
@@ -32,7 +31,6 @@ export default function ServiceLinkEdit({ link }: Props) {
 
     const { data, setData, put, processing, errors } = useForm<FormData>({
         title: link.title || '',
-        slug: link.slug || '',
         order: link.order || 0,
     });
 
@@ -54,11 +52,6 @@ export default function ServiceLinkEdit({ link }: Props) {
                                 <Label htmlFor="title">Title *</Label>
                                 <Input id="title" value={data.title} onChange={(e) => setData('title', e.target.value)} placeholder="Enter title" />
                                 {errors.title && <p className="text-sm text-destructive">{errors.title}</p>}
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="slug">Slug *</Label>
-                                <Input id="slug" value={data.slug} onChange={(e) => setData('slug', e.target.value)} placeholder="e.g., properties, communities" />
-                                {errors.slug && <p className="text-sm text-destructive">{errors.slug}</p>}
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="order">Order</Label>

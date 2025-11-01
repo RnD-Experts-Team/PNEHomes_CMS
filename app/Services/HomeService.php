@@ -11,6 +11,7 @@ use App\Models\HomeGridSection;
 use App\Models\HomeGridLink;
 use App\Models\HomeTestimonial;
 use App\Models\HomeSetting;
+use Illuminate\Support\Str;
 
 class HomeService
 {
@@ -123,14 +124,54 @@ class HomeService
 
     public function createServiceLink(array $data)
     {
-        return HomeServiceLink::create($data);
+        // slug must be auto-generated from title
+        $slugBase = Str::slug($data['title']);
+        $slug = $this->makeUniqueSlug($slugBase);
+
+        return HomeServiceLink::create([
+            'title' => $data['title'],
+            'slug'  => $slug,
+            'order' => $data['order'] ?? 0,
+        ]);
     }
 
     public function updateServiceLink(int $id, array $data)
     {
         $link = HomeServiceLink::findOrFail($id);
-        $link->update($data);
+
+        $update = [
+            'title' => $data['title'],
+            'order' => $data['order'] ?? 0,
+        ];
+
+        // If title changed, regenerate a unique slug
+        if ($link->title !== $data['title']) {
+            $slugBase = Str::slug($data['title']);
+            $update['slug'] = $this->makeUniqueSlug($slugBase, $link->id);
+        }
+
+        $link->update($update);
         return $link;
+    }
+
+    protected function makeUniqueSlug(string $base, ?int $ignoreId = null): string
+    {
+        $slug = $base ?: 'item';
+
+        $exists = fn(string $candidate) =>
+            HomeServiceLink::where('slug', $candidate)
+                ->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))
+                ->exists(); 
+
+        if (!$exists($slug)) {
+            return $slug;
+        }
+        // Append -2, -3, ... until unique
+        $i = 2;
+        while ($exists("{$slug}-{$i}")) {
+            $i++;
+        }
+        return "{$slug}-{$i}";
     }
 
     public function deleteServiceLink(int $id)

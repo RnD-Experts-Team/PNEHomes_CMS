@@ -26,7 +26,7 @@ class HomeServiceLinkController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255',
+            // 'slug' => 'required|string|max:255',
             'order' => 'nullable|integer',
         ]);
 
@@ -48,7 +48,7 @@ class HomeServiceLinkController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255',
+            // 'slug' => 'required|string|max:255',
             'order' => 'nullable|integer',
         ]);
 
