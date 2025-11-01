@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 interface SocialLink {
     id: number;
-    platform: 'facebook' | 'instagram' | 'youtube' | 'twitter' | 'linkedin';
+    platform: '' | 'facebook' | 'instagram' | 'youtube' | 'x' | 'linkedin' | 'pinterest' | 'zillow' | 'tiktok' | 'other' ;
     url: string;
     order: number;
 }
@@ -19,7 +19,7 @@ interface Props {
 }
 
 interface FormData {
-    platform: 'facebook' | 'instagram' | 'youtube' | 'twitter' | 'linkedin';
+    platform: '' | 'facebook' | 'instagram' | 'youtube' | 'x' | 'linkedin' | 'pinterest' | 'zillow' | 'tiktok' | 'other' ;
     url: string;
     order: number;
 }
@@ -59,8 +59,12 @@ export default function SocialLinkEdit({ link }: Props) {
                                         <SelectItem value="facebook">Facebook</SelectItem>
                                         <SelectItem value="instagram">Instagram</SelectItem>
                                         <SelectItem value="youtube">YouTube</SelectItem>
-                                        <SelectItem value="twitter">Twitter</SelectItem>
+                                        <SelectItem value="x">X</SelectItem>
                                         <SelectItem value="linkedin">LinkedIn</SelectItem>
+                                        <SelectItem value="pinterest">Pinterest</SelectItem>
+                                        <SelectItem value="zillow">Zillow</SelectItem>
+                                        <SelectItem value="tiktok">TikTok</SelectItem>
+                                        <SelectItem value="other">Other</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 {errors.platform && <p className="text-sm text-destructive">{errors.platform}</p>}

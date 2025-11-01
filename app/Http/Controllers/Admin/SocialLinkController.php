@@ -25,7 +25,7 @@ class SocialLinkController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'platform' => 'required|in:facebook,instagram,youtube,twitter,linkedin',
+            'platform' => 'required|in:facebook,instagram,youtube,x,linkedin,pinterest,zillow,tiktok,other',
             'url' => 'required|url',
             'order' => 'nullable|integer',
         ]);
@@ -47,7 +47,7 @@ class SocialLinkController extends Controller
     public function update(Request $request, int $id)
     {
         $validated = $request->validate([
-            'platform' => 'required|in:facebook,instagram,youtube,twitter,linkedin',
+            'platform' => 'required|in:facebook,instagram,youtube,x,linkedin,pinterest,zillow,tiktok,other',
             'url' => 'required|url',
             'order' => 'nullable|integer',
         ]);
