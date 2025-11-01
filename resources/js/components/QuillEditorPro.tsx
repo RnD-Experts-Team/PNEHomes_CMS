@@ -34,29 +34,22 @@ const QuillEditorPro: React.FC<QuillEditorProProps> = ({
       placeholder,
       modules: {
         toolbar: [
-          // headings / font / size
+          // headings only (keep; no font or size chooser)
           [{ header: [1, 2, 3, 4, 5, 6, false] }],
-          [{ font: [] }],
-          [{ size: ['small', false, 'large', 'huge'] }],
 
           // styling
           ['bold', 'italic', 'underline', 'strike'],
           [{ color: [] }, { background: [] }],
           [{ script: 'sub' }, { script: 'super' }],
 
-          // alignment & direction
-          [{ align: [] }],
-          [{ indent: '-1' }, { indent: '+1' }],
-          [{ direction: 'rtl' }],
-
           // lists
           [{ list: 'ordered' }, { list: 'bullet' }],
 
-          // links & media
-          ['link', 'image', 'video'],
+          // links only (no files/images/videos)
+          ['link'],
 
-          // blocks
-          ['blockquote', 'code-block'],
+          // blocks (no code-block)
+          ['blockquote'],
 
           // clean
           ['clean'],
@@ -70,11 +63,16 @@ const QuillEditorPro: React.FC<QuillEditorProProps> = ({
           matchVisual: false,
         },
       },
+      // IMPORTANT: disallow formats we hid (prevents pasted embeds, code, etc.)
       formats: [
-        'bold', 'italic', 'underline', 'strike', 'color', 'background',
-        'font', 'size', 'script', 'link', 'code',
-        'header', 'blockquote', 'code-block', 'list', 'bullet',
-        'indent', 'align', 'direction', 'image', 'video',
+        'bold', 'italic', 'underline', 'strike',
+        'color', 'background', 'script',
+        'link',
+        'header', 'blockquote',
+        'list', 'bullet',
+        // intentionally omitted:
+        // 'font', 'size', 'align', 'indent', 'direction',
+        // 'code', 'code-block', 'image', 'video'
       ],
     });
 
@@ -93,13 +91,13 @@ const QuillEditorPro: React.FC<QuillEditorProProps> = ({
       }
     });
 
-    // Keyboard shortcuts (no "this.quill" typings issue)
+    // Keyboard shortcuts
     quill.keyboard.addBinding({ key: 'B', shortKey: true }, () => {
       const range = quill.getSelection();
       if (!range) return false;
       const cur = quill.getFormat(range);
       quill.format('bold', !cur.bold);
-      return false; // prevent browser default
+      return false;
     });
 
     quill.keyboard.addBinding({ key: 'I', shortKey: true }, () => {
@@ -120,58 +118,12 @@ const QuillEditorPro: React.FC<QuillEditorProProps> = ({
 
     // “Save” shortcut stub (Ctrl/Cmd+S)
     quill.keyboard.addBinding({ key: 'S', shortKey: true }, () => {
-      // hook this up to your own save logic if desired
       console.log('Save triggered (Ctrl/Cmd+S)');
       return false;
     });
 
-    // Custom toolbar handlers (typed)
+    // Custom toolbar handlers (keep only link; remove image/video handlers)
     const toolbar = quill.getModule('toolbar') as unknown as ToolbarModule;
-
-    toolbar.addHandler('image', () => {
-      const imageChoice = window.prompt(
-        'Choose an option:\n1. Type "upload" to upload an image file\n2. Type "url" to insert an image URL\n3. Or paste/type the image URL directly'
-      );
-      if (!imageChoice) return;
-      const choice = imageChoice.toLowerCase().trim();
-
-      if (choice === 'upload') {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = () => {
-          const file = input.files?.[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const range = quill.getSelection(true);
-            if (range) quill.insertEmbed(range.index, 'image', e.target?.result);
-          };
-          reader.readAsDataURL(file);
-        };
-        input.click();
-        return;
-      }
-
-      const url = choice === 'url' ? window.prompt('Enter the image URL:') : imageChoice;
-      if (!url) return;
-
-      if (isValidImageUrl(url)) {
-        const range = quill.getSelection(true);
-        if (range) quill.insertEmbed(range.index, 'image', url);
-      } else {
-        window.alert(
-          'Please enter a valid image URL (must end with .jpg, .jpeg, .png, .gif, .webp, or .svg)'
-        );
-      }
-    });
-
-    toolbar.addHandler('video', () => {
-      const url = window.prompt('Enter video URL (YouTube/Vimeo/etc.):');
-      if (!url) return;
-      const range = quill.getSelection(true);
-      if (range) quill.insertEmbed(range.index, 'video', url);
-    });
 
     toolbar.addHandler('link', (value?: any) => {
       if (value) {
@@ -198,21 +150,6 @@ const QuillEditorPro: React.FC<QuillEditorProProps> = ({
       if (sel) quill.setSelection(sel);
     }
   }, [value]);
-
-  const isValidImageUrl = (url: string): boolean => {
-    try {
-      const urlObj = new URL(url);
-      const pathname = urlObj.pathname.toLowerCase();
-      return (
-        /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(pathname) ||
-        url.startsWith('data:image/') ||
-        url.startsWith('blob:') ||
-        /\.(githubusercontent|imgur|cloudinary|unsplash|pexels)\./i.test(urlObj.hostname)
-      );
-    } catch {
-      return false;
-    }
-  };
 
   return (
     <div className={className}>
