@@ -3,7 +3,6 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -20,6 +19,7 @@ interface LayoutData {
   navigation_links: any[];
   footer_links: any[];
   contact_info: any;
+  contact_info_navigation: any;
   social_links: any[];
 }
 
@@ -36,6 +36,13 @@ export default function LayoutIndex({ layoutData }: Props) {
 
   const contactForm = useForm({
     phone: layoutData.contact_info?.phone || '',
+    button: layoutData.contact_info?.button || '',
+  });
+
+  // NEW: separate form for header/nav contact info
+  const contactNavForm = useForm({
+    phone: layoutData.contact_info_navigation?.phone || '',
+    button: layoutData.contact_info_navigation?.button || '',
   });
 
   const handleNavigationSubmit = (e: React.FormEvent) => {
@@ -48,6 +55,11 @@ export default function LayoutIndex({ layoutData }: Props) {
     contactForm.put('/admin/layout/contact-info');
   };
 
+  const handleContactNavSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    contactNavForm.put('/admin/layout/contact-info-navigation');
+  };
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Layout & Settings" />
@@ -57,10 +69,11 @@ export default function LayoutIndex({ layoutData }: Props) {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="navigation">Navigation</TabsTrigger>
             <TabsTrigger value="footer">Footer</TabsTrigger>
             <TabsTrigger value="contact">Contact Info</TabsTrigger>
+            <TabsTrigger value="contact-nav">Contact Info (Header)</TabsTrigger>
             <TabsTrigger value="social">Social Links</TabsTrigger>
           </TabsList>
 
@@ -143,7 +156,7 @@ export default function LayoutIndex({ layoutData }: Props) {
             </Card>
           </TabsContent>
 
-          {/* CONTACT */}
+          {/* CONTACT (GLOBAL) */}
           <TabsContent value="contact" className="space-y-4">
             <form onSubmit={handleContactSubmit}>
               <Card>
@@ -152,19 +165,82 @@ export default function LayoutIndex({ layoutData }: Props) {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
+                    <Label htmlFor="phone">Phone (digits only)</Label>
                     <Input
                       id="phone"
                       value={contactForm.data.phone}
                       onChange={(e) => contactForm.setData('phone', e.target.value)}
-                      placeholder="Enter phone number"
+                      placeholder="e.g. 359888123456"
+                      inputMode="numeric"
+                      pattern="\d*"
                     />
+                    {contactForm.errors.phone && (
+                      <p className="text-sm text-destructive">{contactForm.errors.phone}</p>
+                    )}
                   </div>
 
+                  <div className="space-y-2">
+                    <Label htmlFor="button">Button Text</Label>
+                    <Input
+                      id="button"
+                      value={contactForm.data.button}
+                      onChange={(e) => contactForm.setData('button', e.target.value)}
+                      placeholder="e.g. Contact Us"
+                    />
+                    {contactForm.errors.button && (
+                      <p className="text-sm text-destructive">{contactForm.errors.button}</p>
+                    )}
+                  </div>
 
                   <div className="flex justify-end">
                     <Button type="submit" disabled={contactForm.processing}>
                       {contactForm.processing ? 'Updating...' : 'Update Contact Info'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </form>
+          </TabsContent>
+
+          {/* CONTACT (HEADER/NAV) */}
+          <TabsContent value="contact-nav" className="space-y-4">
+            <form onSubmit={handleContactNavSubmit}>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Contact Info (Header/Navigation)</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="nav_phone">Phone (digits only)</Label>
+                    <Input
+                      id="nav_phone"
+                      value={contactNavForm.data.phone}
+                      onChange={(e) => contactNavForm.setData('phone', e.target.value)}
+                      placeholder="e.g. 359888123456"
+                      inputMode="numeric"
+                      pattern="\d*"
+                    />
+                    {contactNavForm.errors.phone && (
+                      <p className="text-sm text-destructive">{contactNavForm.errors.phone}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="nav_button">Button Text</Label>
+                    <Input
+                      id="nav_button"
+                      value={contactNavForm.data.button}
+                      onChange={(e) => contactNavForm.setData('button', e.target.value)}
+                      placeholder="e.g. Call Now"
+                    />
+                    {contactNavForm.errors.button && (
+                      <p className="text-sm text-destructive">{contactNavForm.errors.button}</p>
+                    )}
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Button type="submit" disabled={contactNavForm.processing}>
+                      {contactNavForm.processing ? 'Updating...' : 'Update Header Contact Info'}
                     </Button>
                   </div>
                 </CardContent>

@@ -47,4 +47,24 @@ class LayoutController extends Controller
             return back()->withErrors(['error' => 'Failed to update: ' . $e->getMessage()]);
         }
     }
+
+     /**
+     * Update the Contact Info used in the NAVIGATION (header).
+     */
+    public function updateContactInfoNavigation(Request $request)
+    {
+        $validated = $request->validate([
+            'phone'  => ['nullable','string','max:32','regex:/^\d+$/'],
+            'button' => ['nullable','string','max:255'],
+        ], [
+            'phone.regex' => 'Phone must contain digits only.',
+        ]);
+
+        try {
+            $this->layoutService->updateContactInfoNavigation($validated);
+            return back()->with('success', 'Header contact info updated successfully');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Failed to update: ' . $e->getMessage()]);
+        }
+    }
 }

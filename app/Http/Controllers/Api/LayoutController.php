@@ -25,6 +25,7 @@ class LayoutController extends Controller
                             'slug' => $link->slug,
                         ];
                     })->toArray(),
+                    'contact' => $layoutData['contact_info_navigation'],
                 ],
                 'footer' => [
                     'links' => $layoutData['footer_links']->map(function ($link) {
