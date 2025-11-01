@@ -228,6 +228,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::get('/layout', [LayoutController::class, 'index'])->name('index');
         Route::put('/layout/navigation', [LayoutController::class, 'updateNavigation'])->name('navigation.update');
         Route::put('/layout/contact-info', [LayoutController::class, 'updateContactInfo'])->name('contact-info.update');
+        Route::put('/contact-info-navigation', [LayoutController::class, 'updateContactInfoNavigation']); // NEW
     });
 
     // Navigation Links

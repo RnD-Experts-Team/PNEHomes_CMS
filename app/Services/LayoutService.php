@@ -8,6 +8,7 @@ use App\Models\FooterLink;
 use App\Models\ContactInfo;
 use App\Models\SocialLink;
 use Illuminate\Support\Str;
+use App\Models\ContactInfoNavigation;
 
 class LayoutService
 {
@@ -18,6 +19,7 @@ class LayoutService
             'navigation_links' => NavigationLink::orderBy('order')->get(),
             'footer_links' => FooterLink::orderBy('order')->get(),
             'contact_info' => ContactInfo::first(),
+            'contact_info_navigation'  => ContactInfoNavigation::first(),
             'social_links' => SocialLink::orderBy('order')->get(),
         ];
     }
@@ -35,7 +37,18 @@ class LayoutService
 
         return $navigation;
     }
+ public function updateContactInfoNavigation(array $data)
+    {
+        $contactInfoNav = ContactInfoNavigation::first();
 
+        if ($contactInfoNav) {
+            $contactInfoNav->update($data);
+        } else {
+            $contactInfoNav = ContactInfoNavigation::create($data);
+        }
+
+        return $contactInfoNav;
+    }
     // ---------- NAV LINKS ----------
     public function getAllNavigationLinks()
     {
