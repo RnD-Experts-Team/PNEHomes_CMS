@@ -43,6 +43,7 @@ import {
     Settings,
     FileText,
     Shield,
+    Contact,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
@@ -94,6 +95,11 @@ const mainNavItems: NavItem[] = [
         href: '/admin/building-options',
         icon: HardHat,
     },
+    {
+        title: 'Contact Us Entries',
+        href: '/admin/contact-entries',
+        icon: Contact,
+    }
 ];
 
 
