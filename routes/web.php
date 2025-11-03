@@ -292,5 +292,16 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/gallery-settings', [GallerySettingsController::class, 'edit'])->name('gallery-settings.edit');
     Route::put('/gallery-settings', [GallerySettingsController::class, 'update'])->name('gallery-settings.update');
 });
+
+
+use App\Http\Controllers\Admin\ContactEntryController as AdminContactEntryController;
+
+Route::middleware(['auth']) // <- adjust to your guard
+    ->prefix('admin')
+    ->group(function () {
+        Route::get('/contact-entries', [AdminContactEntryController::class, 'index'])->name('admin.contact-entries.index');
+        Route::delete('/contact-entries/{contactEntry}', [AdminContactEntryController::class, 'destroy'])->name('admin.contact-entries.destroy');
+    });
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

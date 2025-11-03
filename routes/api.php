@@ -79,3 +79,6 @@ use App\Http\Controllers\Api\FloorPlanController;
 
 // Floor Plans API Routes
 Route::get('/floor-plans', [FloorPlanController::class, 'index']);
+use App\Http\Controllers\Api\ContactEntryController;
+
+Route::post('/contact-entries', [ContactEntryController::class, 'store']);
