@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, X } from 'lucide-react';
 import { IdPickerButton } from '@/components/drive/IdPickerButton';
@@ -41,6 +40,11 @@ export default function EventCreate() {
 
   const addGalleryImage = () => {
     setData('gallery', [...data.gallery, '']);
+  };
+
+  const appendManyGalleryImages = (ids: string[]) => {
+    if (!ids.length) return;
+    setData('gallery', [...data.gallery, ...ids]);
   };
 
   const updateGalleryImage = (index: number, value: string) => {
@@ -94,7 +98,7 @@ export default function EventCreate() {
                 )}
               </div>
 
-              {/* Cover Image ID + Picker */}
+              {/* Cover Image ID + Picker (kept commented as in your original) */}
               {/* <div className="space-y-2">
                 <Label htmlFor="cover_image_id">Cover Image ID (Google Drive)</Label>
                 <div className="flex gap-2">
@@ -139,16 +143,25 @@ export default function EventCreate() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Gallery Images</CardTitle>
-                <Button type="button" onClick={addGalleryImage} size="sm">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Image
-                </Button>
+                <div className="flex gap-2">
+                  {/* NEW: multi-pick to append many IDs at once */}
+                  <IdPickerButton
+                    multiple
+                    label="Pick Images (multi)"
+                    mimeTypes={['image/jpeg', 'image/png', 'image/webp']}
+                    onPickMany={appendManyGalleryImages}
+                  />
+                  <Button type="button" onClick={addGalleryImage} size="sm">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Image
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {data.gallery.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-8">
-                  No images added yet. Click "Add Image" to get started.
+                  No images added yet. Use “Pick Images (multi)” to add many at once, or click “Add Image”.
                 </p>
               ) : (
                 data.gallery.map((imageId, index) => (
@@ -158,7 +171,23 @@ export default function EventCreate() {
                       onChange={(e) => updateGalleryImage(index, e.target.value)}
                       placeholder="Enter Google Drive file ID"
                     />
+                    {/* Keep single picker */}
                     <IdPickerButton onPick={(id) => updateGalleryImage(index, id)} />
+                    {/* Optional per-row multi: replace + insert after */}
+                    <IdPickerButton
+                      multiple
+                      label="Multi"
+                      mimeTypes={['image/jpeg', 'image/png', 'image/webp']}
+                      onPickMany={(ids) => {
+                        if (!ids.length) return;
+                        const first = ids[0];
+                        const rest = ids.slice(1);
+                        const newGallery = [...data.gallery];
+                        newGallery[index] = first;
+                        if (rest.length) newGallery.splice(index + 1, 0, ...rest);
+                        setData('gallery', newGallery);
+                      }}
+                    />
                     <Button
                       type="button"
                       variant="outline"
