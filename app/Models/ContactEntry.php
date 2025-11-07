@@ -24,4 +24,9 @@ class ContactEntry extends Model
     {
         return trim($this->first_name . ' ' . $this->last_name);
     }
+
+    public function labels()
+    {
+        return $this->belongsToMany(\App\Models\Label::class);
+    }
 }

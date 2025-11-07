@@ -296,12 +296,21 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
 use App\Http\Controllers\Admin\ContactEntryController as AdminContactEntryController;
 
-Route::middleware(['auth']) // <- adjust to your guard
-    ->prefix('admin')
-    ->group(function () {
-        Route::get('/contact-entries', [AdminContactEntryController::class, 'index'])->name('admin.contact-entries.index');
-        Route::delete('/contact-entries/{contactEntry}', [AdminContactEntryController::class, 'destroy'])->name('admin.contact-entries.destroy');
-    });
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    Route::get('/contact-entries', [AdminContactEntryController::class, 'index'])->name('admin.contact-entries.index');
+    Route::delete('/contact-entries/{contactEntry}', [AdminContactEntryController::class, 'destroy'])->name('admin.contact-entries.destroy');
+
+    // Labels (create/edit/delete) — all via redirects
+    Route::post('/contact-labels', [AdminContactEntryController::class, 'labelStore'])->name('admin.contact-labels.store');
+    Route::put('/contact-labels/{label}', [AdminContactEntryController::class, 'labelUpdate'])->name('admin.contact-labels.update');
+    Route::delete('/contact-labels/{label}', [AdminContactEntryController::class, 'labelDestroy'])->name('admin.contact-labels.destroy');
+
+    // Per-entry labels (kept but unused in UI)
+    Route::put('/contact-entries/{contactEntry}/labels', [AdminContactEntryController::class, 'updateEntryLabels'])->name('admin.contact-entries.labels.update');
+
+    // Bulk labels
+    Route::put('/contact-entries/bulk-labels', [AdminContactEntryController::class, 'bulkUpdateLabels'])->name('admin.contact-entries.labels.bulk');
+});
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
