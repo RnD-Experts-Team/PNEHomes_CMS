@@ -84,6 +84,9 @@ class PropertyService
             case 'sqft':
                 $query->orderByRaw('CAST(REPLACE(sqft, ",", "") AS UNSIGNED) ' . $sortOrder);
                 break;
+            case 'order':
+                $query->orderBy('order', $sortOrder);
+                break;
             case 'id':
             default:
                 $query->orderBy('id', $sortOrder);

@@ -17,18 +17,38 @@ class PropertyController extends Controller
             
             // Get filters from request
             $filters = [
-                'community' => $request->input('community'),
-                'price' => $request->input('price'),
-                'beds' => $request->input('beds'),
-                'baths' => $request->input('baths'),
-                'garages' => $request->input('garages'),
-                'min' => $request->input('min'),
-                'max' => $request->input('max'),
-                'sortBy' => $request->input('sortBy', 'sqft'),
-                'sortOrder' => $request->input('sortOrder', 'desc'),
-                'page' => $request->input('page', 1),
-                'limit' => $request->input('limit', 9),
-            ];
+            'community' => $request->input('community'),
+            'price'     => $request->input('price'),
+            'beds'      => $request->input('beds'),
+            'baths'     => $request->input('baths'),
+            'garages'   => $request->input('garages'),
+            'min'       => $request->input('min'),
+            'max'       => $request->input('max'),
+            // defaults (may be overridden below)
+            'sortBy'    => 'sqft',
+            'sortOrder' => 'desc',
+            'page'      => (int) $request->input('page', 1),
+            'limit'     => (int) $request->input('limit', 9),
+        ];
+
+        // determine if any real filters were provided
+        $filterKeys = ['community','price','beds','baths','garages','min','max'];
+        $hasFilters = collect($filters)
+            ->only($filterKeys)
+            ->filter(fn ($v) => !is_null($v) && $v !== '')
+            ->isNotEmpty();
+
+        // sorting rule:
+        // - no filters => sort by 'order' ASC
+        // - any filter  => sort by 'sqft' DESC
+        if ($hasFilters) {
+            $filters['sortBy']    = $request->input('sortBy', 'sqft');
+            $filters['sortOrder'] = $request->input('sortOrder', 'desc');
+        } else {
+            $filters['sortBy']    = 'order';
+            $filters['sortOrder'] = 'asc';
+        }
+            
 
             $properties = $this->propertyService->getAllProperties($filters);
             $total = $this->propertyService->getTotalCount($filters);
