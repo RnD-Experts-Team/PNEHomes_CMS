@@ -56,12 +56,11 @@ export default function GalleryAlbumCreate() {
     images: [],
   });
 
-  // ---- Multi pick targets (UI-only)
+  // Multi pick target for direct album images
   const [directMultiTarget, setDirectMultiTarget] = useState<MultiTarget>('real');
-  const [directRowMultiTarget, setDirectRowMultiTarget] = useState<MultiTarget>('real');
 
+  // Multi pick target per sub-album (parallel array)
   const [subMultiTargets, setSubMultiTargets] = useState<MultiTarget[]>([]);
-  const [subRowMultiTarget, setSubRowMultiTarget] = useState<MultiTarget>('real');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,7 +103,10 @@ export default function GalleryAlbumCreate() {
       virtual_image_id: target === 'virtual' ? id : '',
       real_image_id: target === 'real' ? id : '',
     }));
-    newSubAlbums[subIndex].images = [...newSubAlbums[subIndex].images, ...toAppend];
+    newSubAlbums[subIndex].images = [
+      ...newSubAlbums[subIndex].images,
+      ...toAppend,
+    ];
     setData('sub_albums', newSubAlbums);
   };
 
@@ -121,7 +123,9 @@ export default function GalleryAlbumCreate() {
 
   const removeSubAlbumImage = (subIndex: number, imgIndex: number) => {
     const newSubAlbums = [...data.sub_albums];
-    newSubAlbums[subIndex].images = newSubAlbums[subIndex].images.filter((_, i) => i !== imgIndex);
+    newSubAlbums[subIndex].images = newSubAlbums[subIndex].images.filter(
+      (_, i) => i !== imgIndex
+    );
     setData('sub_albums', newSubAlbums);
   };
 
@@ -172,7 +176,9 @@ export default function GalleryAlbumCreate() {
                   onChange={(e) => setData('title', e.target.value)}
                   placeholder="Enter album title"
                 />
-                {errors.title && <p className="text-sm text-destructive">{errors.title}</p>}
+                {errors.title && (
+                  <p className="text-sm text-destructive">{errors.title}</p>
+                )}
                 <p className="text-xs text-muted-foreground">
                   Slug will be auto-generated from title
                 </p>
@@ -277,7 +283,9 @@ export default function GalleryAlbumCreate() {
                           <Label>Title *</Label>
                           <Input
                             value={subAlbum.title}
-                            onChange={(e) => updateSubAlbum(subIndex, 'title', e.target.value)}
+                            onChange={(e) =>
+                              updateSubAlbum(subIndex, 'title', e.target.value)
+                            }
                             placeholder="Enter sub-album title"
                           />
                         </div>
@@ -293,7 +301,9 @@ export default function GalleryAlbumCreate() {
                               placeholder="Google Drive file ID"
                             />
                             <IdPickerButton
-                              onPick={(id) => updateSubAlbum(subIndex, 'cover_image_id', id)}
+                              onPick={(id) =>
+                                updateSubAlbum(subIndex, 'cover_image_id', id)
+                              }
                             />
                           </div>
                         </div>
@@ -304,7 +314,7 @@ export default function GalleryAlbumCreate() {
                             <Label>Images</Label>
 
                             <div className="flex gap-2 items-center">
-                              {/* shadcn target select (per sub-album) */}
+                              {/* shadcn multi target (per sub-album) */}
                               <div className="w-[160px]">
                                 <Select
                                   value={subMultiTargets[subIndex] ?? 'real'}
@@ -401,7 +411,7 @@ export default function GalleryAlbumCreate() {
 
                                     <div className="space-y-2">
                                       <Label className="text-xs">Real Image ID</Label>
-                                      <div className="flex gap-2 items-center">
+                                      <div className="flex gap-2">
                                         <Input
                                           value={img.real_image_id}
                                           onChange={(e) =>
@@ -414,7 +424,6 @@ export default function GalleryAlbumCreate() {
                                           }
                                           placeholder="Optional"
                                         />
-
                                         <IdPickerButton
                                           label="Pick"
                                           mimeTypes={['image/jpeg', 'image/png', 'image/webp']}
@@ -426,58 +435,6 @@ export default function GalleryAlbumCreate() {
                                               id
                                             )
                                           }
-                                        />
-
-                                        {/* shadcn per-row target select */}
-                                        <div className="w-[120px]">
-                                          <Select
-                                            value={subRowMultiTarget}
-                                            onValueChange={(v) =>
-                                              setSubRowMultiTarget(v as MultiTarget)
-                                            }
-                                          >
-                                            <SelectTrigger className="h-8 text-[10px]">
-                                              <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                              <SelectItem value="real">Multi → Real</SelectItem>
-                                              <SelectItem value="virtual">Multi → Virtual</SelectItem>
-                                            </SelectContent>
-                                          </Select>
-                                        </div>
-
-                                        <IdPickerButton
-                                          multiple
-                                          label="Multi"
-                                          mimeTypes={['image/jpeg', 'image/png', 'image/webp']}
-                                          onPickMany={(ids) => {
-                                            if (!ids.length) return;
-
-                                            const first = ids[0];
-                                            const rest = ids.slice(1);
-                                            const newSubAlbums = [...data.sub_albums];
-
-                                            if (subRowMultiTarget === 'real') {
-                                              newSubAlbums[subIndex].images[imgIndex].real_image_id = first;
-                                            } else {
-                                              newSubAlbums[subIndex].images[imgIndex].virtual_image_id = first;
-                                            }
-
-                                            if (rest.length) {
-                                              const inserts = rest.map((id) => ({
-                                                virtual_image_id: subRowMultiTarget === 'virtual' ? id : '',
-                                                real_image_id: subRowMultiTarget === 'real' ? id : '',
-                                              }));
-
-                                              newSubAlbums[subIndex].images.splice(
-                                                imgIndex + 1,
-                                                0,
-                                                ...inserts
-                                              );
-                                            }
-
-                                            setData('sub_albums', newSubAlbums);
-                                          }}
                                         />
                                       </div>
                                     </div>
@@ -503,11 +460,13 @@ export default function GalleryAlbumCreate() {
                   <CardTitle>Images</CardTitle>
 
                   <div className="flex gap-2 items-center">
-                    {/* shadcn direct multi target */}
+                    {/* shadcn multi target */}
                     <div className="w-[160px]">
                       <Select
                         value={directMultiTarget}
-                        onValueChange={(v) => setDirectMultiTarget(v as MultiTarget)}
+                        onValueChange={(v) =>
+                          setDirectMultiTarget(v as MultiTarget)
+                        }
                       >
                         <SelectTrigger className="h-8 text-xs">
                           <SelectValue placeholder="Multi target" />
@@ -544,7 +503,9 @@ export default function GalleryAlbumCreate() {
                     <Card key={index}>
                       <CardContent className="pt-4 space-y-2">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium">Image {index + 1}</span>
+                          <span className="text-sm font-medium">
+                            Image {index + 1}
+                          </span>
                           <Button
                             type="button"
                             variant="ghost"
@@ -567,14 +528,16 @@ export default function GalleryAlbumCreate() {
                             />
                             <IdPickerButton
                               label="Pick"
-                              onPick={(id) => updateImage(index, 'virtual_image_id', id)}
+                              onPick={(id) =>
+                                updateImage(index, 'virtual_image_id', id)
+                              }
                             />
                           </div>
                         </div>
 
                         <div className="space-y-2">
                           <Label>Real Image ID</Label>
-                          <div className="flex gap-2 items-center">
+                          <div className="flex gap-2">
                             <Input
                               value={img.real_image_id}
                               onChange={(e) =>
@@ -582,59 +545,12 @@ export default function GalleryAlbumCreate() {
                               }
                               placeholder="Optional"
                             />
-
                             <IdPickerButton
                               label="Pick"
                               mimeTypes={['image/jpeg', 'image/png', 'image/webp']}
-                              onPick={(id) => updateImage(index, 'real_image_id', id)}
-                            />
-
-                            {/* shadcn per-row direct target */}
-                            <div className="w-[120px]">
-                              <Select
-                                value={directRowMultiTarget}
-                                onValueChange={(v) =>
-                                  setDirectRowMultiTarget(v as MultiTarget)
-                                }
-                              >
-                                <SelectTrigger className="h-8 text-[10px]">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="real">Multi → Real</SelectItem>
-                                  <SelectItem value="virtual">Multi → Virtual</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            <IdPickerButton
-                              multiple
-                              label="Multi"
-                              mimeTypes={['image/jpeg', 'image/png', 'image/webp']}
-                              onPickMany={(ids) => {
-                                if (!ids.length) return;
-                                const first = ids[0];
-                                const rest = ids.slice(1);
-
-                                const newImages = [...data.images];
-
-                                if (directRowMultiTarget === 'real') {
-                                  newImages[index].real_image_id = first;
-                                } else {
-                                  newImages[index].virtual_image_id = first;
-                                }
-
-                                if (rest.length) {
-                                  const inserts = rest.map((id) => ({
-                                    virtual_image_id: directRowMultiTarget === 'virtual' ? id : '',
-                                    real_image_id: directRowMultiTarget === 'real' ? id : '',
-                                  }));
-
-                                  newImages.splice(index + 1, 0, ...inserts);
-                                }
-
-                                setData('images', newImages);
-                              }}
+                              onPick={(id) =>
+                                updateImage(index, 'real_image_id', id)
+                              }
                             />
                           </div>
                         </div>
@@ -647,7 +563,11 @@ export default function GalleryAlbumCreate() {
           )}
 
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => window.history.back()}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => window.history.back()}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={processing}>
