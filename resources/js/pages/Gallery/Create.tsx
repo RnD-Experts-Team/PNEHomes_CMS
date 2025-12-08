@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, X, Trash2 } from 'lucide-react';
 import { IdPickerButton } from '@/components/drive/IdPickerButton';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Gallery', href: '/admin/gallery-albums' },
@@ -35,6 +36,8 @@ interface FormData {
   images: ImageData[];
 }
 
+type MultiTarget = 'virtual' | 'real';
+
 export default function GalleryAlbumCreate() {
   const { data, setData, post, processing, errors } = useForm<FormData>({
     title: '',
@@ -45,6 +48,13 @@ export default function GalleryAlbumCreate() {
     sub_albums: [],
     images: [],
   });
+
+  // ---- Multi pick targets
+  const [directMultiTarget, setDirectMultiTarget] = useState<MultiTarget>('real');
+  const [directRowMultiTarget, setDirectRowMultiTarget] = useState<MultiTarget>('real');
+
+  const [subMultiTargets, setSubMultiTargets] = useState<MultiTarget[]>([]);
+  const [subRowMultiTarget, setSubRowMultiTarget] = useState<MultiTarget>('real');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,6 +67,7 @@ export default function GalleryAlbumCreate() {
       ...data.sub_albums,
       { title: '', cover_image_id: '', images: [] },
     ]);
+    setSubMultiTargets((t) => [...t, 'real']);
   };
 
   const updateSubAlbum = (index: number, field: keyof SubAlbumData, value: any) => {
@@ -67,6 +78,7 @@ export default function GalleryAlbumCreate() {
 
   const removeSubAlbum = (index: number) => {
     setData('sub_albums', data.sub_albums.filter((_, i) => i !== index));
+    setSubMultiTargets((t) => t.filter((_, i) => i !== index));
   };
 
   // ---- Sub-album image management
@@ -78,8 +90,13 @@ export default function GalleryAlbumCreate() {
 
   const appendManySubAlbumImages = (subIndex: number, ids: string[]) => {
     if (!ids.length) return;
+    const target = subMultiTargets[subIndex] ?? 'real';
+
     const newSubAlbums = [...data.sub_albums];
-    const toAppend: ImageData[] = ids.map((id) => ({ virtual_image_id: '', real_image_id: id }));
+    const toAppend: ImageData[] = ids.map((id) => ({
+      virtual_image_id: target === 'virtual' ? id : '',
+      real_image_id: target === 'real' ? id : '',
+    }));
     newSubAlbums[subIndex].images = [...newSubAlbums[subIndex].images, ...toAppend];
     setData('sub_albums', newSubAlbums);
   };
@@ -108,7 +125,11 @@ export default function GalleryAlbumCreate() {
 
   const appendManyImages = (ids: string[]) => {
     if (!ids.length) return;
-    const toAppend: ImageData[] = ids.map((id) => ({ virtual_image_id: '', real_image_id: id }));
+
+    const toAppend: ImageData[] = ids.map((id) => ({
+      virtual_image_id: directMultiTarget === 'virtual' ? id : '',
+      real_image_id: directMultiTarget === 'real' ? id : '',
+    }));
     setData('images', [...data.images, ...toAppend]);
   };
 
@@ -161,7 +182,6 @@ export default function GalleryAlbumCreate() {
                     onChange={(e) => setData('cover_image_id', e.target.value)}
                     placeholder="Enter Google Drive file ID"
                   />
-                  {/* Single-picker kept for cover image */}
                   <IdPickerButton onPick={(id) => setData('cover_image_id', id)} />
                 </div>
                 {errors.cover_image_id && (
@@ -196,11 +216,12 @@ export default function GalleryAlbumCreate() {
                   checked={data.has_sub_albums}
                   onCheckedChange={(checked) => {
                     setData('has_sub_albums', checked);
-                    // Clear opposite content type
                     if (checked) {
                       setData('images', []);
+                      setSubMultiTargets(data.sub_albums.map(() => 'real'));
                     } else {
                       setData('sub_albums', []);
+                      setSubMultiTargets([]);
                     }
                   }}
                 />
@@ -278,14 +299,33 @@ export default function GalleryAlbumCreate() {
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <Label>Images</Label>
-                            <div className="flex gap-2">
-                              {/* NEW: multi-pick for this sub-album */}
+                            <div className="flex gap-2 items-center">
+                              {/* target choose */}
+                              <div className="flex items-center gap-2 rounded-md border px-2 py-1">
+                                <Label className="text-xs">Multi →</Label>
+                                <select
+                                  className="text-xs bg-transparent outline-none"
+                                  value={subMultiTargets[subIndex] ?? 'real'}
+                                  onChange={(e) => {
+                                    const next = [...subMultiTargets];
+                                    next[subIndex] = e.target.value as MultiTarget;
+                                    setSubMultiTargets(next);
+                                  }}
+                                >
+                                  <option value="real">Real IDs</option>
+                                  <option value="virtual">Virtual IDs</option>
+                                </select>
+                              </div>
+
                               <IdPickerButton
                                 multiple
                                 label="Pick Images (multi)"
                                 mimeTypes={['image/jpeg', 'image/png', 'image/webp']}
-                                onPickMany={(ids) => appendManySubAlbumImages(subIndex, ids)}
+                                onPickMany={(ids) =>
+                                  appendManySubAlbumImages(subIndex, ids)
+                                }
                               />
+
                               <Button
                                 type="button"
                                 variant="outline"
@@ -354,7 +394,7 @@ export default function GalleryAlbumCreate() {
 
                                     <div className="space-y-2">
                                       <Label className="text-xs">Real Image ID</Label>
-                                      <div className="flex gap-2">
+                                      <div className="flex gap-2 items-center">
                                         <Input
                                           value={img.real_image_id}
                                           onChange={(e) =>
@@ -367,7 +407,6 @@ export default function GalleryAlbumCreate() {
                                           }
                                           placeholder="Optional"
                                         />
-                                        {/* Keep single pick */}
                                         <IdPickerButton
                                           label="Pick"
                                           mimeTypes={['image/jpeg', 'image/png', 'image/webp']}
@@ -380,24 +419,43 @@ export default function GalleryAlbumCreate() {
                                             )
                                           }
                                         />
-                                        {/* NEW per-row multi to replace+insert */}
+
+                                        {/* per-row target */}
+                                        <div className="flex items-center gap-1 rounded-md border px-2 py-1">
+                                          <Label className="text-[10px]">Multi →</Label>
+                                          <select
+                                            className="text-[10px] bg-transparent outline-none"
+                                            value={subRowMultiTarget}
+                                            onChange={(e) =>
+                                              setSubRowMultiTarget(e.target.value as MultiTarget)
+                                            }
+                                          >
+                                            <option value="real">Real</option>
+                                            <option value="virtual">Virtual</option>
+                                          </select>
+                                        </div>
+
                                         <IdPickerButton
                                           multiple
                                           label="Multi"
                                           mimeTypes={['image/jpeg', 'image/png', 'image/webp']}
                                           onPickMany={(ids) => {
                                             if (!ids.length) return;
+
                                             const first = ids[0];
                                             const rest = ids.slice(1);
-
                                             const newSubAlbums = [...data.sub_albums];
-                                            // replace this row's real id
-                                            newSubAlbums[subIndex].images[imgIndex].real_image_id = first;
-                                            // insert new rows after this one with rest
+
+                                            if (subRowMultiTarget === 'real') {
+                                              newSubAlbums[subIndex].images[imgIndex].real_image_id = first;
+                                            } else {
+                                              newSubAlbums[subIndex].images[imgIndex].virtual_image_id = first;
+                                            }
+
                                             if (rest.length) {
                                               const inserts = rest.map((id) => ({
-                                                virtual_image_id: '',
-                                                real_image_id: id,
+                                                virtual_image_id: subRowMultiTarget === 'virtual' ? id : '',
+                                                real_image_id: subRowMultiTarget === 'real' ? id : '',
                                               }));
                                               newSubAlbums[subIndex].images.splice(
                                                 imgIndex + 1,
@@ -430,14 +488,30 @@ export default function GalleryAlbumCreate() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>Images</CardTitle>
-                  <div className="flex gap-2">
-                    {/* NEW: multi-pick for direct images */}
+                  <div className="flex gap-2 items-center">
+
+                    {/* direct target */}
+                    <div className="flex items-center gap-2 rounded-md border px-2 py-1">
+                      <Label className="text-xs">Multi →</Label>
+                      <select
+                        className="text-xs bg-transparent outline-none"
+                        value={directMultiTarget}
+                        onChange={(e) =>
+                          setDirectMultiTarget(e.target.value as MultiTarget)
+                        }
+                      >
+                        <option value="real">Real IDs</option>
+                        <option value="virtual">Virtual IDs</option>
+                      </select>
+                    </div>
+
                     <IdPickerButton
                       multiple
                       label="Pick Images (multi)"
                       mimeTypes={['image/jpeg', 'image/png', 'image/webp']}
                       onPickMany={appendManyImages}
                     />
+
                     <Button type="button" onClick={addImage} size="sm">
                       <Plus className="mr-2 h-4 w-4" />
                       Add Image
@@ -485,7 +559,7 @@ export default function GalleryAlbumCreate() {
 
                         <div className="space-y-2">
                           <Label>Real Image ID</Label>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 items-center">
                             <Input
                               value={img.real_image_id}
                               onChange={(e) =>
@@ -493,13 +567,27 @@ export default function GalleryAlbumCreate() {
                               }
                               placeholder="Optional"
                             />
-                            {/* Keep single pick */}
                             <IdPickerButton
                               label="Pick"
                               mimeTypes={['image/jpeg', 'image/png', 'image/webp']}
                               onPick={(id) => updateImage(index, 'real_image_id', id)}
                             />
-                            {/* NEW per-row multi to replace+insert */}
+
+                            {/* per-row direct target */}
+                            <div className="flex items-center gap-1 rounded-md border px-2 py-1">
+                              <Label className="text-[10px]">Multi →</Label>
+                              <select
+                                className="text-[10px] bg-transparent outline-none"
+                                value={directRowMultiTarget}
+                                onChange={(e) =>
+                                  setDirectRowMultiTarget(e.target.value as MultiTarget)
+                                }
+                              >
+                                <option value="real">Real</option>
+                                <option value="virtual">Virtual</option>
+                              </select>
+                            </div>
+
                             <IdPickerButton
                               multiple
                               label="Multi"
@@ -510,11 +598,19 @@ export default function GalleryAlbumCreate() {
                                 const rest = ids.slice(1);
 
                                 const newImages = [...data.images];
-                                newImages[index].real_image_id = first;
+
+                                if (directRowMultiTarget === 'real') {
+                                  newImages[index].real_image_id = first;
+                                } else {
+                                  newImages[index].virtual_image_id = first;
+                                }
+
                                 if (rest.length) {
                                   const inserts = rest.map((id) => ({
-                                    virtual_image_id: '',
-                                    real_image_id: id,
+                                    virtual_image_id:
+                                      directRowMultiTarget === 'virtual' ? id : '',
+                                    real_image_id:
+                                      directRowMultiTarget === 'real' ? id : '',
                                   }));
                                   newImages.splice(index + 1, 0, ...inserts);
                                 }
