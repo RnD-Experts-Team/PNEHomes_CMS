@@ -25,6 +25,6 @@ class HomeGridSection extends Model
 
     public function getLogoUrlAttribute(): string
     {
-        return config('media.image_base_url') . '/' . $this->logo_image_id;
+        return config('media.video_base_url') . '/' . $this->logo_image_id;
     }
 }
