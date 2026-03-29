@@ -11,7 +11,9 @@ use Illuminate\Validation\Rule;
 
 class CommunitiesSettingsController extends Controller
 {
-    public function __construct(protected CommunityService $service) {}
+    public function __construct(protected CommunityService $service)
+    {
+    }
 
     public function edit()
     {
@@ -22,6 +24,7 @@ class CommunitiesSettingsController extends Controller
             'settings' => [
                 'title' => $settings->title,
                 'cover_image_id' => $settings->cover_image_id,
+                'cover_image_type' => $settings->cover_image_type,
                 'zillow_link' => $settings->zillow_link,
             ],
             'contact' => $contact ? [
@@ -38,18 +41,20 @@ class CommunitiesSettingsController extends Controller
     {
         $validated = $request->validate([
             // Settings
-            'title' => ['required','string','max:255'],
-            'cover_image_id' => ['nullable','string'],
-            'zillow_link' => ['nullable','url'],
+            'title' => ['required', 'string', 'max:255'],
+            'cover_image_id' => ['nullable', 'string'],
+            'cover_image_type' => ['nullable', 'string', 'in:image,video'],
+            'zillow_link' => ['nullable', 'url'],
 
             // Contact (optional, but validate shape)
-            'contact.title' => ['required','string','max:255'],
-            'contact.message' => ['required','string'],
+            'contact.title' => ['required', 'string', 'max:255'],
+            'contact.message' => ['required', 'string'],
         ]);
 
         $settingsData = [
             'title' => $validated['title'] ?? null,
             'cover_image_id' => $validated['cover_image_id'] ?? null,
+            'cover_image_type' => $validated['cover_image_type'] ?? null,
             'zillow_link' => $validated['zillow_link'] ?? null,
         ];
 

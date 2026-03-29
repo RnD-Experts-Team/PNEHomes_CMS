@@ -4,15 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasMediaUrl;
 
 class BuildingOption extends Model
 {
-    use HasFactory;
+    use HasFactory, HasMediaUrl;
 
     protected $fillable = [
         'title',
         'description',
         'section_image_id',
+        'section_image_type',
         'order',
         'is_active',
     ];
@@ -26,6 +28,9 @@ class BuildingOption extends Model
 
     public function getSectionImageUrlAttribute(): string
     {
-        return config('media.image_base_url') . '/' . $this->section_image_id;
+        return $this->resolveMediaUrl(
+            $this->section_image_id,
+            $this->section_image_type
+        );
     }
 }

@@ -9,7 +9,8 @@ class HomeController extends Controller
 {
     public function __construct(
         protected HomeService $homeService
-    ) {}
+    ) {
+    }
 
     public function index()
     {
@@ -19,11 +20,16 @@ class HomeController extends Controller
             $data = [
                 'first_section' => $homeData['first_section'] ? [
                     'mobile_cover' => $homeData['first_section']->mobile_cover_url,
+                    'mobile_cover_type' => $homeData['first_section']->mobile_cover_image_type,
+
                     'logo' => $homeData['first_section']->logo_url,
+                    'logo_type' => $homeData['first_section']->logo_image_type,
+
                     'title' => $homeData['first_section']->title,
                     'subtitle' => $homeData['first_section']->subtitle,
                     'book_button_text' => $homeData['first_section']->book_button_text,
                 ] : null,
+
                 'hero_sections' => $homeData['hero_sections']->map(function ($section) {
                     return [
                         'icon' => $section->icon,
@@ -31,14 +37,20 @@ class HomeController extends Controller
                         'description' => $section->description,
                     ];
                 })->toArray(),
+
                 'hero' => $homeData['hero'] ? [
                     'title' => $homeData['hero']->title,
                     'subtitle' => $homeData['hero']->subtitle,
                 ] : null,
+
                 'services' => $homeData['services'] ? [
                     'title' => $homeData['services']->title,
+
                     'cover' => $homeData['services']->cover_url,
+                    'cover_type' => $homeData['services']->cover_type,
+
                     'description' => $homeData['services']->description,
+
                     'links' => $homeData['service_links']->map(function ($link) {
                         return [
                             'title' => $link->title,
@@ -46,22 +58,31 @@ class HomeController extends Controller
                         ];
                     })->toArray(),
                 ] : null,
+
                 'grid_section' => $homeData['grid_section'] ? [
                     'video' => $homeData['grid_section']->video_url,
+                    'video_type' => $homeData['grid_section']->video_type,
+
                     'logo' => $homeData['grid_section']->logo_url,
+                    'logo_type' => $homeData['grid_section']->logo_type,
+
                     'links' => $homeData['grid_links']->map(function ($link) {
                         return [
                             'title' => $link->title,
+
                             'cover' => $link->cover_url,
+                            'cover_type' => $link->cover_type,
                         ];
                     })->toArray(),
                 ] : null,
+
                 'testimonials' => $homeData['testimonials']->map(function ($testimonial) {
                     return [
                         'description' => $testimonial->description,
                         'by' => $testimonial->by,
                     ];
                 })->toArray(),
+
                 'contact' => [
                     'title' => $homeData['settings']?->contact_title ?? 'CONTACT',
                 ],

@@ -11,7 +11,8 @@ class ContentPageController extends Controller
 {
     public function __construct(
         protected ContentPageService $contentPageService
-    ) {}
+    ) {
+    }
 
     // About Us
     public function aboutUs()
@@ -27,6 +28,7 @@ class ContentPageController extends Controller
     {
         $validated = $request->validate([
             'cover_image_id' => 'required|string',
+            'cover_image_type' => 'required|string|in:image,video',
             'slogan' => 'required|string|max:255',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
@@ -51,6 +53,7 @@ class ContentPageController extends Controller
                 'slogan' => $privacyPolicy->slogan,
                 'description' => $privacyPolicy->description,
                 'cover_image_id' => $privacyPolicy->cover_image_id,
+                'cover_image_type' => $privacyPolicy->cover_image_type,
                 'contact_title' => $privacyPolicy->contact_title,
                 'contact_message' => $privacyPolicy->contact_message,
             ],
@@ -64,6 +67,7 @@ class ContentPageController extends Controller
             'slogan' => 'required|string|max:255',
             'description' => 'nullable|string',
             'cover_image_id' => 'required|string',
+            'cover_image_type' => 'required|string|in:image,video',
             'contact_title' => 'required|string|max:255',
             'contact_message' => 'required|string',
         ]);

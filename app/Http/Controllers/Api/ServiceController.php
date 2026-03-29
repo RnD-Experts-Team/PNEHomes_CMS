@@ -9,16 +9,20 @@ class ServiceController extends Controller
 {
     public function __construct(
         protected ServiceService $serviceService
-    ) {}
+    ) {
+    }
 
     public function index()
     {
         try {
             $services = $this->serviceService->getAllServices();
-            $cover = $this->serviceService->getSettings()->img;
+            $settings = $this->serviceService->getSettings();
 
             $data = [
-                'cover' => $cover,
+                // ✅ fixed settings media
+                'cover' => $settings?->image_url,
+                'cover_type' => $settings?->image_type,
+
                 'services' => $services->map(function ($service) {
                     return [
                         'id' => $service->id,
@@ -26,13 +30,18 @@ class ServiceController extends Controller
                         'title' => $service->title,
                         'sub_title' => $service->sub_title,
                         'description' => $service->description,
+
+                        // ✅ fixed content items
                         'content' => $service->contentItems->map(function ($item) {
                             return [
-                                'img' => $item->img,
+                                'image' => $item->image_url,
+                                'image_type' => $item->image_type,
+
                                 'sub_title' => $item->sub_title,
                                 'description' => $item->description,
                             ];
                         })->toArray(),
+
                         'contact' => $service->contact ? [
                             'title' => $service->contact->title,
                             'message' => $service->contact->message,
@@ -45,6 +54,7 @@ class ServiceController extends Controller
                 'success' => true,
                 'data' => $data,
             ]);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -65,13 +75,18 @@ class ServiceController extends Controller
                 'title' => $service->title,
                 'sub_title' => $service->sub_title,
                 'description' => $service->description,
+
+                // ✅ fixed content items
                 'content' => $service->contentItems->map(function ($item) {
                     return [
-                        'img' => $item->img,
+                        'image' => $item->image_url,
+                        'image_type' => $item->image_type,
+
                         'sub_title' => $item->sub_title,
                         'description' => $item->description,
                     ];
                 })->toArray(),
+
                 'contact' => $service->contact ? [
                     'title' => $service->contact->title,
                     'message' => $service->contact->message,
@@ -82,6 +97,7 @@ class ServiceController extends Controller
                 'success' => true,
                 'data' => $data,
             ]);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

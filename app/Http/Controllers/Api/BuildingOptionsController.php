@@ -9,7 +9,8 @@ class BuildingOptionsController extends Controller
 {
     public function __construct(
         protected BuildingOptionsService $buildingOptionsService
-    ) {}
+    ) {
+    }
 
     public function index()
     {
@@ -20,17 +21,24 @@ class BuildingOptionsController extends Controller
 
             $data = [
                 'cover' => $settings?->cover_url,
+                'cover_type' => $settings?->cover_type, // ✅ added
+
                 'slogan' => $settings?->slogan,
                 'title' => $settings?->title,
+
                 'sections' => $options->map(function ($option) {
                     return [
                         'id' => $option->id,
                         'title' => $option->title,
                         'description' => $option->description,
                         'section_image' => $option->section_image_url,
+                        'section_image_type' => $option->section_image_type, // ✅ added
                     ];
                 })->toArray(),
+
                 'articles_cover' => $settings?->articles_cover_url,
+                'articles_cover_type' => $settings?->articles_cover_type, // ✅ added
+
                 'articles' => $articles->map(function ($article) {
                     return [
                         'id' => $article->id,
@@ -39,6 +47,7 @@ class BuildingOptionsController extends Controller
                         'description' => $article->description,
                         'content' => $article->content,
                         'image' => $article->image_url,
+                        'image_type' => $article->image_type, // ✅ added
                     ];
                 })->toArray(),
             ];
@@ -67,6 +76,7 @@ class BuildingOptionsController extends Controller
                 'title' => $article->title,
                 'description' => $article->description,
                 'image' => $article->image_url,
+                'image_type' => $article->image_type, // ✅ added
                 'content' => $article->content,
             ];
 

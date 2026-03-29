@@ -4,16 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasMediaUrl;
 
 class HomeService extends Model
 {
-    use HasFactory;
+    use HasFactory, HasMediaUrl;
 
     protected $table = 'home_services';
 
     protected $fillable = [
         'title',
         'cover_image_id',
+        'cover_image_type',
         'description',
     ];
 
@@ -21,6 +23,6 @@ class HomeService extends Model
 
     public function getCoverUrlAttribute(): string
     {
-        return config('media.image_base_url') . '/' . $this->cover_image_id;
+        return $this->resolveMediaUrl($this->cover_image_id, $this->cover_image_type);
     }
 }

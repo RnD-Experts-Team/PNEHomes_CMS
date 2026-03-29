@@ -17,6 +17,7 @@ class CommunityService
         return CommunitiesSetting::firstOrCreate([], [
             'title' => 'Communities',
             'cover_image_id' => null,
+            'cover_image_type' => null,
             'zillow_link' => null,
         ]);
     }
@@ -24,14 +25,14 @@ class CommunityService
     public function getAllCommunities()
     {
         return Community::where('is_active', true)
-            ->with(['gallery','floorplans'])
+            ->with(['gallery', 'floorplans'])
             ->orderBy('order')
             ->get();
     }
 
     public function getCommunityBySlug(string $slug)
     {
-        return Community::with(['gallery','floorplans'])
+        return Community::with(['gallery', 'floorplans'])
             ->where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
@@ -39,7 +40,7 @@ class CommunityService
 
     public function getAllForAdmin()
     {
-        return Community::orderBy('order')->orderBy('created_at','desc')->get();
+        return Community::orderBy('order')->orderBy('created_at', 'desc')->get();
     }
 
     public function getCommunityForAdmin(int $id)
@@ -65,7 +66,9 @@ class CommunityService
                 'latitude' => $data['latitude'] ?? null,
                 'longitude' => $data['longitude'] ?? null,
                 'card_image_id' => $data['card_image_id'],
+                'card_image_type' => $data['card_image_type'] ?? null,
                 'video_id' => $data['video_id'] ?? null,
+                'video_type' => $data['video_type'] ?? null,
                 'community_features' => $data['community_features'] ?? null,
                 'starting_price' => $data['starting_price'],
                 'order' => $data['order'] ?? 0,
@@ -73,16 +76,17 @@ class CommunityService
             ]);
 
             if (!empty($data['gallery'])) {
-                foreach ($data['gallery'] as $index => $imageId) {
+                foreach ($data['gallery'] as $index => $item) {
                     CommunityGallery::create([
                         'community_id' => $community->id,
-                        'image_id' => $imageId,
+                        'image_id' => $item['image_id'],
+                        'image_type' => $item['image_type'],
                         'order' => $index,
                     ]);
                 }
             }
 
-            return $community->load(['gallery','floorplans']);
+            return $community->load(['gallery', 'floorplans']);
         });
     }
 
@@ -104,7 +108,9 @@ class CommunityService
                 'latitude' => $data['latitude'] ?? $community->latitude,
                 'longitude' => $data['longitude'] ?? $community->longitude,
                 'card_image_id' => $data['card_image_id'] ?? $community->card_image_id,
+                'card_image_type' => $data['card_image_type'] ?? $community->card_image_type,
                 'video_id' => $data['video_id'] ?? $community->video_id,
+                'video_type' => $data['video_type'] ?? $community->video_type,
                 'community_features' => $data['community_features'] ?? $community->community_features,
                 'starting_price' => $data['starting_price'] ?? $community->starting_price,
                 'order' => $data['order'] ?? $community->order,
@@ -113,16 +119,18 @@ class CommunityService
 
             if (isset($data['gallery'])) {
                 $community->gallery()->delete();
-                foreach ($data['gallery'] as $index => $imageId) {
+
+                foreach ($data['gallery'] as $index => $item) {
                     CommunityGallery::create([
                         'community_id' => $community->id,
-                        'image_id' => $imageId,
+                        'image_id' => $item['image_id'],
+                        'image_type' => $item['image_type'],
                         'order' => $index,
                     ]);
                 }
             }
 
-            return $community->load(['gallery','floorplans']);
+            return $community->load(['gallery', 'floorplans']);
         });
     }
 
@@ -137,6 +145,7 @@ class CommunityService
             $settings->update([
                 'title' => $settingsData['title'] ?? $settings->title,
                 'cover_image_id' => $settingsData['cover_image_id'] ?? $settings->cover_image_id,
+                'cover_image_type' => $settingsData['cover_image_type'] ?? $settings->cover_image_type, // ✅ added
                 'zillow_link' => $settingsData['zillow_link'] ?? $settings->zillow_link,
             ]);
 
@@ -154,9 +163,9 @@ class CommunityService
         });
     }
     public function deleteCommunity(int $id): void
-{
-    $community = Community::findOrFail($id);
-    $community->delete();
-}
+    {
+        $community = Community::findOrFail($id);
+        $community->delete();
+    }
 
 }

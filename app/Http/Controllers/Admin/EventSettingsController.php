@@ -11,7 +11,8 @@ class EventSettingsController extends Controller
 {
     public function __construct(
         protected EventService $eventService
-    ) {}
+    ) {
+    }
 
     public function edit()
     {
@@ -23,24 +24,25 @@ class EventSettingsController extends Controller
     }
 
     public function update(Request $request)
-{
-    $validated = $request->validate([
-        'cover_image_id' => 'required|string',
-        'slogan' => 'nullable|string|max:255', // changed from required -> nullable
-        'contact_title' => 'nullable|string|max:255',
-        'contact_message' => 'nullable|string',
-        'title' => 'required|string',
-    ]);
+    {
+        $validated = $request->validate([
+            'cover_image_id' => 'required|string',
+            'cover_image_type' => 'required|string|in:image,video',
+            'slogan' => 'nullable|string|max:255', // changed from required -> nullable
+            'contact_title' => 'nullable|string|max:255',
+            'contact_message' => 'nullable|string',
+            'title' => 'required|string',
+        ]);
 
-    try {
-        $this->eventService->updateSettings($validated);
-        return redirect()
-            ->route('event-settings.edit')
-            ->with('success', 'Event settings updated successfully');
-    } catch (\Exception $e) {
-        return back()
-            ->withErrors(['error' => 'Failed to update settings: ' . $e->getMessage()])
-            ->withInput();
+        try {
+            $this->eventService->updateSettings($validated);
+            return redirect()
+                ->route('event-settings.edit')
+                ->with('success', 'Event settings updated successfully');
+        } catch (\Exception $e) {
+            return back()
+                ->withErrors(['error' => 'Failed to update settings: ' . $e->getMessage()])
+                ->withInput();
+        }
     }
-}
 }

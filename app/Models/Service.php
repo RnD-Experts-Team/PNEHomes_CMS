@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasMediaUrl;
 
 class Service extends Model
 {
@@ -15,6 +16,7 @@ class Service extends Model
         'sub_title',
         'description',
         'cover_image_id',
+        'cover_image_type',
         'order',
         'is_active',
     ];
@@ -29,7 +31,7 @@ class Service extends Model
     public function getCoverUrlAttribute(): ?string
     {
         return $this->cover_image_id
-            ? config('media.image_base_url') . '/' . $this->cover_image_id
+            ? $this->resolveMediaUrl($this->cover_image_id, $this->cover_image_type)
             : null;
     }
 

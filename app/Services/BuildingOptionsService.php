@@ -33,6 +33,7 @@ class BuildingOptionsService
             'title' => $data['title'],
             'description' => $data['description'] ?? null,
             'section_image_id' => $data['section_image_id'],
+            'section_image_type' => $data['section_image_type'] ?? null,
             'order' => $data['order'] ?? 0,
             'is_active' => $data['is_active'] ?? true,
         ]);
@@ -46,6 +47,7 @@ class BuildingOptionsService
             'title' => $data['title'] ?? $option->title,
             'description' => $data['description'] ?? $option->description,
             'section_image_id' => $data['section_image_id'] ?? $option->section_image_id,
+            'section_image_type' => $data['section_image_type'] ?? $option->section_image_type,
             'order' => $data['order'] ?? $option->order,
             'is_active' => $data['is_active'] ?? $option->is_active,
         ]);
@@ -95,6 +97,7 @@ class BuildingOptionsService
             'title' => $data['title'],
             'description' => $data['description'] ?? null,
             'image_id' => $data['image_id'],
+            'image_type' => $data['image_type'] ?? null,
             'content' => $data['content'],
             'order' => $data['order'] ?? 0,
             'is_active' => $data['is_active'] ?? true,
@@ -114,6 +117,7 @@ class BuildingOptionsService
             'title' => $data['title'] ?? $article->title,
             'description' => $data['description'] ?? $article->description,
             'image_id' => $data['image_id'] ?? $article->image_id,
+            'image_type' => $data['image_type'] ?? $article->image_type,
             'content' => $data['content'] ?? $article->content,
             'order' => $data['order'] ?? $article->order,
             'is_active' => $data['is_active'] ?? $article->is_active,

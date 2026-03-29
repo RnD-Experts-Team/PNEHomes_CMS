@@ -11,7 +11,8 @@ class HomePageController extends Controller
 {
     public function __construct(
         protected HomeService $homeService
-    ) {}
+    ) {
+    }
 
     public function index()
     {
@@ -26,7 +27,9 @@ class HomePageController extends Controller
     {
         $validated = $request->validate([
             'mobile_cover_image_id' => 'required|string',
+            'mobile_cover_image_type' => 'required|string|in:image,video',
             'logo_image_id' => 'required|string',
+            'logo_image_type' => 'required|string|in:image,video',
             'title' => 'required|string|max:255',
             'subtitle' => 'nullable|string|max:255',
             'book_button_text' => 'nullable|string|max:255',
@@ -60,6 +63,7 @@ class HomePageController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'cover_image_id' => 'required|string',
+            'cover_image_type' => 'required|string|in:image,video',
             'description' => 'nullable|string',
         ]);
 
@@ -75,7 +79,9 @@ class HomePageController extends Controller
     {
         $validated = $request->validate([
             'video_id' => 'required|string',
+            'video_type' => 'required|string|in:image,video',
             'logo_image_id' => 'required|string',
+            'logo_image_type' => 'required|string|in:image,video',
         ]);
 
         try {

@@ -11,7 +11,8 @@ class BuildingOptionsSettingsController extends Controller
 {
     public function __construct(
         protected BuildingOptionsService $buildingOptionsService
-    ) {}
+    ) {
+    }
 
     public function edit()
     {
@@ -27,6 +28,8 @@ class BuildingOptionsSettingsController extends Controller
         $validated = $request->validate([
             'cover_image_id' => 'required|string',
             'articles_cover_image_id' => 'required|string',
+            'cover_image_type' => 'required|string|in:image,video',
+            'articles_cover_image_type' => 'required|string|in:image,video',
             'slogan' => 'required|string|max:255',
             'title' => 'required|string|max:255',
         ]);

@@ -11,7 +11,8 @@ class CommunityController extends Controller
 {
     public function __construct(
         protected CommunityService $communityService
-    ) {}
+    ) {
+    }
 
     public function index()
     {
@@ -37,7 +38,9 @@ class CommunityController extends Controller
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'card_image_id' => 'required|string',
+            'card_image_type' => 'required|string|in:image,video',
             'video_id' => 'nullable|string',
+            'video_type' => 'nullable|string|in:image,video',
             'community_features' => 'nullable|string',
             'starting_price' => 'required|string|max:255',
             'order' => 'nullable|integer',
@@ -78,7 +81,9 @@ class CommunityController extends Controller
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'card_image_id' => 'required|string',
+            'card_image_type' => 'required|string|in:image,video',
             'video_id' => 'nullable|string',
+            'video_type' => 'nullable|string|in:image,video',
             'community_features' => 'nullable|string',
             'starting_price' => 'required|string|max:255',
             'order' => 'nullable|integer',

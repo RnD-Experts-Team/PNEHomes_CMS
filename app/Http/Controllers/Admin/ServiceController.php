@@ -11,7 +11,8 @@ class ServiceController extends Controller
 {
     public function __construct(
         protected ServiceService $serviceService
-    ) {}
+    ) {
+    }
 
     public function index()
     {
@@ -35,13 +36,23 @@ class ServiceController extends Controller
             'title' => 'required|string|max:255',
             'sub_title' => 'nullable|string',
             'description' => 'nullable|string',
+
+            // ✅ media contract
             'cover_image_id' => 'nullable|string',
+            'cover_image_type' => 'nullable|string|in:image,video',
+
             'order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
+
             'content_items' => 'required|array|min:1',
+
+            // ✅ media contract inside array
             'content_items.*.image_id' => 'required|string',
+            'content_items.*.image_type' => 'required|string|in:image,video',
+
             'content_items.*.sub_title' => 'required|string|max:255',
             'content_items.*.description' => 'required|string',
+
             'contact.title' => 'required|string|max:255',
             'contact.message' => 'required|string',
         ]);
@@ -75,13 +86,23 @@ class ServiceController extends Controller
             'title' => 'required|string|max:255',
             'sub_title' => 'nullable|string',
             'description' => 'nullable|string',
+
+            // ✅ media contract
             'cover_image_id' => 'nullable|string',
+            'cover_image_type' => 'nullable|string|in:image,video',
+
             'order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
+
             'content_items' => 'required|array|min:1',
+
+            // ✅ media contract inside array
             'content_items.*.image_id' => 'required|string',
+            'content_items.*.image_type' => 'required|string|in:image,video',
+
             'content_items.*.sub_title' => 'required|string|max:255',
             'content_items.*.description' => 'required|string',
+
             'contact.title' => 'required|string|max:255',
             'contact.message' => 'required|string',
         ]);
@@ -113,11 +134,13 @@ class ServiceController extends Controller
     }
 
 
-    public function updateSettings(Request $request){
-       $validated= $request->validate([
-'image_id' =>['required','string'],
-       ]
-       );
-       $this->serviceService->updateSettings($validated);
+    public function updateSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'image_id' => ['required', 'string'],
+            'image_type' => ['required', 'string', 'in:image,video'], // ✅ added
+        ]);
+
+        $this->serviceService->updateSettings($validated);
     }
 }

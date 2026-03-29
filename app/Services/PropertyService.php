@@ -14,12 +14,13 @@ use Illuminate\Support\Facades\DB;
 class PropertyService
 {
     // ============ Settings Methods ============
-    
+
     public function getSettings(): PropertySettings
     {
         return PropertySettings::firstOrCreate([], [
             'title' => 'Floor Plans',
             'cover_image_id' => '',
+            'cover_image_type' => '',
             'contact_title' => 'Contact Us',
             'contact_message' => "I'm contacting you to ask about the property {propertyTitle}",
         ]);
@@ -31,6 +32,7 @@ class PropertyService
         $settings->update([
             'title' => $data['title'] ?? $settings->title,
             'cover_image_id' => $data['cover_image_id'] ?? $settings->cover_image_id,
+            'cover_image_type' => $data['cover_image_type'] ?? $settings->cover_image_type,
             'contact_title' => $data['contact_title'] ?? $settings->contact_title,
             'contact_message' => $data['contact_message'] ?? $settings->contact_message,
         ]);
@@ -195,10 +197,11 @@ class PropertyService
 
             // Create gallery
             if (!empty($data['gallery'])) {
-                foreach ($data['gallery'] as $index => $imageId) {
+                foreach ($data['gallery'] as $index => $item) {
                     PropertyGallery::create([
                         'property_id' => $property->id,
-                        'image_id' => $imageId,
+                        'image_id' => $item['image_id'],
+                        'image_type' => $item['image_type'],
                         'order' => $index,
                     ]);
                 }
@@ -232,6 +235,7 @@ class PropertyService
                         'property_id' => $property->id,
                         'title' => $plan['title'],
                         'image_id' => $plan['image_id'],
+                        'image_type' => $plan['image_type'], // ✅ added
                         'description' => $plan['description'] ?? '',
                         'order' => $index,
                     ]);
@@ -268,10 +272,12 @@ class PropertyService
             // Update gallery
             if (isset($data['gallery'])) {
                 $property->gallery()->delete();
-                foreach ($data['gallery'] as $index => $imageId) {
+
+                foreach ($data['gallery'] as $index => $item) {
                     PropertyGallery::create([
                         'property_id' => $property->id,
-                        'image_id' => $imageId,
+                        'image_id' => $item['image_id'],
+                        'image_type' => $item['image_type'],
                         'order' => $index,
                     ]);
                 }
@@ -304,11 +310,13 @@ class PropertyService
             // Update floor plans
             if (isset($data['floor_plans'])) {
                 $property->floorPlans()->delete();
+
                 foreach ($data['floor_plans'] as $index => $plan) {
                     PropertyFloorPlan::create([
                         'property_id' => $property->id,
                         'title' => $plan['title'],
                         'image_id' => $plan['image_id'],
+                        'image_type' => $plan['image_type'], // ✅ added
                         'description' => $plan['description'] ?? '',
                         'order' => $index,
                     ]);

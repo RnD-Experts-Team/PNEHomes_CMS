@@ -4,16 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasMediaUrl;
 
 class FloorPlan extends Model
 {
-    use HasFactory;
+    use HasFactory, HasMediaUrl;
 
     protected $fillable = [
         'slug',
         'title',
         'description',
         'image_id',
+        'image_type',
         'bedroom',
         'bathroom',
         'floor',
@@ -35,6 +37,6 @@ class FloorPlan extends Model
 
     public function getImageUrlAttribute(): string
     {
-        return config('media.image_base_url') . '/' . $this->image_id;
+        return $this->resolveMediaUrl($this->image_id, $this->image_type);
     }
 }

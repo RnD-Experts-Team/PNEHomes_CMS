@@ -9,7 +9,8 @@ class FloorPlanController extends Controller
 {
     public function __construct(
         protected FloorPlanService $floorPlanService
-    ) {}
+    ) {
+    }
 
     public function index()
     {
@@ -22,7 +23,11 @@ class FloorPlanController extends Controller
                     'slug' => $floorPlan->slug,
                     'title' => $floorPlan->title,
                     'description' => $floorPlan->description,
+
+                    // ✅ media contract
                     'image' => $floorPlan->image_url,
+                    'image_type' => $floorPlan->image_type,
+
                     'bedroom' => $floorPlan->bedroom,
                     'bathroom' => $floorPlan->bathroom,
                     'floor' => $floorPlan->floor,

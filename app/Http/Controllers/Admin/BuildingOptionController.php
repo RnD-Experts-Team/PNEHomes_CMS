@@ -11,7 +11,8 @@ class BuildingOptionController extends Controller
 {
     public function __construct(
         protected BuildingOptionsService $buildingOptionsService
-    ) {}
+    ) {
+    }
 
     public function index()
     {
@@ -33,6 +34,7 @@ class BuildingOptionController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'section_image_id' => 'required|string',
+            'section_image_type' => 'required|string|in:image,video',
             'order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
         ]);
@@ -65,6 +67,7 @@ class BuildingOptionController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'section_image_id' => 'required|string',
+            'section_image_type' => 'required|string|in:image,video',
             'order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
         ]);

@@ -4,14 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasMediaUrl;
 
 class CommunityGallery extends Model
 {
-    use HasFactory;
+    use HasFactory, HasMediaUrl;
 
     protected $fillable = [
         'community_id',
         'image_id',
+        'image_type',
         'order',
     ];
 
@@ -23,7 +25,7 @@ class CommunityGallery extends Model
 
     public function getUrlAttribute(): string
     {
-        return config('media.image_base_url') . '/' . $this->image_id;
+        return $this->resolveMediaUrl($this->image_id, $this->image_type);
     }
 
     public function community()

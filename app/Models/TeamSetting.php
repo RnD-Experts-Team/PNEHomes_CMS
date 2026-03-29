@@ -4,13 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasMediaUrl;
 
 class TeamSetting extends Model
 {
-    use HasFactory;
+    use HasFactory, HasMediaUrl;
 
     protected $fillable = [
         'cover_image_id',
+        'cover_image_type',
         'slogan',
         'title',
         'subtitle',
@@ -23,6 +25,9 @@ class TeamSetting extends Model
 
     public function getCoverUrlAttribute(): string
     {
-        return config('media.image_base_url') . '/' . $this->cover_image_id;
+        return $this->resolveMediaUrl(
+            $this->cover_image_id,
+            $this->cover_image_type
+        );
     }
 }

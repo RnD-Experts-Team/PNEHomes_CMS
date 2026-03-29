@@ -37,16 +37,18 @@ class EventService
                 'title' => $data['title'],
                 'description' => $data['description'],
                 'cover_image_id' => $data['cover_image_id'] ?? null,
+                'cover_image_type' => $data['cover_image_type'] ?? null,
                 'order' => $data['order'] ?? 0,
                 'is_active' => $data['is_active'] ?? true,
             ]);
 
             // Create gallery
             if (!empty($data['gallery'])) {
-                foreach ($data['gallery'] as $index => $imageId) {
+                foreach ($data['gallery'] as $index => $item) {
                     EventGallery::create([
                         'event_id' => $event->id,
-                        'image_id' => $imageId,
+                        'image_id' => $item['image_id'],
+                        'image_type' => $item['image_type'],
                         'order' => $index,
                     ]);
                 }
@@ -65,17 +67,19 @@ class EventService
                 'title' => $data['title'] ?? $event->title,
                 'description' => $data['description'] ?? $event->description,
                 'cover_image_id' => $data['cover_image_id'] ?? $event->cover_image_id,
+                'cover_image_type' => $data['cover_image_type'] ?? $event->cover_image_type, // ✅ added
                 'order' => $data['order'] ?? $event->order,
                 'is_active' => $data['is_active'] ?? $event->is_active,
             ]);
 
-            // Update gallery
             if (isset($data['gallery'])) {
                 $event->gallery()->delete();
-                foreach ($data['gallery'] as $index => $imageId) {
+
+                foreach ($data['gallery'] as $index => $item) {
                     EventGallery::create([
                         'event_id' => $event->id,
-                        'image_id' => $imageId,
+                        'image_id' => $item['image_id'],
+                        'image_type' => $item['image_type'],
                         'order' => $index,
                     ]);
                 }

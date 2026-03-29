@@ -29,6 +29,8 @@ class TeamService
     {
         return TeamMember::create([
             'cover_image_id' => $data['cover_image_id'],
+            'cover_image_type' => $data['cover_image_type'], // ✅ added
+
             'name' => $data['name'],
             'position' => $data['position'],
             'description' => $data['description'],
@@ -43,6 +45,8 @@ class TeamService
 
         $member->update([
             'cover_image_id' => $data['cover_image_id'] ?? $member->cover_image_id,
+            'cover_image_type' => $data['cover_image_type'] ?? $member->cover_image_type, // ✅ added
+
             'name' => $data['name'] ?? $member->name,
             'position' => $data['position'] ?? $member->position,
             'description' => $data['description'] ?? $member->description,

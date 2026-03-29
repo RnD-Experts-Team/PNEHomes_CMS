@@ -9,7 +9,9 @@ use Inertia\Inertia;
 
 class GalleryAlbumController extends Controller
 {
-    public function __construct(protected GalleryService $service) {}
+    public function __construct(protected GalleryService $service)
+    {
+    }
 
     public function index()
     {
@@ -37,18 +39,24 @@ class GalleryAlbumController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'cover_image_id' => 'required|string',
+            'cover_image_type' => 'required|string|in:image,video',
             'has_sub_albums' => 'nullable|boolean',
             'order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
             'sub_albums' => 'nullable|array',
             'sub_albums.*.title' => 'required|string|max:255',
             'sub_albums.*.cover_image_id' => 'required|string',
+            'sub_albums.*.cover_image_type' => 'required|string|in:image,video',
             'sub_albums.*.images' => 'nullable|array',
             'sub_albums.*.images.*.virtual_image_id' => 'nullable|string',
+            'sub_albums.*.images.*.virtual_image_type' => 'nullable|string|in:image,video',
             'sub_albums.*.images.*.real_image_id' => 'nullable|string',
+            'sub_albums.*.images.*.real_image_type' => 'nullable|string|in:image,video',
             'images' => 'nullable|array',
             'images.*.virtual_image_id' => 'nullable|string',
+            'images.*.virtual_image_type' => 'nullable|string|in:image,video',
             'images.*.real_image_id' => 'nullable|string',
+            'images.*.real_image_type' => 'nullable|string|in:image,video',
         ]);
 
         $this->service->createAlbum($validated);
@@ -66,20 +74,26 @@ class GalleryAlbumController extends Controller
                 'title' => $album->title,
                 'slug' => $album->slug,
                 'cover_image_id' => $album->cover_image_id,
+                'cover_image_type' => $album->cover_image_type,
                 'has_sub_albums' => $album->has_sub_albums,
                 'order' => $album->order,
                 'is_active' => $album->is_active,
                 'sub_albums' => $album->subAlbums->map(fn($sub) => [
                     'title' => $sub->title,
                     'cover_image_id' => $sub->cover_image_id,
+                    'cover_image_type' => $sub->cover_image_type,
                     'images' => $sub->images->map(fn($img) => [
                         'virtual_image_id' => $img->virtual_image_id,
+                        'virtual_image_type' => $img->virtual_image_type,
                         'real_image_id' => $img->real_image_id,
+                        'real_image_type' => $img->real_image_type,
                     ])->toArray(),
                 ])->toArray(),
                 'images' => $album->images->map(fn($img) => [
                     'virtual_image_id' => $img->virtual_image_id,
+                    'virtual_image_type' => $img->virtual_image_type,
                     'real_image_id' => $img->real_image_id,
+                    'real_image_type' => $img->real_image_type,
                 ])->toArray(),
             ],
         ]);
@@ -90,18 +104,26 @@ class GalleryAlbumController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'cover_image_id' => 'required|string',
+            'cover_image_type' => 'required|string|in:image,video',
             'has_sub_albums' => 'nullable|boolean',
             'order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
             'sub_albums' => 'nullable|array',
             'sub_albums.*.title' => 'required|string|max:255',
             'sub_albums.*.cover_image_id' => 'required|string',
+            'sub_albums.*.cover_image_type' => 'required|string|in:image,video',
             'sub_albums.*.images' => 'nullable|array',
             'sub_albums.*.images.*.virtual_image_id' => 'nullable|string',
+            'sub_albums.*.images.*.virtual_image_type' => 'nullable|string|in:image,video',
             'sub_albums.*.images.*.real_image_id' => 'nullable|string',
+            'sub_albums.*.images.*.real_image_type' => 'nullable|string|in:image,video',
+
             'images' => 'nullable|array',
             'images.*.virtual_image_id' => 'nullable|string',
+            'images.*.virtual_image_type' => 'nullable|string|in:image,video',
             'images.*.real_image_id' => 'nullable|string',
+            'images.*.real_image_type' => 'nullable|string|in:image,video',
+
         ]);
 
         $this->service->updateAlbum($id, $validated);

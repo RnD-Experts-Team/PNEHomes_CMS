@@ -11,7 +11,8 @@ class TeamSettingsController extends Controller
 {
     public function __construct(
         protected TeamService $teamService
-    ) {}
+    ) {
+    }
 
     public function edit()
     {
@@ -25,7 +26,10 @@ class TeamSettingsController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
+            // ✅ media contract
             'cover_image_id' => 'required|string',
+            'cover_image_type' => 'required|string|in:image,video',
+
             'slogan' => 'required|string|max:255',
             'title' => 'required|string|max:255',
             'subtitle' => 'nullable|string|max:255',

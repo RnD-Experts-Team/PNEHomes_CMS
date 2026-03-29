@@ -4,21 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasMediaUrl;
 
 class Navigation extends Model
 {
-    use HasFactory;
+    use HasFactory, HasMediaUrl;
 
     protected $table = 'navigation';
 
     protected $fillable = [
         'logo_image_id',
+        'logo_image_type',
     ];
 
     protected $appends = ['logo_url'];
 
     public function getLogoUrlAttribute(): string
     {
-        return config('media.image_base_url') . '/' . $this->logo_image_id;
+        return $this->resolveMediaUrl($this->logo_image_id, $this->logo_image_type);
     }
 }

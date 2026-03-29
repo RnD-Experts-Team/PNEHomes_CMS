@@ -3,15 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasMediaUrl;
 
 class ServicesSetting extends Model
 {
-    Protected $fillable=[
-'image_id'
+    use HasMediaUrl;
+    protected $fillable = [
+        'image_id',
+        'image_type',
     ];
-        protected $appends = ['img'];
+    protected $appends = ['img'];
     public function getImgAttribute(): string
     {
-        return config('media.image_base_url') . '/' . $this->image_id;
+        return $this->resolveMediaUrl($this->image_id, $this->image_type);
     }
 }

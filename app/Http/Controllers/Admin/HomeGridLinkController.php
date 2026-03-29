@@ -9,7 +9,9 @@ use Inertia\Inertia;
 
 class HomeGridLinkController extends Controller
 {
-    public function __construct(protected HomeService $homeService) {}
+    public function __construct(protected HomeService $homeService)
+    {
+    }
 
     public function index()
     {
@@ -27,6 +29,7 @@ class HomeGridLinkController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'cover_image_id' => 'required|string',
+            'cover_image_type' => 'required|string|in:image,video',
             'order' => 'nullable|integer',
         ]);
 
@@ -49,6 +52,7 @@ class HomeGridLinkController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'cover_image_id' => 'required|string',
+            'cover_image_type' => 'required|string|in:image,video',
             'order' => 'nullable|integer',
         ]);
 

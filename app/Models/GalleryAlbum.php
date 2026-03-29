@@ -4,15 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasMediaUrl;
 
 class GalleryAlbum extends Model
 {
-    use HasFactory;
+    use HasFactory, HasMediaUrl;
 
     protected $fillable = [
         'slug',
         'title',
         'cover_image_id',
+        'cover_image_type',
         'has_sub_albums',
         'order',
         'is_active',
@@ -28,7 +30,7 @@ class GalleryAlbum extends Model
 
     public function getCoverUrlAttribute(): string
     {
-        return config('media.image_base_url') . '/' . $this->cover_image_id;
+        return $this->resolveMediaUrl($this->cover_image_id, $this->cover_image_type);
     }
 
     public function subAlbums()

@@ -11,7 +11,8 @@ class TeamMemberController extends Controller
 {
     public function __construct(
         protected TeamService $teamService
-    ) {}
+    ) {
+    }
 
     public function index()
     {
@@ -30,7 +31,10 @@ class TeamMemberController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            // ✅ media contract
             'cover_image_id' => 'required|string',
+            'cover_image_type' => 'required|string|in:image,video',
+
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'description' => 'required|string',
@@ -63,7 +67,10 @@ class TeamMemberController extends Controller
     public function update(Request $request, int $id)
     {
         $validated = $request->validate([
+            // ✅ media contract
             'cover_image_id' => 'required|string',
+            'cover_image_type' => 'required|string|in:image,video',
+
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'description' => 'required|string',

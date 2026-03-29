@@ -12,12 +12,13 @@ use Illuminate\Support\Facades\DB;
 class GalleryService
 {
     // ============ Settings Methods ============
-    
+
     public function getSettings(): GallerySettings
     {
         return GallerySettings::firstOrCreate([], [
             'title' => 'Gallery',
             'cover_image_id' => '',
+            'cover_image_type' => '',
             'contact_title' => 'Contact Us',
             'contact_message' => "I'm contacting you to ask about images of the {title}",
         ]);
@@ -29,6 +30,7 @@ class GalleryService
         $settings->update([
             'title' => $data['title'] ?? $settings->title,
             'cover_image_id' => $data['cover_image_id'] ?? $settings->cover_image_id,
+            'cover_image_type' => $data['cover_image_type'] ?? $settings->cover_image_type,
             'contact_title' => $data['contact_title'] ?? $settings->contact_title,
             'contact_message' => $data['contact_message'] ?? $settings->contact_message,
         ]);
@@ -72,6 +74,7 @@ class GalleryService
                 'slug' => $data['slug'],
                 'title' => $data['title'],
                 'cover_image_id' => $data['cover_image_id'],
+                'cover_image_type' => $data['cover_image_type'] ?? null,
                 'has_sub_albums' => $data['has_sub_albums'] ?? false,
                 'order' => $data['order'] ?? 0,
                 'is_active' => $data['is_active'] ?? true,
@@ -81,12 +84,13 @@ class GalleryService
             if ($album->has_sub_albums && !empty($data['sub_albums'])) {
                 foreach ($data['sub_albums'] as $subIndex => $subData) {
                     $subData['slug'] = Str::slug($subData['title']);
-                    
+
                     $subAlbum = GallerySubAlbum::create([
                         'album_id' => $album->id,
                         'slug' => $subData['slug'],
                         'title' => $subData['title'],
                         'cover_image_id' => $subData['cover_image_id'],
+                        'cover_image_type' => $subData['cover_image_type'] ?? null,
                         'order' => $subIndex,
                     ]);
 
@@ -97,7 +101,9 @@ class GalleryService
                                 'album_id' => $album->id,
                                 'sub_album_id' => $subAlbum->id,
                                 'virtual_image_id' => $imgData['virtual_image_id'] ?? null,
+                                'virtual_image_type' => $imgData['virtual_image_type'] ?? null,
                                 'real_image_id' => $imgData['real_image_id'] ?? null,
+                                'real_image_type' => $imgData['real_image_type'] ?? null,
                                 'order' => $imgIndex,
                             ]);
                         }
@@ -111,7 +117,9 @@ class GalleryService
                             'album_id' => $album->id,
                             'sub_album_id' => null,
                             'virtual_image_id' => $imgData['virtual_image_id'] ?? null,
+                            'virtual_image_type' => $imgData['virtual_image_type'] ?? null,
                             'real_image_id' => $imgData['real_image_id'] ?? null,
+                            'real_image_type' => $imgData['real_image_type'] ?? null,
                             'order' => $imgIndex,
                         ]);
                     }
@@ -136,6 +144,7 @@ class GalleryService
                 'slug' => $slug,
                 'title' => $data['title'] ?? $album->title,
                 'cover_image_id' => $data['cover_image_id'] ?? $album->cover_image_id,
+                'cover_image_type' => $data['cover_image_type'] ?? $album->cover_image_type,
                 'has_sub_albums' => $data['has_sub_albums'] ?? $album->has_sub_albums,
                 'order' => $data['order'] ?? $album->order,
                 'is_active' => $data['is_active'] ?? $album->is_active,
@@ -149,12 +158,13 @@ class GalleryService
             if ($album->has_sub_albums && !empty($data['sub_albums'])) {
                 foreach ($data['sub_albums'] as $subIndex => $subData) {
                     $subData['slug'] = Str::slug($subData['title']);
-                    
+
                     $subAlbum = GallerySubAlbum::create([
                         'album_id' => $album->id,
                         'slug' => $subData['slug'],
                         'title' => $subData['title'],
                         'cover_image_id' => $subData['cover_image_id'],
+                        'cover_image_type' => $subData['cover_image_type'] ?? null,
                         'order' => $subIndex,
                     ]);
 
@@ -165,7 +175,9 @@ class GalleryService
                                 'album_id' => $album->id,
                                 'sub_album_id' => $subAlbum->id,
                                 'virtual_image_id' => $imgData['virtual_image_id'] ?? null,
+                                'virtual_image_type' => $imgData['virtual_image_type'] ?? null,
                                 'real_image_id' => $imgData['real_image_id'] ?? null,
+                                'real_image_type' => $imgData['real_image_type'] ?? null,
                                 'order' => $imgIndex,
                             ]);
                         }
@@ -179,7 +191,9 @@ class GalleryService
                             'album_id' => $album->id,
                             'sub_album_id' => null,
                             'virtual_image_id' => $imgData['virtual_image_id'] ?? null,
+                            'virtual_image_type' => $imgData['virtual_image_type'] ?? null,
                             'real_image_id' => $imgData['real_image_id'] ?? null,
+                            'real_image_type' => $imgData['real_image_type'] ?? null,
                             'order' => $imgIndex,
                         ]);
                     }

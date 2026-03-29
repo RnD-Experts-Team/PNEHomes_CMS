@@ -32,7 +32,7 @@ class CommunitiesFloorplansController extends Controller
     public function create()
     {
         return Inertia::render('Communities/Floorplans/Create', [
-            'communities' => Community::orderBy('title')->get(['id','title']),
+            'communities' => Community::orderBy('title')->get(['id', 'title']),
         ]);
     }
 
@@ -42,6 +42,7 @@ class CommunitiesFloorplansController extends Controller
             'community_id' => 'required|exists:communities,id',
             'title' => 'required|string|max:255',
             'cover_image_id' => 'required|string',
+            'cover_image_type' => 'required|string|in:image,video',
             'status' => 'nullable|string|max:255',
             'price' => 'nullable|string|max:255',
             'beds' => 'nullable|string|max:255',
@@ -57,7 +58,7 @@ class CommunitiesFloorplansController extends Controller
             // slug is auto-generated in model boot, no input
         ]);
 
-        return redirect()->route('communities-floorplans.index')->with('success','Floorplan created');
+        return redirect()->route('communities-floorplans.index')->with('success', 'Floorplan created');
     }
 
     public function edit(int $id)
@@ -66,7 +67,7 @@ class CommunitiesFloorplansController extends Controller
 
         return Inertia::render('Communities/Floorplans/Edit', [
             'floorplan' => $plan,
-            'communities' => Community::orderBy('title')->get(['id','title']),
+            'communities' => Community::orderBy('title')->get(['id', 'title']),
         ]);
     }
 
@@ -78,6 +79,7 @@ class CommunitiesFloorplansController extends Controller
             'community_id' => 'required|exists:communities,id',
             'title' => 'required|string|max:255',
             'cover_image_id' => 'required|string',
+            'cover_image_type' => 'required|string|in:image,video',
             'status' => 'nullable|string|max:255',
             'price' => 'nullable|string|max:255',
             'beds' => 'nullable|string|max:255',
@@ -94,12 +96,12 @@ class CommunitiesFloorplansController extends Controller
             'slug' => Str::slug($validated['title']),
         ]);
 
-        return redirect()->route('communities-floorplans.index')->with('success','Floorplan updated');
+        return redirect()->route('communities-floorplans.index')->with('success', 'Floorplan updated');
     }
 
     public function destroy(int $id)
     {
         CommunitiesFloorplan::findOrFail($id)->delete();
-        return back()->with('success','Floorplan deleted');
+        return back()->with('success', 'Floorplan deleted');
     }
 }

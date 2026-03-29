@@ -9,7 +9,9 @@ use Inertia\Inertia;
 
 class PropertyController extends Controller
 {
-    public function __construct(protected PropertyService $service) {}
+    public function __construct(protected PropertyService $service)
+    {
+    }
 
     public function index()
     {
@@ -48,17 +50,24 @@ class PropertyController extends Controller
             'zillow_link' => 'nullable|url',
             'order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
+
+            // ✅ gallery now includes type
             'gallery' => 'nullable|array',
-            'gallery.*' => 'required|string',
+            'gallery.*.image_id' => 'required|string',
+            'gallery.*.image_type' => 'required|string|in:image,video',
+
             'whats_special.badges' => 'nullable|array',
             'whats_special.badges.*' => 'required|string',
             'whats_special.description' => 'nullable|string',
+
             'facts_features' => 'nullable|array',
             'facts_features.*.title' => 'required|string',
             'facts_features.*.list' => 'required|array',
+
             'floor_plans' => 'nullable|array',
             'floor_plans.*.title' => 'required|string',
             'floor_plans.*.image_id' => 'required|string',
+            'floor_plans.*.image_type' => 'required|string|in:image,video',
             'floor_plans.*.description' => 'nullable|string',
         ]);
 
@@ -85,18 +94,28 @@ class PropertyController extends Controller
                 'zillow_link' => $property->zillow_link,
                 'order' => $property->order,
                 'is_active' => $property->is_active,
-                'gallery' => $property->gallery->pluck('image_id')->toArray(),
+
+                // ✅ return type with gallery
+                'gallery' => $property->gallery->map(fn($g) => [
+                    'image_id' => $g->image_id,
+                    'image_type' => $g->image_type,
+                ])->toArray(),
+
                 'whats_special' => $property->whatsSpecial ? [
                     'badges' => $property->whatsSpecial->badges,
                     'description' => $property->whatsSpecial->description,
                 ] : ['badges' => [], 'description' => ''],
+
                 'facts_features' => $property->factsFeatures->map(fn($f) => [
                     'title' => $f->title,
                     'list' => $f->list,
                 ])->toArray(),
+
+                // ✅ include image_type
                 'floor_plans' => $property->floorPlans->map(fn($fp) => [
                     'title' => $fp->title,
                     'image_id' => $fp->image_id,
+                    'image_type' => $fp->image_type,
                     'description' => $fp->description,
                 ])->toArray(),
             ],
@@ -116,17 +135,27 @@ class PropertyController extends Controller
             'zillow_link' => 'nullable|url',
             'order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
+
+            // ✅ gallery fixed
             'gallery' => 'nullable|array',
-            'gallery.*' => 'required|string',
+            'gallery.*.image_id' => 'required|string',
+            'gallery.*.image_type' => 'required|string|in:image,video',
+
             'whats_special.badges' => 'nullable|array',
             'whats_special.badges.*' => 'required|string',
             'whats_special.description' => 'nullable|string',
+
             'facts_features' => 'nullable|array',
             'facts_features.*.title' => 'required|string',
             'facts_features.*.list' => 'required|array',
+
             'floor_plans' => 'nullable|array',
             'floor_plans.*.title' => 'required|string',
             'floor_plans.*.image_id' => 'required|string',
+
+            // ✅ YOU MISSED THIS — now fixed
+            'floor_plans.*.image_type' => 'required|string|in:image,video',
+
             'floor_plans.*.description' => 'nullable|string',
         ]);
 

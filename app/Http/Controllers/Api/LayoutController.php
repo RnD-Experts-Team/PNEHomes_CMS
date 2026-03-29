@@ -9,7 +9,8 @@ class LayoutController extends Controller
 {
     public function __construct(
         protected LayoutService $layoutService
-    ) {}
+    ) {
+    }
 
     public function index()
     {
@@ -19,14 +20,18 @@ class LayoutController extends Controller
             $data = [
                 'navigation' => [
                     'logo' => $layoutData['navigation']?->logo_url,
+                    'logo_type' => $layoutData['navigation']?->logo_type, // ✅ added
+
                     'links' => $layoutData['navigation_links']->map(function ($link) {
                         return [
                             'title' => $link->title,
                             'slug' => $link->slug,
                         ];
                     })->toArray(),
+
                     'contact' => $layoutData['contact_info_navigation'],
                 ],
+
                 'footer' => [
                     'links' => $layoutData['footer_links']->map(function ($link) {
                         return [
@@ -35,11 +40,13 @@ class LayoutController extends Controller
                         ];
                     })->toArray(),
                 ],
+
                 'contact' => $layoutData['contact_info'] ? [
                     'phone' => $layoutData['contact_info']->phone,
                     'email' => $layoutData['contact_info']->email,
                     'address' => $layoutData['contact_info']->address,
                 ] : null,
+
                 'social' => $layoutData['social_links']->map(function ($link) {
                     return [
                         'platform' => $link->platform,

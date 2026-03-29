@@ -9,7 +9,8 @@ class EventController extends Controller
 {
     public function __construct(
         protected EventService $eventService
-    ) {}
+    ) {
+    }
 
     public function index()
     {
@@ -19,17 +20,28 @@ class EventController extends Controller
 
             $data = [
                 'cover' => $settings?->cover_url,
+                'cover_type' => $settings?->cover_type, // ✅ added
+
                 'slogan' => $settings?->slogan,
                 'title' => $settings?->title,
+
                 'events' => $events->map(function ($event) {
                     return [
                         'id' => $event->id,
                         'title' => $event->title,
                         'description' => $event->description,
+
+                        // still null, leave as-is unless you add it later
                         'cover' => null,
-                        'gallery' => $event->gallery->pluck('url')->toArray(),
+
+                        // ✅ gallery fixed
+                        'gallery' => $event->gallery->map(fn($g) => [
+                            'url' => $g->url,
+                            'type' => $g->type,
+                        ])->toArray(),
                     ];
                 })->toArray(),
+
                 'contact' => $settings ? [
                     'title' => $settings->contact_title,
                     'message' => $settings->contact_message,

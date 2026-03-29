@@ -9,7 +9,8 @@ class ContentPageController extends Controller
 {
     public function __construct(
         protected ContentPageService $contentPageService
-    ) {}
+    ) {
+    }
 
     public function aboutUs()
     {
@@ -25,6 +26,8 @@ class ContentPageController extends Controller
 
             $data = [
                 'cover' => $aboutUs->cover_url,
+                'cover_type' => $aboutUs->cover_type, // ✅ added
+
                 'slogan' => $aboutUs->slogan,
                 'title' => $aboutUs->title,
                 'content' => $aboutUs->content,
@@ -52,7 +55,10 @@ class ContentPageController extends Controller
                 'title' => $privacyPolicy->title,
                 'slogan' => $privacyPolicy->slogan,
                 'description' => $privacyPolicy->description,
+
                 'cover' => $privacyPolicy->cover_url,
+                'cover_type' => $privacyPolicy->cover_type, // ✅ added
+
                 'contact' => [
                     'title' => $privacyPolicy->contact_title,
                     'message' => $privacyPolicy->contact_message,

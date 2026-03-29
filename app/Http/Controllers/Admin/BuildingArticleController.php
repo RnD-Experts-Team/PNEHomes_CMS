@@ -11,7 +11,8 @@ class BuildingArticleController extends Controller
 {
     public function __construct(
         protected BuildingOptionsService $buildingOptionsService
-    ) {}
+    ) {
+    }
 
     public function index()
     {
@@ -34,6 +35,7 @@ class BuildingArticleController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'image_id' => 'required|string',
+            'image_type' => 'required|string|in:image,video',
             'content' => 'required|string',
             'order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
@@ -68,6 +70,7 @@ class BuildingArticleController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'image_id' => 'required|string',
+            'image_type' => 'required|string|in:image,video',
             'content' => 'required|string',
             'order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',

@@ -51,21 +51,21 @@ class ServiceService
                 'sub_title' => $data['sub_title'] ?? null,
                 'description' => $data['description'] ?? null,
                 'cover_image_id' => $data['cover_image_id'] ?? null,
+                'cover_image_type' => $data['cover_image_type'] ?? null, // ✅ added
                 'order' => $data['order'] ?? 0,
                 'is_active' => $data['is_active'] ?? true,
             ]);
 
             // Create content items
-            if (!empty($data['content_items'])) {
-                foreach ($data['content_items'] as $index => $item) {
-                    ServiceContentItem::create([
-                        'service_id' => $service->id,
-                        'image_id' => $item['image_id'],
-                        'sub_title' => $item['sub_title'],
-                        'description' => $item['description'],
-                        'order' => $index,
-                    ]);
-                }
+            foreach ($data['content_items'] as $index => $item) {
+                ServiceContentItem::create([
+                    'service_id' => $service->id,
+                    'image_id' => $item['image_id'],
+                    'image_type' => $item['image_type'], // ✅ added
+                    'sub_title' => $item['sub_title'],
+                    'description' => $item['description'],
+                    'order' => $index,
+                ]);
             }
 
             // Create contact
@@ -97,6 +97,7 @@ class ServiceService
                 'sub_title' => $data['sub_title'] ?? $service->sub_title,
                 'description' => $data['description'] ?? $service->description,
                 'cover_image_id' => $data['cover_image_id'] ?? $service->cover_image_id,
+                'cover_image_type' => $data['cover_image_type'] ?? $service->cover_image_type, // ✅ added
                 'order' => $data['order'] ?? $service->order,
                 'is_active' => $data['is_active'] ?? $service->is_active,
             ]);
@@ -108,6 +109,7 @@ class ServiceService
                     ServiceContentItem::create([
                         'service_id' => $service->id,
                         'image_id' => $item['image_id'],
+                        'image_type' => $item['image_type'], // ✅ added
                         'sub_title' => $item['sub_title'],
                         'description' => $item['description'],
                         'order' => $index,
@@ -142,14 +144,15 @@ class ServiceService
     {
         return ServicesSetting::firstOrCreate([], [
             'image_id' => null,
+            'image_type' => null, // ✅ added
         ]);
     }
 
-        public function updateSettings(array $data)
+    public function updateSettings(array $data)
     {
         $servicesSettings = $this->getSettings();
         $servicesSettings->update($data);
-        
+
         return $servicesSettings;
     }
 }

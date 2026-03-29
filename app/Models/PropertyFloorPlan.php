@@ -4,15 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasMediaUrl;
 
 class PropertyFloorPlan extends Model
 {
-    use HasFactory;
+    use HasFactory, HasMediaUrl;
 
     protected $fillable = [
         'property_id',
         'title',
         'image_id',
+        'image_type',
         'description',
         'order',
     ];
@@ -25,7 +27,7 @@ class PropertyFloorPlan extends Model
 
     public function getImgAttribute(): string
     {
-        return config('media.image_base_url') . '/' . $this->image_id;
+        return $this->resolveMediaUrl($this->image_id, $this->image_type);
     }
 
     public function property()

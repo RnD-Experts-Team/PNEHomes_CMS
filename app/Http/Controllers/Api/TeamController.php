@@ -9,7 +9,8 @@ class TeamController extends Controller
 {
     public function __construct(
         protected TeamService $teamService
-    ) {}
+    ) {
+    }
 
     public function index()
     {
@@ -18,20 +19,29 @@ class TeamController extends Controller
             $settings = $this->teamService->getSettings();
 
             $data = [
+                // ✅ settings media fixed
                 'cover' => $settings?->cover_url,
+                'cover_type' => $settings?->cover_type,
+
                 'slogan' => $settings?->slogan,
                 'title' => $settings?->title,
                 'subtitle' => $settings?->subtitle,
                 'description' => $settings?->description,
+
                 'team' => $members->map(function ($member) {
                     return [
                         'id' => $member->id,
+
+                        // ✅ member media fixed
                         'cover' => $member->cover_url,
+                        'cover_type' => $member->cover_type,
+
                         'name' => $member->name,
                         'position' => $member->position,
                         'description' => $member->description,
                     ];
                 })->toArray(),
+
                 'contact' => $settings ? [
                     'title' => $settings->contact_title,
                     'message' => $settings->contact_message,
@@ -42,6 +52,7 @@ class TeamController extends Controller
                 'success' => true,
                 'data' => $data,
             ]);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

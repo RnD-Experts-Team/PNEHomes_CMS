@@ -4,16 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasMediaUrl;
 
 class Community extends Model
 {
-    use HasFactory;
+    use HasFactory, HasMediaUrl;
 
     protected $fillable = [
-        'slug','title','city','address',
-        'latitude','longitude',
-        'card_image_id','video_id','community_features',
-        'starting_price','order','is_active',
+        'slug',
+        'title',
+        'city',
+        'address',
+        'latitude',
+        'longitude',
+        'card_image_id',
+        'card_image_type',
+        'video_id',
+        'video_type',
+        'community_features',
+        'starting_price',
+        'order',
+        'is_active',
     ];
 
     protected $casts = [
@@ -23,19 +34,19 @@ class Community extends Model
         'longitude' => 'float',
     ];
 
-    protected $appends = ['card_image_url','video_url'];
+    protected $appends = ['card_image_url', 'video_url'];
 
     public function getCardImageUrlAttribute(): ?string
     {
         return $this->card_image_id
-            ? config('media.image_base_url') . '/' . $this->card_image_id
+            ? $this->resolveMediaUrl($this->card_image_id, $this->card_image_type)
             : null;
     }
 
     public function getVideoUrlAttribute(): ?string
     {
         return $this->video_id
-            ? config('media.video_base_url') . '/' . $this->video_id . '/preview'
+            ? $this->resolveMediaUrl($this->video_id, $this->video_type)
             : null;
     }
 
@@ -43,7 +54,7 @@ class Community extends Model
     {
         return $this->hasMany(CommunityGallery::class)->orderBy('order');
     }
-public function floorplans()   // relation name matches table
+    public function floorplans()   // relation name matches table
     {
         return $this->hasMany(CommunitiesFloorplan::class)->orderBy('order');
     }

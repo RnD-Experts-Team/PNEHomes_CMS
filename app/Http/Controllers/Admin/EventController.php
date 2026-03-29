@@ -11,7 +11,8 @@ class EventController extends Controller
 {
     public function __construct(
         protected EventService $eventService
-    ) {}
+    ) {
+    }
 
     public function index()
     {
@@ -33,6 +34,7 @@ class EventController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'cover_image_id' => 'nullable|string',
+            'cover_image_type' => 'nullable|string|in:image,video',
             'order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
             'gallery' => 'nullable|array',
@@ -67,6 +69,7 @@ class EventController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'cover_image_id' => 'nullable|string',
+            'cover_image_type' => 'nullable|string|in:image,video',
             'order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
             'gallery' => 'nullable|array',

@@ -9,7 +9,9 @@ use Inertia\Inertia;
 
 class LayoutController extends Controller
 {
-    public function __construct(protected LayoutService $layoutService) {}
+    public function __construct(protected LayoutService $layoutService)
+    {
+    }
 
     public function index()
     {
@@ -24,6 +26,7 @@ class LayoutController extends Controller
     {
         $validated = $request->validate([
             'logo_image_id' => 'required|string',
+            'logo_image_type' => 'required|string|in:image,video',
         ]);
 
         try {
@@ -48,14 +51,14 @@ class LayoutController extends Controller
         }
     }
 
-     /**
+    /**
      * Update the Contact Info used in the NAVIGATION (header).
      */
     public function updateContactInfoNavigation(Request $request)
     {
         $validated = $request->validate([
-            'phone'  => ['nullable','string','max:32','regex:/^\d+$/'],
-            'button' => ['nullable','string','max:255'],
+            'phone' => ['nullable', 'string', 'max:32', 'regex:/^\d+$/'],
+            'button' => ['nullable', 'string', 'max:255'],
         ], [
             'phone.regex' => 'Phone must contain digits only.',
         ]);

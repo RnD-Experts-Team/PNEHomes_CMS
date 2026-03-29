@@ -8,13 +8,15 @@ use App\Services\CommunityService;
 
 class CommunityController extends Controller
 {
-    public function __construct(protected CommunityService $communityService) {}
+    public function __construct(protected CommunityService $communityService)
+    {
+    }
 
     public function index()
     {
         try {
             $settings = $this->communityService->getSettings();
-            $contact  = $this->communityService->getContact();
+            $contact = $this->communityService->getContact();
             $communities = $this->communityService->getAllCommunities();
 
             $list = $communities->map(function ($c) {
@@ -26,10 +28,21 @@ class CommunityController extends Controller
                     'address' => $c->address,
                     'latitude' => $c->latitude,
                     'longitude' => $c->longitude,
+
                     'card_image' => $c->card_image_url,
-                    'gallery' => $c->gallery->pluck('url')->toArray(),
+                    'card_image_type' => $c->card_image_type, // ✅ added
+
+                    // ✅ gallery fixed
+                    'gallery' => $c->gallery->map(fn($g) => [
+                        'url' => $g->url,
+                        'type' => $g->type,
+                    ])->toArray(),
+
                     'video' => $c->video_url,
+                    'video_type' => $c->video_type, // ✅ added
+
                     'community-features' => $c->community_features,
+
                     'floor-plans' => $c->floorplans
                         ->where('is_active', true)
                         ->sortBy('order')
@@ -38,6 +51,7 @@ class CommunityController extends Controller
                             'title' => $p->title,
                             'community' => $c->slug,
                             'cover' => $p->cover_url,
+                            'cover_type' => $p->cover_type, // ✅ added
                             'status' => null,
                             'price' => $p->price,
                             'beds' => $p->beds,
@@ -45,6 +59,7 @@ class CommunityController extends Controller
                             'garages' => $p->garages,
                             'sqft' => $p->sqft,
                         ])->values()->toArray(),
+
                     'starting-price' => $c->starting_price,
                 ];
             })->values()->toArray();
@@ -54,6 +69,7 @@ class CommunityController extends Controller
                 'data' => [
                     'title' => $settings->title,
                     'cover' => $settings->cover_url,
+                    'cover_type' => $settings->cover_type, // ✅ added
                     'communities' => $list,
                     'zillow' => $settings->zillow_link,   // exact key used by frontend JSON
                     'contact' => $contact ? [
@@ -63,7 +79,7 @@ class CommunityController extends Controller
                 ],
             ]);
         } catch (\Throwable $e) {
-            return response()->json(['success'=>false,'message'=>'Failed to fetch communities'], 500);
+            return response()->json(['success' => false, 'message' => 'Failed to fetch communities'], 500);
         }
     }
 
@@ -81,10 +97,21 @@ class CommunityController extends Controller
                 'address' => $c->address,
                 'latitude' => $c->latitude,
                 'longitude' => $c->longitude,
+
                 'card_image' => $c->card_image_url,
-                'gallery' => $c->gallery->pluck('url')->toArray(),
+                'card_image_type' => $c->card_image_type, // ✅ added
+
+                // ✅ gallery fixed
+                'gallery' => $c->gallery->map(fn($g) => [
+                    'url' => $g->url,
+                    'type' => $g->type,
+                ])->toArray(),
+
                 'video' => $c->video_url,
+                'video_type' => $c->video_type, // ✅ added
+
                 'community-features' => $c->community_features,
+
                 'floor-plans' => $c->floorplans
                     ->where('is_active', true)
                     ->sortBy('order')
@@ -93,6 +120,7 @@ class CommunityController extends Controller
                         'title' => $p->title,
                         'community' => $c->slug,
                         'cover' => $p->cover_url,
+                        'cover_type' => $p->cover_type, // ✅ added
                         'status' => $p->status,
                         'price' => $p->price,
                         'beds' => $p->beds,
@@ -100,16 +128,18 @@ class CommunityController extends Controller
                         'garages' => $p->garages,
                         'sqft' => $p->sqft,
                     ])->values()->toArray(),
+
                 'starting-price' => $c->starting_price,
+
                 'contact' => $contact ? [
                     'title' => $contact->title,
                     'message' => $contact->message,
                 ] : null,
             ];
 
-            return response()->json(['success'=>true,'data'=>$data]);
+            return response()->json(['success' => true, 'data' => $data]);
         } catch (\Throwable $e) {
-            return response()->json(['success'=>false,'message'=>'Community not found'], 404);
+            return response()->json(['success' => false, 'message' => 'Community not found'], 404);
         }
     }
 }

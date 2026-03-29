@@ -11,7 +11,8 @@ class FloorPlanController extends Controller
 {
     public function __construct(
         protected FloorPlanService $floorPlanService
-    ) {}
+    ) {
+    }
 
     public function index()
     {
@@ -33,6 +34,7 @@ class FloorPlanController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'image_id' => 'required|string',
+            'image_type' => 'required|string|in:image,video',
             'bedroom' => 'required|integer|min:0',
             'bathroom' => 'required|integer|min:0',
             'floor' => 'required|integer|min:0',
@@ -70,6 +72,7 @@ class FloorPlanController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'image_id' => 'required|string',
+            'image_type' => 'required|string|in:image,video',
             'bedroom' => 'required|integer|min:0',
             'bathroom' => 'required|integer|min:0',
             'floor' => 'required|integer|min:0',

@@ -6,16 +6,28 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Traits\HasMediaUrl;
 
 class CommunitiesFloorplan extends Model
 {
-    use HasFactory;
+    use HasFactory, HasMediaUrl;
 
     protected $table = 'communities_floorplans';
 
     protected $fillable = [
-        'community_id','slug','title','cover_image_id','status',
-        'price','beds','baths','garages','sqft','order','is_active',
+        'community_id',
+        'slug',
+        'title',
+        'cover_image_id',
+        'cover_image_type',
+        'status',
+        'price',
+        'beds',
+        'baths',
+        'garages',
+        'sqft',
+        'order',
+        'is_active',
     ];
 
     protected $casts = [
@@ -42,7 +54,7 @@ class CommunitiesFloorplan extends Model
     public function getCoverUrlAttribute(): ?string
     {
         return $this->cover_image_id
-            ? config('media.image_base_url').'/'.$this->cover_image_id
+            ? $this->resolveMediaUrl($this->cover_image_id, $this->cover_image_type)
             : null;
     }
 }
