@@ -1,13 +1,19 @@
-import { Head, useForm } from '@inertiajs/react';
+import { IdPickerButton } from '@/components/drive/IdPickerButton';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { IdPickerButton } from '@/components/drive/IdPickerButton';
-
+import { Head, useForm } from '@inertiajs/react';
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Properties', href: '/admin/properties' },
     { title: 'Settings', href: '#' },
@@ -16,6 +22,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface Settings {
     title: string;
     cover_image_id: string;
+    cover_image_type: string;
     contact_title: string;
     contact_message: string;
 }
@@ -27,6 +34,7 @@ interface Props {
 interface FormData {
     title: string;
     cover_image_id: string;
+    cover_image_type: string;
     contact_title: string;
     contact_message: string;
 }
@@ -35,8 +43,11 @@ export default function PropertySettings({ settings }: Props) {
     const { data, setData, put, processing, errors } = useForm<FormData>({
         title: settings?.title || 'Floor Plans',
         cover_image_id: settings?.cover_image_id || '',
+        cover_image_type: settings?.cover_image_type || 'image',
         contact_title: settings?.contact_title || 'Contact Us',
-        contact_message: settings?.contact_message || "I'm contacting you to ask about the property {propertyTitle}",
+        contact_message:
+            settings?.contact_message ||
+            "I'm contacting you to ask about the property {propertyTitle}",
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -63,27 +74,72 @@ export default function PropertySettings({ settings }: Props) {
                                 <Input
                                     id="title"
                                     value={data.title}
-                                    onChange={(e) => setData('title', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('title', e.target.value)
+                                    }
                                     placeholder="Floor Plans"
                                 />
                                 {errors.title && (
-                                    <p className="text-sm text-destructive">{errors.title}</p>
+                                    <p className="text-sm text-destructive">
+                                        {errors.title}
+                                    </p>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="cover_image_id">Cover Image ID (Google Drive) *</Label>
+                                <Label htmlFor="cover_image_id">
+                                    Cover Image ID (Google Drive) *
+                                </Label>
+
                                 <div className="flex gap-2">
                                     <Input
                                         id="cover_image_id"
                                         value={data.cover_image_id}
-                                        onChange={(e) => setData('cover_image_id', e.target.value)}
+                                        onChange={(e) =>
+                                            setData(
+                                                'cover_image_id',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="Enter Google Drive file ID"
                                     />
-                                    <IdPickerButton onPick={(id) => setData('cover_image_id', id)} />
+
+                                    <Select
+                                        value={data.cover_image_type}
+                                        onValueChange={(value) =>
+                                            setData('cover_image_type', value)
+                                        }
+                                    >
+                                        <SelectTrigger className="w-[140px]">
+                                            <SelectValue placeholder="Type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="image">
+                                                Image
+                                            </SelectItem>
+                                            <SelectItem value="video">
+                                                Video
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+
+                                    <IdPickerButton
+                                        onPick={(id) =>
+                                            setData('cover_image_id', id)
+                                        }
+                                    />
                                 </div>
+
                                 {errors.cover_image_id && (
-                                    <p className="text-sm text-destructive">{errors.cover_image_id}</p>
+                                    <p className="text-sm text-destructive">
+                                        {errors.cover_image_id}
+                                    </p>
+                                )}
+
+                                {errors.cover_image_type && (
+                                    <p className="text-sm text-destructive">
+                                        {errors.cover_image_type}
+                                    </p>
                                 )}
                             </div>
                         </CardContent>
@@ -95,32 +151,48 @@ export default function PropertySettings({ settings }: Props) {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="contact_title">Contact Title *</Label>
+                                <Label htmlFor="contact_title">
+                                    Contact Title *
+                                </Label>
                                 <Input
                                     id="contact_title"
                                     value={data.contact_title}
-                                    onChange={(e) => setData('contact_title', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('contact_title', e.target.value)
+                                    }
                                     placeholder="Contact Us"
                                 />
                                 {errors.contact_title && (
-                                    <p className="text-sm text-destructive">{errors.contact_title}</p>
+                                    <p className="text-sm text-destructive">
+                                        {errors.contact_title}
+                                    </p>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="contact_message">Contact Message *</Label>
+                                <Label htmlFor="contact_message">
+                                    Contact Message *
+                                </Label>
                                 <Textarea
                                     id="contact_message"
                                     value={data.contact_message}
-                                    onChange={(e) => setData('contact_message', e.target.value)}
+                                    onChange={(e) =>
+                                        setData(
+                                            'contact_message',
+                                            e.target.value,
+                                        )
+                                    }
                                     placeholder="Enter contact message"
                                     rows={4}
                                 />
                                 {errors.contact_message && (
-                                    <p className="text-sm text-destructive">{errors.contact_message}</p>
+                                    <p className="text-sm text-destructive">
+                                        {errors.contact_message}
+                                    </p>
                                 )}
                                 <p className="text-xs text-muted-foreground">
-                                    Use <code>{'{propertyTitle}'}</code> as a placeholder for the property title
+                                    Use <code>{'{propertyTitle}'}</code> as a
+                                    placeholder for the property title
                                 </p>
                             </div>
                         </CardContent>

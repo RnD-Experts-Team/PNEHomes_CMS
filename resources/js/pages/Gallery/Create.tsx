@@ -1,581 +1,1002 @@
-import { Head, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { IdPickerButton } from '@/components/drive/IdPickerButton';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, X, Trash2 } from 'lucide-react';
-import { IdPickerButton } from '@/components/drive/IdPickerButton';
-import { useState } from 'react';
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
+import { Head, useForm } from '@inertiajs/react';
+import { Plus, Trash2, X } from 'lucide-react';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Gallery', href: '/admin/gallery-albums' },
-  { title: 'Create Album', href: '#' },
+    { title: 'Gallery', href: '/admin/gallery-albums' },
+    { title: 'Create Album', href: '#' },
 ];
 
 interface ImageData {
-  virtual_image_id: string;
-  real_image_id: string;
+    virtual_image_id: string;
+    virtual_image_type: string;
+
+    real_image_id: string;
+    real_image_type: string;
 }
 
 interface SubAlbumData {
-  title: string;
-  cover_image_id: string;
-  images: ImageData[];
+    title: string;
+    cover_image_id: string;
+    cover_image_type: string;
+    images: ImageData[];
 }
 
 interface FormData {
-  title: string;
-  cover_image_id: string;
-  has_sub_albums: boolean;
-  order: number;
-  is_active: boolean;
-  sub_albums: SubAlbumData[];
-  images: ImageData[];
+    title: string;
+    cover_image_id: string;
+    cover_image_type: string;
+    has_sub_albums: boolean;
+    order: number;
+    is_active: boolean;
+    sub_albums: SubAlbumData[];
+    images: ImageData[];
 }
 
 type MultiTarget = 'virtual' | 'real';
 
 export default function GalleryAlbumCreate() {
-  const { data, setData, post, processing, errors } = useForm<FormData>({
-    title: '',
-    cover_image_id: '',
-    has_sub_albums: false,
-    order: 0,
-    is_active: true,
-    sub_albums: [],
-    images: [],
-  });
+    const { data, setData, post, processing, errors } = useForm<FormData>({
+        title: '',
+        cover_image_id: '',
+        cover_image_type: 'image',
+        has_sub_albums: false,
+        order: 0,
+        is_active: true,
+        sub_albums: [],
+        images: [],
+    });
 
-  // Multi pick target for direct album images
-  const [directMultiTarget, setDirectMultiTarget] = useState<MultiTarget>('real');
+    // Multi pick target for direct album images
+    const [directMultiTarget, setDirectMultiTarget] =
+        useState<MultiTarget>('real');
 
-  // Multi pick target per sub-album (parallel array)
-  const [subMultiTargets, setSubMultiTargets] = useState<MultiTarget[]>([]);
+    // Multi pick target per sub-album (parallel array)
+    const [subMultiTargets, setSubMultiTargets] = useState<MultiTarget[]>([]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    post('/admin/gallery-albums');
-  };
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post('/admin/gallery-albums');
+    };
 
-  // ---- Sub-album management
-  const addSubAlbum = () => {
-    setData('sub_albums', [
-      ...data.sub_albums,
-      { title: '', cover_image_id: '', images: [] },
-    ]);
-    setSubMultiTargets((t) => [...t, 'real']);
-  };
+    // ---- Sub-album management
+    const addSubAlbum = () => {
+        setData('sub_albums', [
+            ...data.sub_albums,
+            {
+                title: '',
+                cover_image_id: '',
+                cover_image_type: 'image',
+                images: [],
+            },
+        ]);
+        setSubMultiTargets((t) => [...t, 'real']);
+    };
 
-  const updateSubAlbum = (index: number, field: keyof SubAlbumData, value: any) => {
-    const newSubAlbums = [...data.sub_albums];
-    newSubAlbums[index] = { ...newSubAlbums[index], [field]: value };
-    setData('sub_albums', newSubAlbums);
-  };
+    const updateSubAlbum = (
+        index: number,
+        field: keyof SubAlbumData,
+        value: any,
+    ) => {
+        const newSubAlbums = [...data.sub_albums];
+        newSubAlbums[index] = { ...newSubAlbums[index], [field]: value };
+        setData('sub_albums', newSubAlbums);
+    };
 
-  const removeSubAlbum = (index: number) => {
-    setData('sub_albums', data.sub_albums.filter((_, i) => i !== index));
-    setSubMultiTargets((t) => t.filter((_, i) => i !== index));
-  };
+    const removeSubAlbum = (index: number) => {
+        setData(
+            'sub_albums',
+            data.sub_albums.filter((_, i) => i !== index),
+        );
+        setSubMultiTargets((t) => t.filter((_, i) => i !== index));
+    };
 
-  // ---- Sub-album image management
-  const addSubAlbumImage = (subIndex: number) => {
-    const newSubAlbums = [...data.sub_albums];
-    newSubAlbums[subIndex].images.push({ virtual_image_id: '', real_image_id: '' });
-    setData('sub_albums', newSubAlbums);
-  };
+    // ---- Sub-album image management
+    const addSubAlbumImage = (subIndex: number) => {
+        const newSubAlbums = [...data.sub_albums];
+        newSubAlbums[subIndex].images.push({
+            virtual_image_id: '',
+            virtual_image_type: 'image',
+            real_image_id: '',
+            real_image_type: 'image',
+        });
+        setData('sub_albums', newSubAlbums);
+    };
 
-  const appendManySubAlbumImages = (subIndex: number, ids: string[]) => {
-    if (!ids.length) return;
-    const target = subMultiTargets[subIndex] ?? 'real';
+    const appendManySubAlbumImages = (subIndex: number, ids: string[]) => {
+        if (!ids.length) return;
+        const target = subMultiTargets[subIndex] ?? 'real';
 
-    const newSubAlbums = [...data.sub_albums];
-    const toAppend: ImageData[] = ids.map((id) => ({
-      virtual_image_id: target === 'virtual' ? id : '',
-      real_image_id: target === 'real' ? id : '',
-    }));
-    newSubAlbums[subIndex].images = [
-      ...newSubAlbums[subIndex].images,
-      ...toAppend,
-    ];
-    setData('sub_albums', newSubAlbums);
-  };
+        const newSubAlbums = [...data.sub_albums];
+        const toAppend: ImageData[] = ids.map((id) => ({
+            virtual_image_id: target === 'virtual' ? id : '',
+            virtual_image_type: 'image',
 
-  const updateSubAlbumImage = (
-    subIndex: number,
-    imgIndex: number,
-    field: keyof ImageData,
-    value: string
-  ) => {
-    const newSubAlbums = [...data.sub_albums];
-    newSubAlbums[subIndex].images[imgIndex][field] = value;
-    setData('sub_albums', newSubAlbums);
-  };
+            real_image_id: target === 'real' ? id : '',
+            real_image_type: 'image',
+        }));
+        newSubAlbums[subIndex].images = [
+            ...newSubAlbums[subIndex].images,
+            ...toAppend,
+        ];
+        setData('sub_albums', newSubAlbums);
+    };
 
-  const removeSubAlbumImage = (subIndex: number, imgIndex: number) => {
-    const newSubAlbums = [...data.sub_albums];
-    newSubAlbums[subIndex].images = newSubAlbums[subIndex].images.filter(
-      (_, i) => i !== imgIndex
-    );
-    setData('sub_albums', newSubAlbums);
-  };
+    const updateSubAlbumImage = (
+        subIndex: number,
+        imgIndex: number,
+        field: keyof ImageData,
+        value: string,
+    ) => {
+        const newSubAlbums = [...data.sub_albums];
+        newSubAlbums[subIndex].images[imgIndex][field] = value;
+        setData('sub_albums', newSubAlbums);
+    };
 
-  // ---- Direct image management
-  const addImage = () => {
-    setData('images', [...data.images, { virtual_image_id: '', real_image_id: '' }]);
-  };
+    const removeSubAlbumImage = (subIndex: number, imgIndex: number) => {
+        const newSubAlbums = [...data.sub_albums];
+        newSubAlbums[subIndex].images = newSubAlbums[subIndex].images.filter(
+            (_, i) => i !== imgIndex,
+        );
+        setData('sub_albums', newSubAlbums);
+    };
 
-  const appendManyImages = (ids: string[]) => {
-    if (!ids.length) return;
+    // ---- Direct image management
+    const addImage = () => {
+        setData('images', [
+            ...data.images,
+            {
+                virtual_image_id: '',
+                virtual_image_type: 'image',
+                real_image_id: '',
+                real_image_type: 'image',
+            },
+        ]);
+    };
 
-    const toAppend: ImageData[] = ids.map((id) => ({
-      virtual_image_id: directMultiTarget === 'virtual' ? id : '',
-      real_image_id: directMultiTarget === 'real' ? id : '',
-    }));
-    setData('images', [...data.images, ...toAppend]);
-  };
+    const appendManyImages = (ids: string[]) => {
+        if (!ids.length) return;
 
-  const updateImage = (index: number, field: keyof ImageData, value: string) => {
-    const newImages = [...data.images];
-    newImages[index][field] = value;
-    setData('images', newImages);
-  };
+        const toAppend: ImageData[] = ids.map((id) => ({
+            virtual_image_id: directMultiTarget === 'virtual' ? id : '',
+            virtual_image_type: 'image',
+            real_image_id: directMultiTarget === 'real' ? id : '',
+            real_image_type: 'image',
+        }));
+        setData('images', [...data.images, ...toAppend]);
+    };
 
-  const removeImage = (index: number) => {
-    setData('images', data.images.filter((_, i) => i !== index));
-  };
+    const updateImage = (
+        index: number,
+        field: keyof ImageData,
+        value: string,
+    ) => {
+        const newImages = [...data.images];
+        newImages[index][field] = value;
+        setData('images', newImages);
+    };
 
-  return (
-    <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Create Gallery Album" />
-      <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Create Gallery Album</h1>
-        </div>
+    const removeImage = (index: number) => {
+        setData(
+            'images',
+            data.images.filter((_, i) => i !== index),
+        );
+    };
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Title *</Label>
-                <Input
-                  id="title"
-                  value={data.title}
-                  onChange={(e) => setData('title', e.target.value)}
-                  placeholder="Enter album title"
-                />
-                {errors.title && (
-                  <p className="text-sm text-destructive">{errors.title}</p>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  Slug will be auto-generated from title
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="cover_image_id">Cover Image ID (Google Drive) *</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="cover_image_id"
-                    value={data.cover_image_id}
-                    onChange={(e) => setData('cover_image_id', e.target.value)}
-                    placeholder="Enter Google Drive file ID"
-                  />
-                  <IdPickerButton onPick={(id) => setData('cover_image_id', id)} />
-                </div>
-                {errors.cover_image_id && (
-                  <p className="text-sm text-destructive">{errors.cover_image_id}</p>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="order">Order</Label>
-                  <Input
-                    id="order"
-                    type="number"
-                    value={data.order}
-                    onChange={(e) => setData('order', parseInt(e.target.value) || 0)}
-                  />
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="is_active"
-                    checked={data.is_active}
-                    onCheckedChange={(checked) => setData('is_active', checked)}
-                  />
-                  <Label htmlFor="is_active">Active</Label>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="has_sub_albums"
-                  checked={data.has_sub_albums}
-                  onCheckedChange={(checked) => {
-                    setData('has_sub_albums', checked);
-                    if (checked) {
-                      setData('images', []);
-                      setSubMultiTargets(data.sub_albums.map(() => 'real'));
-                    } else {
-                      setData('sub_albums', []);
-                      setSubMultiTargets([]);
-                    }
-                  }}
-                />
-                <Label htmlFor="has_sub_albums">Has Sub-Albums</Label>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Sub-Albums Section */}
-          {data.has_sub_albums && (
-            <Card>
-              <CardHeader>
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Create Gallery Album" />
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
-                  <CardTitle>Sub-Albums</CardTitle>
-                  <Button type="button" onClick={addSubAlbum} size="sm">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Sub-Album
-                  </Button>
+                    <h1 className="text-2xl font-bold">Create Gallery Album</h1>
                 </div>
-              </CardHeader>
 
-              <CardContent className="space-y-6">
-                {data.sub_albums.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-8">
-                    No sub-albums added yet. Click "Add Sub-Album" to get started.
-                  </p>
-                ) : (
-                  data.sub_albums.map((subAlbum, subIndex) => (
-                    <Card key={subIndex}>
-                      <CardHeader>
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-base">
-                            Sub-Album {subIndex + 1}
-                          </CardTitle>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeSubAlbum(subIndex)}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
-                      </CardHeader>
-
-                      <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                          <Label>Title *</Label>
-                          <Input
-                            value={subAlbum.title}
-                            onChange={(e) =>
-                              updateSubAlbum(subIndex, 'title', e.target.value)
-                            }
-                            placeholder="Enter sub-album title"
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>Cover Image ID *</Label>
-                          <div className="flex gap-2">
-                            <Input
-                              value={subAlbum.cover_image_id}
-                              onChange={(e) =>
-                                updateSubAlbum(subIndex, 'cover_image_id', e.target.value)
-                              }
-                              placeholder="Google Drive file ID"
-                            />
-                            <IdPickerButton
-                              onPick={(id) =>
-                                updateSubAlbum(subIndex, 'cover_image_id', id)
-                              }
-                            />
-                          </div>
-                        </div>
-
-                        {/* Sub-Album Images */}
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <Label>Images</Label>
-
-                            <div className="flex gap-2 items-center">
-                              {/* shadcn multi target (per sub-album) */}
-                              <div className="w-[160px]">
-                                <Select
-                                  value={subMultiTargets[subIndex] ?? 'real'}
-                                  onValueChange={(v) => {
-                                    const next = [...subMultiTargets];
-                                    next[subIndex] = v as MultiTarget;
-                                    setSubMultiTargets(next);
-                                  }}
-                                >
-                                  <SelectTrigger className="h-8 text-xs">
-                                    <SelectValue placeholder="Multi target" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="real">Multi → Real IDs</SelectItem>
-                                    <SelectItem value="virtual">Multi → Virtual IDs</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-
-                              <IdPickerButton
-                                multiple
-                                label="Pick Images (multi)"
-                                mimeTypes={['image/jpeg', 'image/png', 'image/webp']}
-                                onPickMany={(ids) =>
-                                  appendManySubAlbumImages(subIndex, ids)
-                                }
-                              />
-
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => addSubAlbumImage(subIndex)}
-                              >
-                                <Plus className="mr-2 h-3 w-3" />
-                                Add Image
-                              </Button>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Basic Information</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="title">Title *</Label>
+                                <Input
+                                    id="title"
+                                    value={data.title}
+                                    onChange={(e) =>
+                                        setData('title', e.target.value)
+                                    }
+                                    placeholder="Enter album title"
+                                />
+                                {errors.title && (
+                                    <p className="text-sm text-destructive">
+                                        {errors.title}
+                                    </p>
+                                )}
+                                <p className="text-xs text-muted-foreground">
+                                    Slug will be auto-generated from title
+                                </p>
                             </div>
-                          </div>
 
-                          {subAlbum.images.length === 0 ? (
-                            <p className="text-xs text-muted-foreground text-center py-4">
-                              No images added
-                            </p>
-                          ) : (
-                            <div className="space-y-3">
-                              {subAlbum.images.map((img, imgIndex) => (
-                                <Card key={imgIndex}>
-                                  <CardContent className="pt-4 space-y-2">
-                                    <div className="flex items-center justify-between mb-2">
-                                      <span className="text-xs font-medium">
-                                        Image {imgIndex + 1}
-                                      </span>
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() =>
-                                          removeSubAlbumImage(subIndex, imgIndex)
+                            <div className="space-y-2">
+                                <Label htmlFor="cover_image_id">
+                                    Cover Image ID (Google Drive) *
+                                </Label>
+                                <div className="flex gap-2">
+                                    <Input
+                                        id="cover_image_id"
+                                        value={data.cover_image_id}
+                                        onChange={(e) =>
+                                            setData(
+                                                'cover_image_id',
+                                                e.target.value,
+                                            )
                                         }
-                                      >
-                                        <X className="h-3 w-3" />
-                                      </Button>
-                                    </div>
+                                        placeholder="Enter Google Drive file ID"
+                                    />
 
-                                    <div className="space-y-2">
-                                      <Label className="text-xs">Virtual Image ID</Label>
-                                      <div className="flex gap-2">
-                                        <Input
-                                          value={img.virtual_image_id}
-                                          onChange={(e) =>
-                                            updateSubAlbumImage(
-                                              subIndex,
-                                              imgIndex,
-                                              'virtual_image_id',
-                                              e.target.value
-                                            )
-                                          }
-                                          placeholder="Optional"
-                                        />
-                                        <IdPickerButton
-                                          label="Pick"
-                                          onPick={(id) =>
-                                            updateSubAlbumImage(
-                                              subIndex,
-                                              imgIndex,
-                                              'virtual_image_id',
-                                              id
-                                            )
-                                          }
-                                        />
-                                      </div>
-                                    </div>
+                                    <Select
+                                        value={data.cover_image_type}
+                                        onValueChange={(value) =>
+                                            setData('cover_image_type', value)
+                                        }
+                                    >
+                                        <SelectTrigger className="w-[140px]">
+                                            <SelectValue placeholder="Type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="image">
+                                                Image
+                                            </SelectItem>
+                                            <SelectItem value="video">
+                                                Video
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
 
-                                    <div className="space-y-2">
-                                      <Label className="text-xs">Real Image ID</Label>
-                                      <div className="flex gap-2">
-                                        <Input
-                                          value={img.real_image_id}
-                                          onChange={(e) =>
-                                            updateSubAlbumImage(
-                                              subIndex,
-                                              imgIndex,
-                                              'real_image_id',
-                                              e.target.value
-                                            )
-                                          }
-                                          placeholder="Optional"
-                                        />
-                                        <IdPickerButton
-                                          label="Pick"
-                                          mimeTypes={['image/jpeg', 'image/png', 'image/webp']}
-                                          onPick={(id) =>
-                                            updateSubAlbumImage(
-                                              subIndex,
-                                              imgIndex,
-                                              'real_image_id',
-                                              id
-                                            )
-                                          }
-                                        />
-                                      </div>
-                                    </div>
-                                  </CardContent>
-                                </Card>
-                              ))}
+                                    <IdPickerButton
+                                        onPick={(id) =>
+                                            setData('cover_image_id', id)
+                                        }
+                                    />
+                                </div>
+                                {errors.cover_image_id && (
+                                    <p className="text-sm text-destructive">
+                                        {errors.cover_image_id}
+                                    </p>
+                                )}
                             </div>
-                          )}
-                        </div>
-                      </CardContent>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="order">Order</Label>
+                                    <Input
+                                        id="order"
+                                        type="number"
+                                        value={data.order}
+                                        onChange={(e) =>
+                                            setData(
+                                                'order',
+                                                parseInt(e.target.value) || 0,
+                                            )
+                                        }
+                                    />
+                                </div>
+
+                                <div className="flex items-center space-x-2">
+                                    <Switch
+                                        id="is_active"
+                                        checked={data.is_active}
+                                        onCheckedChange={(checked) =>
+                                            setData('is_active', checked)
+                                        }
+                                    />
+                                    <Label htmlFor="is_active">Active</Label>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                                <Switch
+                                    id="has_sub_albums"
+                                    checked={data.has_sub_albums}
+                                    onCheckedChange={(checked) => {
+                                        setData('has_sub_albums', checked);
+                                        if (checked) {
+                                            setData('images', []);
+                                            setSubMultiTargets(
+                                                data.sub_albums.map(
+                                                    () => 'real',
+                                                ),
+                                            );
+                                        } else {
+                                            setData('sub_albums', []);
+                                            setSubMultiTargets([]);
+                                        }
+                                    }}
+                                />
+                                <Label htmlFor="has_sub_albums">
+                                    Has Sub-Albums
+                                </Label>
+                            </div>
+                        </CardContent>
                     </Card>
-                  ))
-                )}
-              </CardContent>
-            </Card>
-          )}
 
-          {/* Direct Images Section */}
-          {!data.has_sub_albums && (
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Images</CardTitle>
+                    {/* Sub-Albums Section */}
+                    {data.has_sub_albums && (
+                        <Card>
+                            <CardHeader>
+                                <div className="flex items-center justify-between">
+                                    <CardTitle>Sub-Albums</CardTitle>
+                                    <Button
+                                        type="button"
+                                        onClick={addSubAlbum}
+                                        size="sm"
+                                    >
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Add Sub-Album
+                                    </Button>
+                                </div>
+                            </CardHeader>
 
-                  <div className="flex gap-2 items-center">
-                    {/* shadcn multi target */}
-                    <div className="w-[160px]">
-                      <Select
-                        value={directMultiTarget}
-                        onValueChange={(v) =>
-                          setDirectMultiTarget(v as MultiTarget)
-                        }
-                      >
-                        <SelectTrigger className="h-8 text-xs">
-                          <SelectValue placeholder="Multi target" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="real">Multi → Real IDs</SelectItem>
-                          <SelectItem value="virtual">Multi → Virtual IDs</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                            <CardContent className="space-y-6">
+                                {data.sub_albums.length === 0 ? (
+                                    <p className="py-8 text-center text-sm text-muted-foreground">
+                                        No sub-albums added yet. Click "Add
+                                        Sub-Album" to get started.
+                                    </p>
+                                ) : (
+                                    data.sub_albums.map(
+                                        (subAlbum, subIndex) => (
+                                            <Card key={subIndex}>
+                                                <CardHeader>
+                                                    <div className="flex items-center justify-between">
+                                                        <CardTitle className="text-base">
+                                                            Sub-Album{' '}
+                                                            {subIndex + 1}
+                                                        </CardTitle>
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() =>
+                                                                removeSubAlbum(
+                                                                    subIndex,
+                                                                )
+                                                            }
+                                                        >
+                                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                                        </Button>
+                                                    </div>
+                                                </CardHeader>
 
-                    <IdPickerButton
-                      multiple
-                      label="Pick Images (multi)"
-                      mimeTypes={['image/jpeg', 'image/png', 'image/webp']}
-                      onPickMany={appendManyImages}
-                    />
+                                                <CardContent className="space-y-4">
+                                                    <div className="space-y-2">
+                                                        <Label>Title *</Label>
+                                                        <Input
+                                                            value={
+                                                                subAlbum.title
+                                                            }
+                                                            onChange={(e) =>
+                                                                updateSubAlbum(
+                                                                    subIndex,
+                                                                    'title',
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                            placeholder="Enter sub-album title"
+                                                        />
+                                                    </div>
 
-                    <Button type="button" onClick={addImage} size="sm">
-                      <Plus className="mr-2 h-4 w-4" />
-                      Add Image
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
+                                                    <div className="space-y-2">
+                                                        <Label>
+                                                            Cover Image ID *
+                                                        </Label>
+                                                        <div className="flex gap-2">
+                                                            <Input
+                                                                value={
+                                                                    subAlbum.cover_image_id
+                                                                }
+                                                                onChange={(e) =>
+                                                                    updateSubAlbum(
+                                                                        subIndex,
+                                                                        'cover_image_id',
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                placeholder="Google Drive file ID"
+                                                            />
 
-              <CardContent className="space-y-4">
-                {data.images.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-8">
-                    No images added yet. Use “Pick Images (multi)” to add many at once, or click “Add Image”.
-                  </p>
-                ) : (
-                  data.images.map((img, index) => (
-                    <Card key={index}>
-                      <CardContent className="pt-4 space-y-2">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium">
-                            Image {index + 1}
-                          </span>
-                          <Button
+                                                            <Select
+                                                                value={
+                                                                    subAlbum.cover_image_type
+                                                                }
+                                                                onValueChange={(
+                                                                    value,
+                                                                ) =>
+                                                                    updateSubAlbum(
+                                                                        subIndex,
+                                                                        'cover_image_type',
+                                                                        value,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <SelectTrigger className="w-[140px]">
+                                                                    <SelectValue placeholder="Type" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectItem value="image">
+                                                                        Image
+                                                                    </SelectItem>
+                                                                    <SelectItem value="video">
+                                                                        Video
+                                                                    </SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+
+                                                            <IdPickerButton
+                                                                onPick={(id) =>
+                                                                    updateSubAlbum(
+                                                                        subIndex,
+                                                                        'cover_image_id',
+                                                                        id,
+                                                                    )
+                                                                }
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Sub-Album Images */}
+                                                    <div className="space-y-2">
+                                                        <div className="flex items-center justify-between">
+                                                            <Label>
+                                                                Images
+                                                            </Label>
+
+                                                            <div className="flex items-center gap-2">
+                                                                {/* shadcn multi target (per sub-album) */}
+                                                                <div className="w-[160px]">
+                                                                    <Select
+                                                                        value={
+                                                                            subMultiTargets[
+                                                                                subIndex
+                                                                            ] ??
+                                                                            'real'
+                                                                        }
+                                                                        onValueChange={(
+                                                                            v,
+                                                                        ) => {
+                                                                            const next =
+                                                                                [
+                                                                                    ...subMultiTargets,
+                                                                                ];
+                                                                            next[
+                                                                                subIndex
+                                                                            ] =
+                                                                                v as MultiTarget;
+                                                                            setSubMultiTargets(
+                                                                                next,
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        <SelectTrigger className="h-8 text-xs">
+                                                                            <SelectValue placeholder="Multi target" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                            <SelectItem value="real">
+                                                                                Multi
+                                                                                →
+                                                                                Real
+                                                                                IDs
+                                                                            </SelectItem>
+                                                                            <SelectItem value="virtual">
+                                                                                Multi
+                                                                                →
+                                                                                Virtual
+                                                                                IDs
+                                                                            </SelectItem>
+                                                                        </SelectContent>
+                                                                    </Select>
+                                                                </div>
+
+                                                                <IdPickerButton
+                                                                    multiple
+                                                                    label="Pick Images (multi)"
+                                                                    mimeTypes={[
+                                                                        'image/jpeg',
+                                                                        'image/png',
+                                                                        'image/webp',
+                                                                    ]}
+                                                                    onPickMany={(
+                                                                        ids,
+                                                                    ) =>
+                                                                        appendManySubAlbumImages(
+                                                                            subIndex,
+                                                                            ids,
+                                                                        )
+                                                                    }
+                                                                />
+
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    onClick={() =>
+                                                                        addSubAlbumImage(
+                                                                            subIndex,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    <Plus className="mr-2 h-3 w-3" />
+                                                                    Add Image
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+
+                                                        {subAlbum.images
+                                                            .length === 0 ? (
+                                                            <p className="py-4 text-center text-xs text-muted-foreground">
+                                                                No images added
+                                                            </p>
+                                                        ) : (
+                                                            <div className="space-y-3">
+                                                                {subAlbum.images.map(
+                                                                    (
+                                                                        img,
+                                                                        imgIndex,
+                                                                    ) => (
+                                                                        <Card
+                                                                            key={
+                                                                                imgIndex
+                                                                            }
+                                                                        >
+                                                                            <CardContent className="space-y-2 pt-4">
+                                                                                <div className="mb-2 flex items-center justify-between">
+                                                                                    <span className="text-xs font-medium">
+                                                                                        Image{' '}
+                                                                                        {imgIndex +
+                                                                                            1}
+                                                                                    </span>
+                                                                                    <Button
+                                                                                        type="button"
+                                                                                        variant="ghost"
+                                                                                        size="sm"
+                                                                                        onClick={() =>
+                                                                                            removeSubAlbumImage(
+                                                                                                subIndex,
+                                                                                                imgIndex,
+                                                                                            )
+                                                                                        }
+                                                                                    >
+                                                                                        <X className="h-3 w-3" />
+                                                                                    </Button>
+                                                                                </div>
+
+                                                                                <div className="space-y-2">
+                                                                                    <Label className="text-xs">
+                                                                                        Virtual
+                                                                                        Image
+                                                                                        ID
+                                                                                    </Label>
+                                                                                    <div className="space-y-2">
+                                                                                        <Label className="text-xs">
+                                                                                            Virtual
+                                                                                            Image
+                                                                                            ID
+                                                                                        </Label>
+                                                                                        <div className="flex gap-2">
+                                                                                            <Input
+                                                                                                value={
+                                                                                                    img.virtual_image_id
+                                                                                                }
+                                                                                                onChange={(
+                                                                                                    e,
+                                                                                                ) =>
+                                                                                                    updateSubAlbumImage(
+                                                                                                        subIndex,
+                                                                                                        imgIndex,
+                                                                                                        'virtual_image_id',
+                                                                                                        e
+                                                                                                            .target
+                                                                                                            .value,
+                                                                                                    )
+                                                                                                }
+                                                                                                placeholder="Optional"
+                                                                                            />
+
+                                                                                            <Select
+                                                                                                value={
+                                                                                                    img.virtual_image_type
+                                                                                                }
+                                                                                                onValueChange={(
+                                                                                                    value,
+                                                                                                ) =>
+                                                                                                    updateSubAlbumImage(
+                                                                                                        subIndex,
+                                                                                                        imgIndex,
+                                                                                                        'virtual_image_type',
+                                                                                                        value,
+                                                                                                    )
+                                                                                                }
+                                                                                            >
+                                                                                                <SelectTrigger className="w-[120px]">
+                                                                                                    <SelectValue placeholder="Type" />
+                                                                                                </SelectTrigger>
+                                                                                                <SelectContent>
+                                                                                                    <SelectItem value="image">
+                                                                                                        Image
+                                                                                                    </SelectItem>
+                                                                                                    <SelectItem value="video">
+                                                                                                        Video
+                                                                                                    </SelectItem>
+                                                                                                </SelectContent>
+                                                                                            </Select>
+
+                                                                                            <IdPickerButton
+                                                                                                label="Pick"
+                                                                                                onPick={(
+                                                                                                    id,
+                                                                                                ) =>
+                                                                                                    updateSubAlbumImage(
+                                                                                                        subIndex,
+                                                                                                        imgIndex,
+                                                                                                        'virtual_image_id',
+                                                                                                        id,
+                                                                                                    )
+                                                                                                }
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <div className="space-y-2">
+                                                                                    <Label className="text-xs">
+                                                                                        Real
+                                                                                        Image
+                                                                                        ID
+                                                                                    </Label>
+                                                                                    <div className="space-y-2">
+                                                                                        <Label className="text-xs">
+                                                                                            Real
+                                                                                            Image
+                                                                                            ID
+                                                                                        </Label>
+                                                                                        <div className="flex gap-2">
+                                                                                            <Input
+                                                                                                value={
+                                                                                                    img.real_image_id
+                                                                                                }
+                                                                                                onChange={(
+                                                                                                    e,
+                                                                                                ) =>
+                                                                                                    updateSubAlbumImage(
+                                                                                                        subIndex,
+                                                                                                        imgIndex,
+                                                                                                        'real_image_id',
+                                                                                                        e
+                                                                                                            .target
+                                                                                                            .value,
+                                                                                                    )
+                                                                                                }
+                                                                                                placeholder="Optional"
+                                                                                            />
+
+                                                                                            <Select
+                                                                                                value={
+                                                                                                    img.real_image_type
+                                                                                                }
+                                                                                                onValueChange={(
+                                                                                                    value,
+                                                                                                ) =>
+                                                                                                    updateSubAlbumImage(
+                                                                                                        subIndex,
+                                                                                                        imgIndex,
+                                                                                                        'real_image_type',
+                                                                                                        value,
+                                                                                                    )
+                                                                                                }
+                                                                                            >
+                                                                                                <SelectTrigger className="w-[120px]">
+                                                                                                    <SelectValue placeholder="Type" />
+                                                                                                </SelectTrigger>
+                                                                                                <SelectContent>
+                                                                                                    <SelectItem value="image">
+                                                                                                        Image
+                                                                                                    </SelectItem>
+                                                                                                    <SelectItem value="video">
+                                                                                                        Video
+                                                                                                    </SelectItem>
+                                                                                                </SelectContent>
+                                                                                            </Select>
+
+                                                                                            <IdPickerButton
+                                                                                                label="Pick"
+                                                                                                mimeTypes={[
+                                                                                                    'image/jpeg',
+                                                                                                    'image/png',
+                                                                                                    'image/webp',
+                                                                                                ]}
+                                                                                                onPick={(
+                                                                                                    id,
+                                                                                                ) =>
+                                                                                                    updateSubAlbumImage(
+                                                                                                        subIndex,
+                                                                                                        imgIndex,
+                                                                                                        'real_image_id',
+                                                                                                        id,
+                                                                                                    )
+                                                                                                }
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </CardContent>
+                                                                        </Card>
+                                                                    ),
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        ),
+                                    )
+                                )}
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {/* Direct Images Section */}
+                    {!data.has_sub_albums && (
+                        <Card>
+                            <CardHeader>
+                                <div className="flex items-center justify-between">
+                                    <CardTitle>Images</CardTitle>
+
+                                    <div className="flex items-center gap-2">
+                                        {/* shadcn multi target */}
+                                        <div className="w-[160px]">
+                                            <Select
+                                                value={directMultiTarget}
+                                                onValueChange={(v) =>
+                                                    setDirectMultiTarget(
+                                                        v as MultiTarget,
+                                                    )
+                                                }
+                                            >
+                                                <SelectTrigger className="h-8 text-xs">
+                                                    <SelectValue placeholder="Multi target" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="real">
+                                                        Multi → Real IDs
+                                                    </SelectItem>
+                                                    <SelectItem value="virtual">
+                                                        Multi → Virtual IDs
+                                                    </SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                        <IdPickerButton
+                                            multiple
+                                            label="Pick Images (multi)"
+                                            mimeTypes={[
+                                                'image/jpeg',
+                                                'image/png',
+                                                'image/webp',
+                                            ]}
+                                            onPickMany={appendManyImages}
+                                        />
+
+                                        <Button
+                                            type="button"
+                                            onClick={addImage}
+                                            size="sm"
+                                        >
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Add Image
+                                        </Button>
+                                    </div>
+                                </div>
+                            </CardHeader>
+
+                            <CardContent className="space-y-4">
+                                {data.images.length === 0 ? (
+                                    <p className="py-8 text-center text-sm text-muted-foreground">
+                                        No images added yet. Use “Pick Images
+                                        (multi)” to add many at once, or click
+                                        “Add Image”.
+                                    </p>
+                                ) : (
+                                    data.images.map((img, index) => (
+                                        <Card key={index}>
+                                            <CardContent className="space-y-2 pt-4">
+                                                <div className="mb-2 flex items-center justify-between">
+                                                    <span className="text-sm font-medium">
+                                                        Image {index + 1}
+                                                    </span>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            removeImage(index)
+                                                        }
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label>
+                                                        Virtual Image ID
+                                                    </Label>
+                                                    <div className="space-y-2">
+                                                        <Label>
+                                                            Virtual Image ID
+                                                        </Label>
+                                                        <div className="flex gap-2">
+                                                            <Input
+                                                                value={
+                                                                    img.virtual_image_id
+                                                                }
+                                                                onChange={(e) =>
+                                                                    updateImage(
+                                                                        index,
+                                                                        'virtual_image_id',
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                placeholder="Optional"
+                                                            />
+
+                                                            <Select
+                                                                value={
+                                                                    img.virtual_image_type
+                                                                }
+                                                                onValueChange={(
+                                                                    value,
+                                                                ) =>
+                                                                    updateImage(
+                                                                        index,
+                                                                        'virtual_image_type',
+                                                                        value,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <SelectTrigger className="w-[120px]">
+                                                                    <SelectValue placeholder="Type" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectItem value="image">
+                                                                        Image
+                                                                    </SelectItem>
+                                                                    <SelectItem value="video">
+                                                                        Video
+                                                                    </SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+
+                                                            <IdPickerButton
+                                                                label="Pick"
+                                                                onPick={(id) =>
+                                                                    updateImage(
+                                                                        index,
+                                                                        'virtual_image_id',
+                                                                        id,
+                                                                    )
+                                                                }
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label>Real Image ID</Label>
+                                                    <div className="space-y-2">
+                                                        <Label>
+                                                            Real Image ID
+                                                        </Label>
+                                                        <div className="flex gap-2">
+                                                            <Input
+                                                                value={
+                                                                    img.real_image_id
+                                                                }
+                                                                onChange={(e) =>
+                                                                    updateImage(
+                                                                        index,
+                                                                        'real_image_id',
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                placeholder="Optional"
+                                                            />
+
+                                                            <Select
+                                                                value={
+                                                                    img.real_image_type
+                                                                }
+                                                                onValueChange={(
+                                                                    value,
+                                                                ) =>
+                                                                    updateImage(
+                                                                        index,
+                                                                        'real_image_type',
+                                                                        value,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <SelectTrigger className="w-[120px]">
+                                                                    <SelectValue placeholder="Type" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectItem value="image">
+                                                                        Image
+                                                                    </SelectItem>
+                                                                    <SelectItem value="video">
+                                                                        Video
+                                                                    </SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+
+                                                            <IdPickerButton
+                                                                label="Pick"
+                                                                mimeTypes={[
+                                                                    'image/jpeg',
+                                                                    'image/png',
+                                                                    'image/webp',
+                                                                ]}
+                                                                onPick={(id) =>
+                                                                    updateImage(
+                                                                        index,
+                                                                        'real_image_id',
+                                                                        id,
+                                                                    )
+                                                                }
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    ))
+                                )}
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    <div className="flex justify-end gap-2">
+                        <Button
                             type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeImage(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>Virtual Image ID</Label>
-                          <div className="flex gap-2">
-                            <Input
-                              value={img.virtual_image_id}
-                              onChange={(e) =>
-                                updateImage(index, 'virtual_image_id', e.target.value)
-                              }
-                              placeholder="Optional"
-                            />
-                            <IdPickerButton
-                              label="Pick"
-                              onPick={(id) =>
-                                updateImage(index, 'virtual_image_id', id)
-                              }
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>Real Image ID</Label>
-                          <div className="flex gap-2">
-                            <Input
-                              value={img.real_image_id}
-                              onChange={(e) =>
-                                updateImage(index, 'real_image_id', e.target.value)
-                              }
-                              placeholder="Optional"
-                            />
-                            <IdPickerButton
-                              label="Pick"
-                              mimeTypes={['image/jpeg', 'image/png', 'image/webp']}
-                              onPick={(id) =>
-                                updateImage(index, 'real_image_id', id)
-                              }
-                            />
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
-                )}
-              </CardContent>
-            </Card>
-          )}
-
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => window.history.back()}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={processing}>
-              {processing ? 'Creating...' : 'Create Album'}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </AppLayout>
-  );
+                            variant="outline"
+                            onClick={() => window.history.back()}
+                        >
+                            Cancel
+                        </Button>
+                        <Button type="submit" disabled={processing}>
+                            {processing ? 'Creating...' : 'Create Album'}
+                        </Button>
+                    </div>
+                </form>
+            </div>
+        </AppLayout>
+    );
 }

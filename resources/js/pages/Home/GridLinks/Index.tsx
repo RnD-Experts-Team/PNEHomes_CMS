@@ -1,15 +1,33 @@
-import { Head, Link, router } from '@inertiajs/react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Pencil, Trash2, Plus, ArrowLeft } from 'lucide-react';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Head, Link, router } from '@inertiajs/react';
+import { ArrowLeft, Pencil, Plus, Trash2 } from 'lucide-react';
 
 interface GridLink {
     id: number;
     title: string;
     cover_image_id: string;
+    cover_image_type: string;
     order: number;
 }
 
@@ -34,12 +52,17 @@ export default function GridLinksIndex({ links }: Props) {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Link href="/admin/home">
-                            <Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button>
+                            <Button variant="ghost" size="icon">
+                                <ArrowLeft className="h-4 w-4" />
+                            </Button>
                         </Link>
                         <h1 className="text-2xl font-bold">Grid Links</h1>
                     </div>
                     <Link href="/admin/home-grid-links/create">
-                        <Button><Plus className="mr-2 h-4 w-4" />Add Link</Button>
+                        <Button>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Link
+                        </Button>
                     </Link>
                 </div>
 
@@ -50,37 +73,83 @@ export default function GridLinksIndex({ links }: Props) {
                                 <TableHead>Order</TableHead>
                                 <TableHead>Title</TableHead>
                                 <TableHead>Cover Image ID</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead>Cover Image Type</TableHead>
+                                <TableHead className="text-right">
+                                    Actions
+                                </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {links.length === 0 ? (
-                                <TableRow><TableCell colSpan={4} className="text-center">No links found</TableCell></TableRow>
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={4}
+                                        className="text-center"
+                                    >
+                                        No links found
+                                    </TableCell>
+                                </TableRow>
                             ) : (
                                 links.map((link) => (
                                     <TableRow key={link.id}>
                                         <TableCell>{link.order}</TableCell>
-                                        <TableCell className="font-medium">{link.title}</TableCell>
+                                        <TableCell className="font-medium">
+                                            {link.title}
+                                        </TableCell>
                                         <TableCell>
-                                            <code className="rounded bg-muted px-2 py-1 text-sm">{link.cover_image_id}</code>
+                                            <code className="rounded bg-muted px-2 py-1 text-sm">
+                                                {link.cover_image_id}
+                                            </code>
+                                        </TableCell>
+                                        <TableCell>
+                                            {link.cover_image_type}
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
-                                                <Link href={`/admin/home-grid-links/${link.id}/edit`}>
-                                                    <Button variant="outline" size="sm"><Pencil className="h-4 w-4" /></Button>
+                                                <Link
+                                                    href={`/admin/home-grid-links/${link.id}/edit`}
+                                                >
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                    >
+                                                        <Pencil className="h-4 w-4" />
+                                                    </Button>
                                                 </Link>
                                                 <AlertDialog>
                                                     <AlertDialogTrigger asChild>
-                                                        <Button variant="outline" size="sm" className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="text-destructive"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
                                                     </AlertDialogTrigger>
                                                     <AlertDialogContent>
                                                         <AlertDialogHeader>
-                                                            <AlertDialogTitle>Delete Link</AlertDialogTitle>
-                                                            <AlertDialogDescription>Are you sure you want to delete "{link.title}"?</AlertDialogDescription>
+                                                            <AlertDialogTitle>
+                                                                Delete Link
+                                                            </AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                Are you sure you
+                                                                want to delete "
+                                                                {link.title}"?
+                                                            </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
-                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                            <AlertDialogAction onClick={() => handleDelete(link.id)}>Delete</AlertDialogAction>
+                                                            <AlertDialogCancel>
+                                                                Cancel
+                                                            </AlertDialogCancel>
+                                                            <AlertDialogAction
+                                                                onClick={() =>
+                                                                    handleDelete(
+                                                                        link.id,
+                                                                    )
+                                                                }
+                                                            >
+                                                                Delete
+                                                            </AlertDialogAction>
                                                         </AlertDialogFooter>
                                                     </AlertDialogContent>
                                                 </AlertDialog>

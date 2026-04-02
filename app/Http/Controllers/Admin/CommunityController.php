@@ -46,7 +46,8 @@ class CommunityController extends Controller
             'order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
             'gallery' => 'nullable|array',
-            'gallery.*' => 'required|string',
+            'gallery.*.image_id' => 'required|string',
+            'gallery.*.image_type' => 'required|string|in:image,video',
         ]);
 
         try {
@@ -89,7 +90,8 @@ class CommunityController extends Controller
             'order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
             'gallery' => 'nullable|array',
-            'gallery.*' => 'required|string',
+            'gallery.*.image_id' => 'required|string',
+            'gallery.*.image_type' => 'required|string|in:image,video',
         ]);
 
         try {

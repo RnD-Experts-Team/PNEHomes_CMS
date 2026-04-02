@@ -1,23 +1,28 @@
-import { Head, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { IdPickerButton } from '@/components/drive/IdPickerButton';
 import QuillEditorPro from '@/components/QuillEditorPro';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Privacy Policy', href: '#' },
-];
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
+import { Head, useForm } from '@inertiajs/react';
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Privacy Policy', href: '#' }];
 
 interface PrivacyPolicy {
     title: string;
     slogan: string;
     description: string;
     cover_image_id: string;
+    cover_image_type: string;
     contact_title: string;
     contact_message: string;
 }
@@ -31,6 +36,7 @@ interface FormData {
     slogan: string;
     description: string;
     cover_image_id: string;
+    cover_image_type: string;
     contact_title: string;
     contact_message: string;
 }
@@ -41,8 +47,11 @@ export default function PrivacyPolicyPage({ privacyPolicy }: Props) {
         slogan: privacyPolicy?.slogan || 'PNE HOMES PRIVACY POLICY',
         description: privacyPolicy?.description || '',
         cover_image_id: privacyPolicy?.cover_image_id || '',
+        cover_image_type: privacyPolicy?.cover_image_type || 'image',
         contact_title: privacyPolicy?.contact_title || 'Contact Us Today',
-        contact_message: privacyPolicy?.contact_message || "I would like to learn more about PNE Homes' privacy policy and how my personal information is handled.",
+        contact_message:
+            privacyPolicy?.contact_message ||
+            "I would like to learn more about PNE Homes' privacy policy and how my personal information is handled.",
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -69,11 +78,15 @@ export default function PrivacyPolicyPage({ privacyPolicy }: Props) {
                                 <Input
                                     id="title"
                                     value={data.title}
-                                    onChange={(e) => setData('title', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('title', e.target.value)
+                                    }
                                     placeholder="PRIVACY POLICY"
                                 />
                                 {errors.title && (
-                                    <p className="text-sm text-destructive">{errors.title}</p>
+                                    <p className="text-sm text-destructive">
+                                        {errors.title}
+                                    </p>
                                 )}
                             </div>
 
@@ -82,11 +95,15 @@ export default function PrivacyPolicyPage({ privacyPolicy }: Props) {
                                 <Input
                                     id="slogan"
                                     value={data.slogan}
-                                    onChange={(e) => setData('slogan', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('slogan', e.target.value)
+                                    }
                                     placeholder="PNE HOMES PRIVACY POLICY"
                                 />
                                 {errors.slogan && (
-                                    <p className="text-sm text-destructive">{errors.slogan}</p>
+                                    <p className="text-sm text-destructive">
+                                        {errors.slogan}
+                                    </p>
                                 )}
                             </div>
 
@@ -94,32 +111,72 @@ export default function PrivacyPolicyPage({ privacyPolicy }: Props) {
                                 <Label htmlFor="description">Description</Label>
                                 <QuillEditorPro
                                     value={data.description}
-                                    onChange={(html) => setData('description', html)}
+                                    onChange={(html) =>
+                                        setData('description', html)
+                                    }
                                     placeholder="Enter a brief description…"
                                     height="200px"
                                     className="w-full"
                                 />
                                 {errors.description && (
-                                    <p className="text-sm text-destructive">{errors.description}</p>
+                                    <p className="text-sm text-destructive">
+                                        {errors.description}
+                                    </p>
                                 )}
                                 <p className="text-xs text-muted-foreground">
-                                    This editor supports rich text formatting, links, lists, and more.
+                                    This editor supports rich text formatting,
+                                    links, lists, and more.
                                 </p>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="cover_image_id">Cover Image ID (Google Drive) *</Label>
+                                <Label htmlFor="cover_image_id">
+                                    Cover Image ID (Google Drive) *
+                                </Label>
+
                                 <div className="flex gap-2">
                                     <Input
                                         id="cover_image_id"
                                         value={data.cover_image_id}
-                                        onChange={(e) => setData('cover_image_id', e.target.value)}
+                                        onChange={(e) =>
+                                            setData(
+                                                'cover_image_id',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="Enter Google Drive file ID"
                                     />
-                                    <IdPickerButton onPick={(id) => setData('cover_image_id', id)} />
+
+                                    <Select
+                                        value={data.cover_image_type}
+                                        onValueChange={(value) =>
+                                            setData('cover_image_type', value)
+                                        }
+                                    >
+                                        <SelectTrigger className="w-[140px]">
+                                            <SelectValue placeholder="Type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="image">
+                                                Image
+                                            </SelectItem>
+                                            <SelectItem value="video">
+                                                Video
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+
+                                    <IdPickerButton
+                                        onPick={(id) =>
+                                            setData('cover_image_id', id)
+                                        }
+                                    />
                                 </div>
+
                                 {errors.cover_image_id && (
-                                    <p className="text-sm text-destructive">{errors.cover_image_id}</p>
+                                    <p className="text-sm text-destructive">
+                                        {errors.cover_image_id}
+                                    </p>
                                 )}
                             </div>
                         </CardContent>
@@ -131,29 +188,44 @@ export default function PrivacyPolicyPage({ privacyPolicy }: Props) {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="contact_title">Contact Title *</Label>
+                                <Label htmlFor="contact_title">
+                                    Contact Title *
+                                </Label>
                                 <Input
                                     id="contact_title"
                                     value={data.contact_title}
-                                    onChange={(e) => setData('contact_title', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('contact_title', e.target.value)
+                                    }
                                     placeholder="Contact Us Today"
                                 />
                                 {errors.contact_title && (
-                                    <p className="text-sm text-destructive">{errors.contact_title}</p>
+                                    <p className="text-sm text-destructive">
+                                        {errors.contact_title}
+                                    </p>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="contact_message">Contact Message *</Label>
+                                <Label htmlFor="contact_message">
+                                    Contact Message *
+                                </Label>
                                 <Textarea
                                     id="contact_message"
                                     value={data.contact_message}
-                                    onChange={(e) => setData('contact_message', e.target.value)}
+                                    onChange={(e) =>
+                                        setData(
+                                            'contact_message',
+                                            e.target.value,
+                                        )
+                                    }
                                     placeholder="Enter contact message"
                                     rows={4}
                                 />
                                 {errors.contact_message && (
-                                    <p className="text-sm text-destructive">{errors.contact_message}</p>
+                                    <p className="text-sm text-destructive">
+                                        {errors.contact_message}
+                                    </p>
                                 )}
                             </div>
                         </CardContent>
@@ -161,7 +233,9 @@ export default function PrivacyPolicyPage({ privacyPolicy }: Props) {
 
                     <div className="flex justify-end gap-2">
                         <Button type="submit" disabled={processing}>
-                            {processing ? 'Updating...' : 'Update Privacy Policy'}
+                            {processing
+                                ? 'Updating...'
+                                : 'Update Privacy Policy'}
                         </Button>
                     </div>
                 </form>

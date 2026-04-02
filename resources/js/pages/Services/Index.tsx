@@ -1,17 +1,4 @@
-import { Head, Link, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Button } from '@/components/ui/button';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Pencil, Trash2, Plus, Settings } from 'lucide-react';
+import { IdPickerButton } from '@/components/drive/IdPickerButton';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -23,6 +10,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -34,9 +23,26 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { IdPickerButton } from '@/components/drive/IdPickerButton';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Pencil, Plus, Settings, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-
 interface Service {
     id: number;
     slug: string;
@@ -49,6 +55,7 @@ interface Service {
 
 interface ServiceSettings {
     image_id: string;
+    image_type: string;
 }
 
 interface Props {
@@ -68,6 +75,7 @@ export default function ServicesIndex({ services, settings }: Props) {
 
     const { data, setData, put, processing, errors } = useForm({
         image_id: settings?.image_id || '',
+        image_type: settings?.image_type || 'image',
     });
 
     const handleDelete = (id: number) => {
@@ -95,7 +103,10 @@ export default function ServicesIndex({ services, settings }: Props) {
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Services</h1>
                     <div className="flex gap-2">
-                        <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+                        <Dialog
+                            open={settingsOpen}
+                            onOpenChange={setSettingsOpen}
+                        >
                             <DialogTrigger asChild>
                                 <Button variant="outline">
                                     <Settings className="mr-2 h-4 w-4" />
@@ -105,7 +116,9 @@ export default function ServicesIndex({ services, settings }: Props) {
                             <DialogContent>
                                 <form onSubmit={handleSettingsSubmit}>
                                     <DialogHeader>
-                                        <DialogTitle>Services Settings</DialogTitle>
+                                        <DialogTitle>
+                                            Services Settings
+                                        </DialogTitle>
                                         <DialogDescription>
                                             Update the services page cover image
                                         </DialogDescription>
@@ -120,17 +133,46 @@ export default function ServicesIndex({ services, settings }: Props) {
                                                     id="image_id"
                                                     value={data.image_id}
                                                     onChange={(e) =>
-                                                        setData('image_id', e.target.value)
+                                                        setData(
+                                                            'image_id',
+                                                            e.target.value,
+                                                        )
                                                     }
                                                     placeholder="Enter Google Drive file ID"
                                                 />
+
+                                                <Select
+                                                    value={data.image_type}
+                                                    onValueChange={(value) =>
+                                                        setData(
+                                                            'image_type',
+                                                            value,
+                                                        )
+                                                    }
+                                                >
+                                                    <SelectTrigger className="w-[140px]">
+                                                        <SelectValue placeholder="Type" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="image">
+                                                            Image
+                                                        </SelectItem>
+                                                        <SelectItem value="video">
+                                                            Video
+                                                        </SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+
                                                 <IdPickerButton
-                                                    onPick={(id) => setData('image_id', id)}
+                                                    onPick={(id) =>
+                                                        setData('image_id', id)
+                                                    }
                                                 />
                                             </div>
-                                            {errors.image_id && (
+
+                                            {errors.image_type && (
                                                 <p className="text-sm text-destructive">
-                                                    {errors.image_id}
+                                                    {errors.image_type}
                                                 </p>
                                             )}
                                         </div>
@@ -139,12 +181,19 @@ export default function ServicesIndex({ services, settings }: Props) {
                                         <Button
                                             type="button"
                                             variant="outline"
-                                            onClick={() => setSettingsOpen(false)}
+                                            onClick={() =>
+                                                setSettingsOpen(false)
+                                            }
                                         >
                                             Cancel
                                         </Button>
-                                        <Button type="submit" disabled={processing}>
-                                            {processing ? 'Saving...' : 'Save Changes'}
+                                        <Button
+                                            type="submit"
+                                            disabled={processing}
+                                        >
+                                            {processing
+                                                ? 'Saving...'
+                                                : 'Save Changes'}
                                         </Button>
                                     </DialogFooter>
                                 </form>
@@ -168,13 +217,18 @@ export default function ServicesIndex({ services, settings }: Props) {
                                 <TableHead>Title</TableHead>
                                 <TableHead>Slug</TableHead>
                                 <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead className="text-right">
+                                    Actions
+                                </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {services.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="text-center">
+                                    <TableCell
+                                        colSpan={5}
+                                        className="text-center"
+                                    >
                                         No services found
                                     </TableCell>
                                 </TableRow>
@@ -193,10 +247,14 @@ export default function ServicesIndex({ services, settings }: Props) {
                                         <TableCell>
                                             <Badge
                                                 variant={
-                                                    service.is_active ? 'default' : 'secondary'
+                                                    service.is_active
+                                                        ? 'default'
+                                                        : 'secondary'
                                                 }
                                             >
-                                                {service.is_active ? 'Active' : 'Inactive'}
+                                                {service.is_active
+                                                    ? 'Active'
+                                                    : 'Inactive'}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-right">
@@ -204,7 +262,10 @@ export default function ServicesIndex({ services, settings }: Props) {
                                                 <Link
                                                     href={`/admin/services/${service.id}/edit`}
                                                 >
-                                                    <Button variant="outline" size="sm">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                    >
                                                         <Pencil className="h-4 w-4" />
                                                     </Button>
                                                 </Link>
@@ -224,9 +285,12 @@ export default function ServicesIndex({ services, settings }: Props) {
                                                                 Delete Service
                                                             </AlertDialogTitle>
                                                             <AlertDialogDescription>
-                                                                Are you sure you want to delete "
-                                                                {service.title}"? This action
-                                                                cannot be undone.
+                                                                Are you sure you
+                                                                want to delete "
+                                                                {service.title}
+                                                                "? This action
+                                                                cannot be
+                                                                undone.
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
@@ -235,7 +299,9 @@ export default function ServicesIndex({ services, settings }: Props) {
                                                             </AlertDialogCancel>
                                                             <AlertDialogAction
                                                                 onClick={() =>
-                                                                    handleDelete(service.id)
+                                                                    handleDelete(
+                                                                        service.id,
+                                                                    )
                                                                 }
                                                             >
                                                                 Delete

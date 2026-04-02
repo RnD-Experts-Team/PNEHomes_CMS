@@ -1,10 +1,8 @@
-import { Head, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { IdPickerButton } from '@/components/drive/IdPickerButton';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import {
     Select,
     SelectContent,
@@ -12,8 +10,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { IdPickerButton } from '@/components/drive/IdPickerButton';
+import { Switch } from '@/components/ui/switch';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
+import { Head, useForm } from '@inertiajs/react';
 
 interface Community {
     id: number;
@@ -26,6 +26,7 @@ interface Floorplan {
     title: string;
     slug: string;
     cover_image_id: string;
+    cover_image_type: string;
     status: string;
     price: string;
     beds: string;
@@ -45,6 +46,7 @@ interface FormData {
     community_id: number;
     title: string;
     cover_image_id: string;
+    cover_image_type: string;
     status: string;
     price: string;
     beds: string;
@@ -66,6 +68,7 @@ export default function FloorplanEdit({ floorplan, communities }: Props) {
         community_id: floorplan.community_id,
         title: floorplan.title || '',
         cover_image_id: floorplan.cover_image_id || '',
+        cover_image_type: floorplan.cover_image_type || 'image',
         status: floorplan.status || 'available',
         price: floorplan.price || '',
         beds: floorplan.beds || '',
@@ -97,7 +100,9 @@ export default function FloorplanEdit({ floorplan, communities }: Props) {
                         <CardContent className="space-y-4">
                             {/* Community Selection */}
                             <div className="space-y-2">
-                                <Label htmlFor="community_id">Community *</Label>
+                                <Label htmlFor="community_id">
+                                    Community *
+                                </Label>
                                 <Select
                                     value={data.community_id.toString()}
                                     onValueChange={(value) =>
@@ -131,14 +136,19 @@ export default function FloorplanEdit({ floorplan, communities }: Props) {
                                     <Input
                                         id="title"
                                         value={data.title}
-                                        onChange={(e) => setData('title', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('title', e.target.value)
+                                        }
                                         placeholder="Enter floor plan title"
                                     />
                                     {errors.title && (
-                                        <p className="text-sm text-destructive">{errors.title}</p>
+                                        <p className="text-sm text-destructive">
+                                            {errors.title}
+                                        </p>
                                     )}
                                     <p className="text-xs text-muted-foreground">
-                                        Current slug: <code>{floorplan.slug}</code>
+                                        Current slug:{' '}
+                                        <code>{floorplan.slug}</code>
                                     </p>
                                 </div>
 
@@ -165,20 +175,55 @@ export default function FloorplanEdit({ floorplan, communities }: Props) {
                                 <Label htmlFor="cover_image_id">
                                     Cover Image ID (Google Drive) *
                                 </Label>
+
                                 <div className="flex gap-2">
                                     <Input
                                         id="cover_image_id"
                                         value={data.cover_image_id}
-                                        onChange={(e) => setData('cover_image_id', e.target.value)}
+                                        onChange={(e) =>
+                                            setData(
+                                                'cover_image_id',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="Enter Google Drive file ID"
                                     />
+
+                                    <Select
+                                        value={data.cover_image_type}
+                                        onValueChange={(value) =>
+                                            setData('cover_image_type', value)
+                                        }
+                                    >
+                                        <SelectTrigger className="w-[140px]">
+                                            <SelectValue placeholder="Type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="image">
+                                                Image
+                                            </SelectItem>
+                                            <SelectItem value="video">
+                                                Video
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+
                                     <IdPickerButton
-                                        onPick={(id) => setData('cover_image_id', id)}
+                                        onPick={(id) =>
+                                            setData('cover_image_id', id)
+                                        }
                                     />
                                 </div>
+
                                 {errors.cover_image_id && (
                                     <p className="text-sm text-destructive">
                                         {errors.cover_image_id}
+                                    </p>
+                                )}
+
+                                {errors.cover_image_type && (
+                                    <p className="text-sm text-destructive">
+                                        {errors.cover_image_type}
                                     </p>
                                 )}
                             </div>
@@ -189,7 +234,9 @@ export default function FloorplanEdit({ floorplan, communities }: Props) {
                                     <Input
                                         id="price"
                                         value={data.price}
-                                        onChange={(e) => setData('price', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('price', e.target.value)
+                                        }
                                         placeholder="$XXX,XXX"
                                     />
                                 </div>
@@ -199,7 +246,9 @@ export default function FloorplanEdit({ floorplan, communities }: Props) {
                                     <Input
                                         id="sqft"
                                         value={data.sqft}
-                                        onChange={(e) => setData('sqft', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('sqft', e.target.value)
+                                        }
                                         placeholder="e.g., 2,500"
                                     />
                                 </div>
@@ -211,7 +260,9 @@ export default function FloorplanEdit({ floorplan, communities }: Props) {
                                     <Input
                                         id="beds"
                                         value={data.beds}
-                                        onChange={(e) => setData('beds', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('beds', e.target.value)
+                                        }
                                         placeholder="e.g., 3"
                                     />
                                 </div>
@@ -221,7 +272,9 @@ export default function FloorplanEdit({ floorplan, communities }: Props) {
                                     <Input
                                         id="baths"
                                         value={data.baths}
-                                        onChange={(e) => setData('baths', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('baths', e.target.value)
+                                        }
                                         placeholder="e.g., 2.5"
                                     />
                                 </div>
@@ -231,7 +284,9 @@ export default function FloorplanEdit({ floorplan, communities }: Props) {
                                     <Input
                                         id="garages"
                                         value={data.garages}
-                                        onChange={(e) => setData('garages', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('garages', e.target.value)
+                                        }
                                         placeholder="e.g., 2"
                                     />
                                 </div>
@@ -245,7 +300,10 @@ export default function FloorplanEdit({ floorplan, communities }: Props) {
                                         type="number"
                                         value={data.order}
                                         onChange={(e) =>
-                                            setData('order', parseInt(e.target.value) || 0)
+                                            setData(
+                                                'order',
+                                                parseInt(e.target.value) || 0,
+                                            )
                                         }
                                     />
                                 </div>
@@ -254,7 +312,9 @@ export default function FloorplanEdit({ floorplan, communities }: Props) {
                                     <Switch
                                         id="is_active"
                                         checked={data.is_active}
-                                        onCheckedChange={(checked) => setData('is_active', checked)}
+                                        onCheckedChange={(checked) =>
+                                            setData('is_active', checked)
+                                        }
                                     />
                                     <Label htmlFor="is_active">Active</Label>
                                 </div>
