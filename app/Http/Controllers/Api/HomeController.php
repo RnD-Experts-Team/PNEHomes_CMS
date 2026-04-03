@@ -47,7 +47,7 @@ class HomeController extends Controller
                     'title' => $homeData['services']->title,
 
                     'cover' => $homeData['services']->cover_url,
-                    'cover_type' => $homeData['services']->cover_type,
+                    'cover_type' => $homeData['services']->cover_image_type,
 
                     'description' => $homeData['services']->description,
 
@@ -64,14 +64,14 @@ class HomeController extends Controller
                     'video_type' => $homeData['grid_section']->video_type,
 
                     'logo' => $homeData['grid_section']->logo_url,
-                    'logo_type' => $homeData['grid_section']->logo_type,
+                    'logo_type' => $homeData['grid_section']->logo_image_type,
 
                     'links' => $homeData['grid_links']->map(function ($link) {
                         return [
                             'title' => $link->title,
 
                             'cover' => $link->cover_url,
-                            'cover_type' => $link->cover_type,
+                            'cover_type' => $link->cover_image_type,
                         ];
                     })->toArray(),
                 ] : null,

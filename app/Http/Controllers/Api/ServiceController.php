@@ -20,7 +20,7 @@ class ServiceController extends Controller
 
             $data = [
                 // ✅ fixed settings media
-                'cover' => $settings?->image_url,
+                'cover' => $settings?->img,
                 'cover_type' => $settings?->image_type,
 
                 'services' => $services->map(function ($service) {
@@ -34,7 +34,7 @@ class ServiceController extends Controller
                         // ✅ fixed content items
                         'content' => $service->contentItems->map(function ($item) {
                             return [
-                                'image' => $item->image_url,
+                                'image' => $item->img,
                                 'image_type' => $item->image_type,
 
                                 'sub_title' => $item->sub_title,
@@ -79,7 +79,7 @@ class ServiceController extends Controller
                 // ✅ fixed content items
                 'content' => $service->contentItems->map(function ($item) {
                     return [
-                        'image' => $item->image_url,
+                        'image' => $item->img,
                         'image_type' => $item->image_type,
 
                         'sub_title' => $item->sub_title,

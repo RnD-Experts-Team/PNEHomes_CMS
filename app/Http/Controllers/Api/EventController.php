@@ -20,7 +20,7 @@ class EventController extends Controller
 
             $data = [
                 'cover' => $settings?->cover_url,
-                'cover_type' => $settings?->cover_type, // ✅ added
+                'cover_type' => $settings?->cover_image_type, // ✅ added
 
                 'slogan' => $settings?->slogan,
                 'title' => $settings?->title,
@@ -37,7 +37,7 @@ class EventController extends Controller
                         // ✅ gallery fixed
                         'gallery' => $event->gallery->map(fn($g) => [
                             'url' => $g->url,
-                            'type' => $g->type,
+                            'type' => $g->image_type,
                         ])->toArray(),
                     ];
                 })->toArray(),

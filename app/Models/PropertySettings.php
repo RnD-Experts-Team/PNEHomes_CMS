@@ -7,6 +7,7 @@ use App\Traits\HasMediaUrl;
 
 class PropertySettings extends Model
 {
+    use HasMediaUrl;
     protected $table = 'property_settings';
 
     protected $fillable = [

@@ -35,7 +35,7 @@ class CommunityController extends Controller
                     // ✅ gallery fixed
                     'gallery' => $c->gallery->map(fn($g) => [
                         'url' => $g->url,
-                        'type' => $g->type,
+                        'type' => $g->image_type,
                     ])->toArray(),
 
                     'video' => $c->video_url,
@@ -51,7 +51,7 @@ class CommunityController extends Controller
                             'title' => $p->title,
                             'community' => $c->slug,
                             'cover' => $p->cover_url,
-                            'cover_type' => $p->cover_type, // ✅ added
+                            'cover_type' => $p->cover_image_type, // ✅ added
                             'status' => null,
                             'price' => $p->price,
                             'beds' => $p->beds,
@@ -69,7 +69,7 @@ class CommunityController extends Controller
                 'data' => [
                     'title' => $settings->title,
                     'cover' => $settings->cover_url,
-                    'cover_type' => $settings->cover_type, // ✅ added
+                    'cover_type' => $settings->cover_image_type, // ✅ added
                     'communities' => $list,
                     'zillow' => $settings->zillow_link,   // exact key used by frontend JSON
                     'contact' => $contact ? [
@@ -104,7 +104,7 @@ class CommunityController extends Controller
                 // ✅ gallery fixed
                 'gallery' => $c->gallery->map(fn($g) => [
                     'url' => $g->url,
-                    'type' => $g->type,
+                    'type' => $g->image_type,
                 ])->toArray(),
 
                 'video' => $c->video_url,
@@ -120,7 +120,7 @@ class CommunityController extends Controller
                         'title' => $p->title,
                         'community' => $c->slug,
                         'cover' => $p->cover_url,
-                        'cover_type' => $p->cover_type, // ✅ added
+                        'cover_type' => $p->cover_image_type, // ✅ added
                         'status' => $p->status,
                         'price' => $p->price,
                         'beds' => $p->beds,

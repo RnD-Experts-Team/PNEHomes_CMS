@@ -21,7 +21,7 @@ class TeamController extends Controller
             $data = [
                 // ✅ settings media fixed
                 'cover' => $settings?->cover_url,
-                'cover_type' => $settings?->cover_type,
+                'cover_type' => $settings?->cover_image_type,
 
                 'slogan' => $settings?->slogan,
                 'title' => $settings?->title,
@@ -34,7 +34,7 @@ class TeamController extends Controller
 
                         // ✅ member media fixed
                         'cover' => $member->cover_url,
-                        'cover_type' => $member->cover_type,
+                        'cover_type' => $member->cover_image_type,
 
                         'name' => $member->name,
                         'position' => $member->position,

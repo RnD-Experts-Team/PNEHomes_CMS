@@ -16,7 +16,6 @@ class PropertyController extends Controller
     {
         try {
             $settings = $this->propertyService->getSettings();
-
             $filters = [
                 'community' => $request->input('community'),
                 'price' => $request->input('price'),
@@ -45,7 +44,6 @@ class PropertyController extends Controller
                 $filters['sortBy'] = 'order';
                 $filters['sortOrder'] = 'asc';
             }
-
             $properties = $this->propertyService->getAllProperties($filters);
             $total = $this->propertyService->getTotalCount($filters);
             $communities = $this->propertyService->getUniqueCommunities();
@@ -55,7 +53,7 @@ class PropertyController extends Controller
 
                 // ✅ settings media
                 'cover' => $settings->cover_url,
-                'cover_type' => $settings->cover_type,
+                'cover_type' => $settings->cover_image_type,
 
                 'properties' => $properties->map(fn($p) => [
                     'id' => $p->id,
@@ -71,7 +69,7 @@ class PropertyController extends Controller
                     // ✅ gallery fixed
                     'gallery' => $p->gallery->map(fn($g) => [
                         'url' => $g->url,
-                        'type' => $g->type,
+                        'type' => $g->image_type,
                     ])->toArray(),
 
                     'zillow_link' => $p->zillow_link,
@@ -89,7 +87,7 @@ class PropertyController extends Controller
                     // ✅ floor plans fixed
                     'Floor_plans' => $p->floorPlans->map(fn($fp) => [
                         'title' => $fp->title,
-                        'image' => $fp->image_url,
+                        'image' => $fp->img,
                         'image_type' => $fp->image_type,
                         'description' => $fp->description,
                     ])->toArray(),
@@ -106,7 +104,6 @@ class PropertyController extends Controller
                     'communities' => $communities,
                 ],
             ];
-
             return response()->json(['success' => true, 'data' => $data]);
 
         } catch (\Throwable $e) {
@@ -134,7 +131,7 @@ class PropertyController extends Controller
                 // ✅ gallery fixed
                 'gallery' => $property->gallery->map(fn($g) => [
                     'url' => $g->url,
-                    'type' => $g->type,
+                    'type' => $g->image_type,
                 ])->toArray(),
 
                 'zillow_link' => $property->zillow_link,
@@ -152,7 +149,7 @@ class PropertyController extends Controller
                 // ✅ floor plans fixed
                 'Floor_plans' => $property->floorPlans->map(fn($fp) => [
                     'title' => $fp->title,
-                    'image' => $fp->image_url,
+                    'image' => $fp->img,
                     'image_type' => $fp->image_type,
                     'description' => $fp->description,
                 ])->toArray(),

@@ -20,7 +20,7 @@ class LayoutController extends Controller
             $data = [
                 'navigation' => [
                     'logo' => $layoutData['navigation']?->logo_url,
-                    'logo_type' => $layoutData['navigation']?->logo_type, // ✅ added
+                    'logo_type' => $layoutData['navigation']?->logo_image_type, // ✅ added
 
                     'links' => $layoutData['navigation_links']->map(function ($link) {
                         return [

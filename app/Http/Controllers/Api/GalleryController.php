@@ -20,7 +20,7 @@ class GalleryController extends Controller
             $data = [
                 'title' => $settings->title,
                 'cover' => $settings->cover_url,
-                'cover_type' => $settings->cover_type,
+                'cover_type' => $settings->cover_image_type,
 
                 'gallery' => $albums->map(function ($album) {
                     return [
@@ -29,7 +29,7 @@ class GalleryController extends Controller
                         'title' => $album->title,
 
                         'cover_img' => $album->cover_url,
-                        'cover_img_type' => $album->cover_type,
+                        'cover_img_type' => $album->cover_image_type,
 
                         'sub_albums' => $album->has_sub_albums
                             ? $album->subAlbums->map(fn($sub) => [
@@ -37,14 +37,14 @@ class GalleryController extends Controller
                                 'title' => $sub->title,
 
                                 'cover_img' => $sub->cover_url,
-                                'cover_img_type' => $sub->cover_type,
+                                'cover_img_type' => $sub->cover_image_type,
 
                                 'gallery' => $sub->images->map(fn($img) => [
                                     'virtual_img' => $img->virtual_url,
-                                    'virtual_img_type' => $img->virtual_type,
+                                    'virtual_img_type' => $img->virtual_image_type,
 
                                     'real_img' => $img->real_url,
-                                    'real_img_type' => $img->real_type,
+                                    'real_img_type' => $img->real_image_type,
                                 ])->toArray(),
                             ])->toArray()
                             : [],
@@ -52,10 +52,10 @@ class GalleryController extends Controller
                         'gallery' => !$album->has_sub_albums
                             ? $album->images->map(fn($img) => [
                                 'virtual_img' => $img->virtual_url,
-                                'virtual_img_type' => $img->virtual_type,
+                                'virtual_img_type' => $img->virtual_image_type,
 
                                 'real_img' => $img->real_url,
-                                'real_img_type' => $img->real_type,
+                                'real_img_type' => $img->real_image_type,
                             ])->toArray()
                             : [],
                     ];
@@ -85,7 +85,7 @@ class GalleryController extends Controller
                 'title' => $album->title,
 
                 'cover_img' => $album->cover_url,
-                'cover_img_type' => $album->cover_type,
+                'cover_img_type' => $album->cover_image_type,
 
                 'sub_albums' => $album->has_sub_albums
                     ? $album->subAlbums->map(fn($sub) => [
@@ -93,14 +93,14 @@ class GalleryController extends Controller
                         'title' => $sub->title,
 
                         'cover_img' => $sub->cover_url,
-                        'cover_img_type' => $sub->cover_type,
+                        'cover_img_type' => $sub->cover_image_type,
 
                         'gallery' => $sub->images->map(fn($img) => [
                             'virtual_img' => $img->virtual_url,
-                            'virtual_img_type' => $img->virtual_type,
+                            'virtual_img_type' => $img->virtual_image_type,
 
                             'real_img' => $img->real_url,
-                            'real_img_type' => $img->real_type,
+                            'real_img_type' => $img->real_image_type,
                         ])->toArray(),
                     ])->toArray()
                     : [],
@@ -108,10 +108,10 @@ class GalleryController extends Controller
                 'gallery' => !$album->has_sub_albums
                     ? $album->images->map(fn($img) => [
                         'virtual_img' => $img->virtual_url,
-                        'virtual_img_type' => $img->virtual_type,
+                        'virtual_img_type' => $img->virtual_image_type,
 
                         'real_img' => $img->real_url,
-                        'real_img_type' => $img->real_type,
+                        'real_img_type' => $img->real_image_type,
                     ])->toArray()
                     : [],
 
@@ -145,14 +145,14 @@ class GalleryController extends Controller
                     'title' => $subAlbum->title,
 
                     'cover_img' => $subAlbum->cover_url,
-                    'cover_img_type' => $subAlbum->cover_type,
+                    'cover_img_type' => $subAlbum->cover_image_type,
 
                     'gallery' => $subAlbum->images->map(fn($img) => [
                         'virtual_img' => $img->virtual_url,
-                        'virtual_img_type' => $img->virtual_type,
+                        'virtual_img_type' => $img->virtual_image_type,
 
                         'real_img' => $img->real_url,
-                        'real_img_type' => $img->real_type,
+                        'real_img_type' => $img->real_image_type,
                     ])->toArray(),
                 ],
 

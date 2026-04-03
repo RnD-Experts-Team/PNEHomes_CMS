@@ -21,7 +21,7 @@ class BuildingOptionsController extends Controller
 
             $data = [
                 'cover' => $settings?->cover_url,
-                'cover_type' => $settings?->cover_type, // ✅ added
+                'cover_type' => $settings?->cover_image_type, // ✅ added
 
                 'slogan' => $settings?->slogan,
                 'title' => $settings?->title,
@@ -37,7 +37,7 @@ class BuildingOptionsController extends Controller
                 })->toArray(),
 
                 'articles_cover' => $settings?->articles_cover_url,
-                'articles_cover_type' => $settings?->articles_cover_type, // ✅ added
+                'articles_cover_type' => $settings?->articles_cover_image_type, // ✅ added
 
                 'articles' => $articles->map(function ($article) {
                     return [
