@@ -31,13 +31,14 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn, isSameUrl, resolveUrl } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { 
-    Menu, 
+import {
+    Menu,
     Home,
     Building2,
     LayoutTemplate,
     Users,
     ImageIcon,
+    LandPlot,
     Calendar,
     HardHat,
     Settings,
@@ -79,6 +80,11 @@ const mainNavItems: NavItem[] = [
         title: 'Gallery',
         href: '/admin/gallery-albums',
         icon: ImageIcon,
+    },
+    {
+        title: 'Our Projects',
+        href: '/admin/project-lots',
+        icon: LandPlot,
     },
     {
         title: 'Events',

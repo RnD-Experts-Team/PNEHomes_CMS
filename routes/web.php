@@ -88,6 +88,25 @@ Route::middleware(['auth'])->prefix('admin')->name('gallery-albums.')->group(fun
     Route::delete('/gallery-albums/{id}', [GalleryAlbumController::class, 'destroy'])->name('destroy');
 });
 
+use App\Http\Controllers\Admin\ProjectLotController;
+use App\Http\Controllers\Admin\ProjectSettingsController;
+
+// Admin Project Lot Routes (Protected by auth middleware)
+Route::middleware(['auth'])->prefix('admin')->name('project-lots.')->group(function () {
+    Route::get('/project-lots', [ProjectLotController::class, 'index'])->name('index');
+    Route::get('/project-lots/create', [ProjectLotController::class, 'create'])->name('create');
+    Route::post('/project-lots', [ProjectLotController::class, 'store'])->name('store');
+    Route::get('/project-lots/{id}/edit', [ProjectLotController::class, 'edit'])->name('edit');
+    Route::put('/project-lots/{id}', [ProjectLotController::class, 'update'])->name('update');
+    Route::delete('/project-lots/{id}', [ProjectLotController::class, 'destroy'])->name('destroy');
+});
+
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    // Project Settings
+    Route::get('/project-settings', [ProjectSettingsController::class, 'edit'])->name('project-settings.edit');
+    Route::put('/project-settings', [ProjectSettingsController::class, 'update'])->name('project-settings.update');
+});
+
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\EventSettingsController;
 

@@ -41,6 +41,15 @@ Route::prefix('gallery')->group(function () {
     Route::get('/{albumSlug}/{subAlbumSlug}', [GalleryController::class, 'showSubAlbum']);
 });
 
+use App\Http\Controllers\Api\ProjectController;
+
+// Projects API Routes
+Route::prefix('projects')->group(function () {
+    Route::get('/', [ProjectController::class, 'index']);
+    Route::get('/{slug}', [ProjectController::class, 'show']);
+    Route::get('/{lotSlug}/{roomSlug}', [ProjectController::class, 'showRoom']);
+});
+
 use App\Http\Controllers\Api\EventController;
 
 // Events API Routes
